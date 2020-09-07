@@ -17,6 +17,7 @@ import {
 import DropDown from "@components/DropDown";
 import Header from "@components/Header";
 import ImgUploadBtn from "@components/ImgUploadBtn";
+import SuccessModal from "@components/SuccessModal";
 
 //import api
 const axios = require("axios");
@@ -47,7 +48,7 @@ export default class Create extends React.Component {
       NRCCODE: [],
       nrcstate: { value: null, label: null },
       NRCSTATE: [],
-      nrcstatus: { value: null, label: null },
+      nrcstatus: { value: 1, label: "N" },
       NRCSTATUS: [],
       usertype: { value: 1, label: "ပြည်သူ" },
       endtownship: { value: null, label: null },
@@ -76,10 +77,17 @@ export default class Create extends React.Component {
       qstatusboolean: false,
       tempTownship: [],
       Township: [],
+      MINISTRAY: [],
+      tempMinistray: [],
       qtownstatus: "",
       qtownstatusboolean: false,
       pass: "",
       startplaces: "",
+      ministrayTownship: "",
+      // TOWNSHIPMINISTRAY:[],
+      townshipministrayid: null,
+      townshipministrayname: "",
+      isOpenSuccessModel: false,
     };
     this.BackHandler = null;
   }
@@ -215,14 +223,14 @@ export default class Create extends React.Component {
         headers,
       })
       .then(function (response) {
-        // console.log("Township",response.data);
+        // console.log("Ministray",response.data);
         let education = response.data.Ministry;
         let arr = [];
         education.map((data, index) => {
           var obj = { value: data.id, label: data.ministry };
           arr.push(obj);
         });
-        self.setState({ EDUCATION: arr });
+        self.setState({ EDUCATION: arr, MINISTRAY: response.data.Ministry });
       })
       .catch(function (err) {
         console.log(err);
@@ -313,6 +321,40 @@ export default class Create extends React.Component {
       });
   }
 
+  _handleMinistoryTownship(value) {
+    // alert(value);
+    const self = this;
+    const headers = {
+      Accept: "application/json",
+      Authorization: "Bearer " + self.state.access_token,
+    };
+
+    // console.log(GetTownshipApi);
+    axios
+      .get(GetCityApi, {
+        headers,
+      })
+      .then(function (response) {
+        // console.log("Township",response.data);
+        let endtownship = response.data.Township;
+        let arr = [];
+        endtownship.map((data, index) => {
+          // console.log("Ministray",data);
+          if (value == data.id) {
+            console.log("Ministry", data);
+            self.setState({
+              townshipministrayname: data.township,
+              townshipministrayid: data.id,
+            });
+          }
+          // arr.push(obj);
+        });
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+  }
+
   //search
   searching(word) {
     // alert(word);
@@ -397,20 +439,35 @@ export default class Create extends React.Component {
       endtownship: { value: value, label: label },
     });
   }
+
+  searchingMinistray(word) {
+    return this.state.MINISTRAY.filter((data) => {
+      const ministry = data.id != null ? data.id : "";
+      const ministrys = ministry.toString();
+      return ministrys.toLowerCase().includes(word.toString().toLowerCase());
+    });
+  }
   _handleOnSelectEducation(value, label) {
+    if (value) {
+      setTimeout(() => {
+        const searched = this.searchingMinistray(value);
+        this.setState({ tempMinistray: searched });
+        this.setState({
+          ministrayTownship: this.state.tempMinistray[0].township_id,
+        });
+        // console.log("TempMinistray",this.state.tempMinistray);
+      }, 100);
+    }
     this.setState({
       education: { value: value, label: label },
       address: label,
     });
+    this._handleMinistoryTownship(this.state.ministrayTownship);
   }
-  // _NrcFrontPhoto(){
-  //   const {imagePath}=this.state;
-  //   if (imagePath) {
-  //     const uriPart = imagePath.split(".");
-  //     const fileExtension = uriPart[uriPart.length - 1];
-  //     const fileName = imagePath.substr(imagePath.lastIndexOf("/") + 1);
-  //   }
-  // }
+  _handleOnClose() {
+    this.setState({ isOpenSuccessModel: false });
+    this._gotoStep(1);
+  }
 
   _handleSave() {
     const self = this;
@@ -433,7 +490,9 @@ export default class Create extends React.Component {
       starttownship_id: this.state.township.vlaue,
       start_place: this.state.startplaces,
       ministry_status: this.state.showcheckbox ? 1 : 0,
-      endPlace_id: this.state.endtownship.value,
+      endPlace_id: this.state.endtownship.value
+        ? this.state.endtownship.value
+        : this.state.townshipministrayid,
       end_place: this.state.addressText
         ? this.state.addressText
         : this.state.address,
@@ -497,14 +556,39 @@ export default class Create extends React.Component {
         ? this.state.education.value
         : null,
     };
-    console.log(bodyParam);
+    // console.log(bodyParam);
     axios
       .post(CreateApi, bodyParam, {
         headers,
       })
       .then(function (response) {
         if (response.data.status == 1) {
-          alert(response.data.message);
+          // alert(response.data.message);
+          self.setState({
+            name: "",
+            nrccode:{vlaue:null,label:null},
+            nrcstatus:{vlaue:null,label:null},
+            nrcstate:{vlaue:null,label:null},
+            city:{vlaue:null,label:null},
+            township:{vlaue:null,label:null},
+            endtownship:{value:null,label:null},
+            townshipministrayid:null,
+            showcheckbox:false,
+            qstatusboolean:false,
+            qtownstatusboolean:false,
+            education:{value:null,label:null},
+            nrcnumber: "",
+            vehicle: "",
+            startplaces: "",
+            address: "",
+            addressText: "",
+            imagePath: null,
+            imagePathMo: null,
+            imagePathNrcBack: null,
+            passport: "",
+            imagePathSupport: null,
+            isOpenSuccessModel: true,
+          });
         } else {
           alert(response.data.message);
         }
@@ -732,7 +816,7 @@ export default class Create extends React.Component {
     }
   }
   render() {
-    console.log(this.state.user_id);
+    // console.log(this.state.user_id);
     return (
       <View style={{ flex: 1 }}>
         {this.state.showStepOne ? (
@@ -1008,6 +1092,7 @@ export default class Create extends React.Component {
                             <View style={{ justifyContent: "center" }}>
                               <Text>ဝန်ကြီးဌာန</Text>
                             </View>
+
                             <View style={{ width: "70%", marginTop: 10 }}>
                               <DropDown
                                 placeholder="ဝန်ကြီးဌာန"
@@ -1022,18 +1107,27 @@ export default class Create extends React.Component {
                           </View>
                         ) : null}
                       </View>
+                      {this.state.showcheckbox ? (
+                        <View style={{ marginTop: 10 }}>
+                          <TextInput
+                            style={[styles.textInput]}
+                            value={this.state.townshipministrayname}
+                          />
+                        </View>
+                      ) : (
+                        <View style={{ marginTop: 10 }}>
+                          <DropDown
+                            placeholder="Select Township"
+                            optionsContainerWidth="95%"
+                            value={this.state.endtownship}
+                            options={this.state.ENDTOWNSHIP}
+                            onSelect={(value, label) =>
+                              this._handleOnSelectEndTownship(value, label)
+                            }
+                          />
+                        </View>
+                      )}
 
-                      <View style={{ marginTop: 10 }}>
-                        <DropDown
-                          placeholder="Select Township"
-                          optionsContainerWidth="95%"
-                          value={this.state.endtownship}
-                          options={this.state.ENDTOWNSHIP}
-                          onSelect={(value, label) =>
-                            this._handleOnSelectEndTownship(value, label)
-                          }
-                        />
-                      </View>
                       {this.state.showcheckbox ? (
                         <TextInput
                           style={[styles.textInput]}
@@ -1066,7 +1160,7 @@ export default class Create extends React.Component {
                   >
                     <TouchableOpacity
                       style={[styles.touchBtn, { width: "45%" }]}
-                      onPress={() => this._gotoStep(1)}
+                      onPress={() => this._handleSave()}
                     >
                       <Text style={{ color: "white", fontWeight: "bold" }}>
                         အသစ်ထည့်မည်
@@ -1089,6 +1183,11 @@ export default class Create extends React.Component {
                   </View>
                 </KeyboardAvoidingView>
               </ScrollView>
+              <SuccessModal
+                isOpen={this.state.isOpenSuccessModel}
+                text="Created Successfully"
+                onClose={() => this._handleOnClose()}
+              />
             </View>
           </View>
         ) : null}

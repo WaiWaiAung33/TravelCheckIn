@@ -7,6 +7,7 @@ import ToleGate from "@screens/dashboard/ToleGate";
 import Detail from "@screens/dashboard/Detail";
 import TravelNote from "@screens/dashboard/TravelNote";
 import TravelNoteDetail from "@screens/dashboard/TravelNoteDetail";
+import ToleGateList from "@screens/dashboard/ToleGateList";
 import Edit from "@screens/dashboard/Edit";
 export default createAppContainer(
   createStackNavigator(
@@ -68,6 +69,22 @@ export default createAppContainer(
       },
       TravelNote:{
         screen:TravelNote,
+        navigationOptions: ({ navigation }) => ({
+          headerShown:false
+          // headerTitle: "ခရီးသွားမှတ်တမ်းများ",
+          // headerTintColor:"white",
+          // headerStyle: {
+          //   backgroundColor: "#308DCC",
+          // },
+
+          // headerTitleStyle: {
+          //   fontWeight: "bold",
+          //   fontSize:18
+          // },
+        }),
+      },
+      ToleGateList:{
+        screen:ToleGateList,
         navigationOptions: ({ navigation }) => ({
           headerShown:false
           // headerTitle: "ခရီးသွားမှတ်တမ်းများ",

@@ -15,3 +15,6 @@ export const GetNrcStateApi = BaseUrl + "getNRCstate";
 //create api
 export const CreateApi = BaseUrl + "regrister";
 
+//qr list
+export const QRListApi = BaseUrl + "qrgenerate";
+

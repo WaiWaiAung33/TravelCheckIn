@@ -32,7 +32,7 @@ export default class ToleGate extends React.Component {
       <View style={styles.container}>
         <Header
         name="QR Code ဖတ်ရန်"
-        Onpress={()=>this.props.navigation.navigate("Home")}
+        Onpress={()=>this.props.navigation.navigate("ToleGateList")}
         />
         <TouchableOpacity style={styles.qrcodeBox}>
           <QRCode codeStyle="square" size={100} />

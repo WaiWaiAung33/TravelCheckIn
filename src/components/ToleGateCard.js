@@ -13,25 +13,12 @@ export default class ToleGateCard extends React.Component {
         <TouchableOpacity onPress={() => this._OnPress()} activeOpacity={0.8}>
           <View>
             <Text style={{ textAlign: "right", fontWeight: "bold" }}>
-              1.1.2020
+             {this.props.date}
             </Text>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <Text style={styles.firstText}>အမည်</Text>
-              <Text style={styles.secondText}>လှလှ</Text>
-            </View>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <Text style={styles.firstText}>မှတ်ပုံတင်နံပါတ်</Text>
-              <Text style={styles.secondText}>၇/ကတခ(နိုင်)၁၂၃၄၅၆</Text>
-            </View>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <Text style={styles.firstText}>ဖုန်းနံပါတ်</Text>
-              <Text style={styles.secondText}>09123456789</Text>
+            <View>
+              <Text style={styles.secondText}>{this.props.name}</Text>
+              <Text style={styles.secondText}>{this.props.nrc}</Text>
+              <Text style={styles.secondText}>{this.props.phoneNo}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -53,6 +40,8 @@ const styles = StyleSheet.create({
     width: "35%",
   },
   secondText: {
-    width: "65%",
+    // width: "65%",
+    paddingTop:6
+
   },
 });

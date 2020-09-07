@@ -115,7 +115,7 @@ async _handleLogout(){
           <TouchableOpacity
             activeOpacity={0.8}
             style={[styles.touchBtn, { backgroundColor: "#E99944" }]}
-            onPress={() => this.props.navigation.navigate("ToleGate")}
+            onPress={() => this.props.navigation.navigate("ToleGateList")}
           >
             <Text style={styles.text}>စစ်ဆေးရေးဂိတ်တွင်ပြရန်</Text>
           </TouchableOpacity>
