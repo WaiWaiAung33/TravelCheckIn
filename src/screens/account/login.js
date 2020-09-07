@@ -4,14 +4,82 @@ import {
   StyleSheet,
   Text,
   View,
-  ImageBackground,
   Dimensions,
   Image,
   TextInput,
   TouchableOpacity,
+  AsyncStorage
 } from "react-native";
+//import Api
+import NetInfo from "@react-native-community/netinfo";
+const axios = require("axios");
+import { LoginApi } from "@api/Url";
+
 const { height, width } = Dimensions.get("window");
 export default class Login extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isOnline: false,
+      userId: null,
+      editable: true,
+    };
+  }
+  async componentDidMount() {
+    NetInfo.addEventListener((state) => {
+      this.setState({ isOnline: state.isConnected });
+    });
+    const { navigation } = this.props;
+    this.focusListener = navigation.addListener("didFocus", async () => {
+      await this.setState({ editable: true, userId: null });
+    });
+    const userid = await AsyncStorage.getItem("loginID");
+    const routeName = userid != null ? "Home" : "Login";
+    this.props.navigation.navigate(routeName);
+  }
+  _handleLogin = async () => {
+    var self = this;
+    self.setState({
+      editable: false,
+    });
+    if (this.state.isOnline) {
+      if (this.state.userId == null) {
+        alert("Phone Number is required!");
+        self.setState({ editable: true });
+      } else {
+        let appuser = {
+          mobile: this.state.userId,
+        };
+
+        axios
+          .post(LoginApi, appuser)
+          .then(function (response) {
+            console.log(response.data);
+            if (response.data.error == 0) {
+              // console.log(response.data);
+              // alert(response.data.message);
+
+              self.props.navigation.navigate("OTPCode", {
+                userId: self.state.userId,
+                editable: true,
+              });
+            } else {
+              alert(response.data.message);
+              self.setState({ editable: true });
+            }
+          })
+          .catch(function (error) {
+            // console.log("Error:", error);
+            alert("Something went wrong!");
+            self.setState({ editable: true });
+          });
+      }
+    } else {
+      self.setState({ editable: true });
+      alert("Please check your internet connection!");
+    }
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -39,11 +107,17 @@ export default class Login extends React.Component {
               <Image source={require("@images/phone.png")} />
             </View>
 
-            <TextInput style={styles.textInput} placeholder="09 XXX XXX XXX" keyboardType="number-pad" />
+            <TextInput
+              style={styles.textInput}
+              value={this.state.userId}
+              placeholder="09 XXX XXX XXX"
+              keyboardType="number-pad"
+              onChangeText={(value) => this.setState({ userId: value })}
+            />
           </View>
           <TouchableOpacity
             style={styles.touchBtn}
-            onPress={() => this.props.navigation.navigate("OTPCode")}
+            onPress={() => (this.state.editable ? this._handleLogin() : null)}
           >
             <Text style={styles.text}>လျှောက်လွှာတင်မည်</Text>
           </TouchableOpacity>

@@ -10,6 +10,7 @@ import {
   TextInput,
   TouchableOpacity,
   BackHandler,
+  AsyncStorage
 } from "react-native";
 const { height, width } = Dimensions.get("window");
 export default class Home extends React.Component {
@@ -32,6 +33,11 @@ export default class Home extends React.Component {
   };
   UNSAFE_componentWillUnmount() {
     this.focusListener.remove();
+  }
+async _handleLogout(){
+    await AsyncStorage.clear();
+    this.props.navigation.navigate("Login");
+    return true;
   }
   render() {
     return (
@@ -62,7 +68,7 @@ export default class Home extends React.Component {
               <Text style={{ color: "white", fontWeight: "bold" }}>My</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => this.props.navigation.navigate("Login")}
+              onPress={() => this._handleLogout()}
               style={{width:50,alignItems:"flex-end"}}
             >
               <Image

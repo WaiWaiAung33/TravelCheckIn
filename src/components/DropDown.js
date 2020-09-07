@@ -6,15 +6,14 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
 } from "react-native";
 import {
   Menu,
   MenuOptions,
   MenuOption,
-  MenuTrigger
+  MenuTrigger,
 } from "react-native-popup-menu";
-
 
 export default class DropDown extends React.Component {
   handleOnSelect(value, label) {
@@ -74,7 +73,13 @@ export default class DropDown extends React.Component {
           {this._renderMenuTrigger()}
           <MenuOptions
             customStyles={menuOptionsStyles}
-            optionsContainerStyle={{maxHeight: Dimensions.get("window").height, width: this.props.optionsContainerWidth? this.props.optionsContainerWidth: null, marginTop: this.props.marginTop? this.props.marginTop: 0}}
+            optionsContainerStyle={{
+              maxHeight: Dimensions.get("window").height,
+              width: this.props.optionsContainerWidth
+                ? this.props.optionsContainerWidth
+                : null,
+              marginTop: this.props.marginTop ? this.props.marginTop : 0,
+            }}
           >
             <ScrollView>{this._renderMenuOptions()}</ScrollView>
           </MenuOptions>
@@ -93,18 +98,18 @@ const styles = StyleSheet.create({
   triggerText: {
     flex: 1,
     fontSize: 14,
-    margin: 10
+    margin: 10,
   },
   activeText: {
-    color: "black"
+    color: "black",
   },
-//   inactiveText: {
-//     color: Colors.placeholder
-//   },
+  //   inactiveText: {
+  //     color: Colors.placeholder
+  //   },
   downArrow: {
     width: 10,
-    height: 10
-  }
+    height: 10,
+  },
 });
 
 const triggerStyles = {
@@ -113,21 +118,21 @@ const triggerStyles = {
     borderRadius: 5,
     flexDirection: "row",
     minHeight: 40,
-  }
+  },
 };
 
 const menuOptionsStyles = {
   optionsWrapper: {},
   optionWrapper: {
     borderBottomWidth: 1,
-    borderStyle: "solid"
+    borderStyle: "solid",
   },
   OptionTouchableComponent: TouchableOpacity,
   optionTouchable: {
-    activeOpacity: 0.3
+    activeOpacity: 0.3,
   },
   optionText: {
     margin: 5,
-    fontSize: 14
-  }
+    fontSize: 14,
+  },
 };

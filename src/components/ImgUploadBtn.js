@@ -12,6 +12,7 @@ export default class ImgUploadBtn extends React.Component {
     this.state = {
       isOpenPhotoModal: false,
       isOpenImage: false,
+      show: false,
     };
   }
 
@@ -33,6 +34,7 @@ export default class ImgUploadBtn extends React.Component {
 
   onPressUploadBtn() {
     this.getPermissions();
+    this.setState({ show: !this.state.show });
   }
 
   _handleOnCloseSuccessModal() {
@@ -81,18 +83,36 @@ export default class ImgUploadBtn extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          style={styles.btn}
-          onPress={() => {
-            this.onPressUploadBtn();
-          }}
-        >
+        {this.props.imagePath ? (
+          <TouchableOpacity
+            // onPress={() => this.setState({ isOpenImage: true })}
+            activeOpacity={0.7}
+            onPress={() => {
+              this.onPressUploadBtn();
+            }}
+          >
+            <Image
+              style={styles.selectedImage}
+              source={{ uri: this.props.imagePath }}
+            />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={styles.btn}
+            onPress={() => {
+              this.onPressUploadBtn();
+            }}
+          >
             <View>
-            <Image style={styles.btnIcon} source={require("@images/camera.png")} />
+              <Image
+                style={styles.btnIcon}
+                source={require("@images/camera.png")}
+              />
             </View>
-        
-        </TouchableOpacity>
+          </TouchableOpacity>
+        )}
+
         {/* {this.props.imagePath ? (
           <TouchableOpacity
             onPress={() => this.setState({ isOpenImage: true })}
@@ -123,19 +143,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderWidth: 1,
     // width:"50%",
-    height:100,
+    height: 100,
     paddingHorizontal: 10,
     alignItems: "center",
     borderRadius: 5,
     borderStyle: "solid",
-    justifyContent:"center",
+    justifyContent: "center",
     borderColor: "#E3EEF5",
-    backgroundColor:"#E3EEF5",
-    elevation:3,
-    shadowOffset:{width:2,height:2},
-    shadowOpacity:0.5,
-    flex:1,
-    marginTop:5
+    backgroundColor: "#E3EEF5",
+    elevation: 3,
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.5,
+    flex: 1,
+    marginTop: 5,
   },
   btnIcon: {
     width: 40,
