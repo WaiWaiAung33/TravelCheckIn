@@ -18,6 +18,7 @@ import DropDown from "@components/DropDown";
 import Header from "@components/Header";
 import ImgUploadBtn from "@components/ImgUploadBtn";
 import SuccessModal from "@components/SuccessModal";
+import ErrorText from "@components/ErrorText";
 
 //import api
 const axios = require("axios");
@@ -88,6 +89,10 @@ export default class Create extends React.Component {
       townshipministrayid: null,
       townshipministrayname: "",
       isOpenSuccessModel: false,
+
+      ISERRORNAME:false,
+      ISERRORNRCNUMBER:false,
+      ISERRORVERICHAL:false
     };
     this.BackHandler = null;
   }
@@ -470,6 +475,7 @@ export default class Create extends React.Component {
   }
 
   _handleSave() {
+
     const self = this;
     const headers = {
       Accept: "application/json",
@@ -599,6 +605,23 @@ export default class Create extends React.Component {
   }
 
   _gotoStep(step) {
+    let isError = false;
+    if (this.state.name == "") {
+      // alert("Helo");
+      this.setState({ ISERRORNAME: true });
+      isError = true;
+    }
+    if (this.state.nrcnumber == "") {
+      // alert("Helo");
+      this.setState({ ISERRORNRCNUMBER: true });
+      isError = true;
+    }
+    if (this.state.vehicle == "") {
+      // alert("Helo");
+      this.setState({ ISERRORVERICHAL: true });
+      isError = true;
+    }
+    if (!isError){
     if (step == 1) {
       this.setState({
         showStepOne: true,
@@ -610,6 +633,7 @@ export default class Create extends React.Component {
         showStepTwo: true,
       });
     }
+  }
   }
   _onChangeCheckBox() {
     this.setState({
@@ -862,8 +886,12 @@ export default class Create extends React.Component {
                       value={this.state.name}
                       style={styles.textInput}
                       placeholder="လှလှ"
-                      onChangeText={(value) => this.setState({ name: value })}
+                      onChangeText={(value) => this.setState({ name: value,ISERRORNAME:false })}
                     />
+                     <ErrorText
+                    errMessage="အမည်ထည့်ပေးပါရန်"
+                    isShow={this.state.ISERRORNAME}
+                />
                   </View>
                   {this.state.usertype.value == "5" ? (
                     <View style={styles.secondContainer}>
@@ -932,9 +960,12 @@ export default class Create extends React.Component {
                             keyboardType="number-pad"
                             placeholder="111111"
                             onChangeText={(value) =>
-                              this.setState({ nrcnumber: value })
+                              this.setState({ nrcnumber: value,ISERRORNRCNUMBER:false})
                             }
                           />
+                             <ErrorText
+                            errMessage="မှတ်ပုံတင်နံပါတ်ထည့်ပေးပါရန်"
+                            isShow={this.state.ISERRORNRCNUMBER}/>
                         </View>
                       </View>
                     </View>
@@ -955,9 +986,12 @@ export default class Create extends React.Component {
                       style={styles.textInput}
                       placeholder="7K/1234"
                       onChangeText={(value) =>
-                        this.setState({ vehicle: value })
+                        this.setState({ vehicle: value,ISERRORVERICHAL:false })
                       }
                     />
+                       <ErrorText
+                    errMessage="ယာဉ်နံပါတ်ထည့်ပေးပါရန်"
+                    isShow={this.state.ISERRORVERICHAL}/>
                   </View>
                   <TouchableOpacity
                     style={styles.touchBtn}

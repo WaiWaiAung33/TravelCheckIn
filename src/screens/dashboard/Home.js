@@ -27,14 +27,18 @@ export default class Home extends React.Component {
       this._handleBackButton.bind(this)
     );
   }
+
   _handleBackButton = () => {
     BackHandler.exitApp();
     return true;
   };
+
   UNSAFE_componentWillUnmount() {
+    this.removeBackHandler();
+    // Remove the event listener before removing the screen from the stack
     this.focusListener.remove();
   }
-async _handleLogout(){
+  async _handleLogout(){
     await AsyncStorage.clear();
     this.props.navigation.navigate("Login");
     return true;
