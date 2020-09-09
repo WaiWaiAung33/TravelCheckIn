@@ -9,6 +9,7 @@ import TravelNote from "@screens/dashboard/TravelNote";
 import TravelNoteDetail from "@screens/dashboard/TravelNoteDetail";
 import ToleGateList from "@screens/dashboard/ToleGateList";
 import Edit from "@screens/dashboard/Edit";
+import TravelQr from "@screens/dashboard/TravelQr";
 export default createAppContainer(
   createStackNavigator(
     {
@@ -107,6 +108,12 @@ export default createAppContainer(
       },
       Edit:{
         screen:Edit,
+        navigationOptions:({navigation})=>({
+          headerShown:false
+        })
+      },
+      TravelQr:{
+        screen:TravelQr,
         navigationOptions:({navigation})=>({
           headerShown:false
         })

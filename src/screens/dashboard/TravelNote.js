@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   Text,
   Image,
-  Dimensions
+  Dimensions,
+  AsyncStorage,
 } from "react-native";
 import DatePicker from "react-native-datepicker";
 import Moment from "moment";
@@ -20,7 +21,12 @@ import Header from "@components/Header";
 import Loading from "@components/Loading";
 //import styles
 import Style from "@styles/Styles";
-const {width,height} = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
+
+//import api
+const axios = require("axios");
+import { RegisterHistoryApi } from "@api/Url";
+import TravelNoteApi from "@api/TravelNoteApi";
 
 const STATUS = [
   { value: "1", label: "လာရောက်ခွင့်ပြုသည်" },
@@ -28,46 +34,6 @@ const STATUS = [
   { value: "3", label: "စောင့်ကြည့်ခံရမည်" },
   { value: "4", label: "လက်ခံသည်" },
   { value: "5", label: "ပြင်ဆင်ရန်" },
-];
-const DATA = [
-  {
-    name: "လှလှ",
-    nrc: "7/KhaThaKha(N)123456",
-    phone: "09451237884",
-    status: "လာရောက်ခွင့်ပြုသည်",
-    colors: "#308DCC",
-  },
-  {
-    name: "မြမြ",
-    nrc: "7/KhaThaKha(N)111111",
-    phone: "094512414141",
-    status: "လာရောက်ခွင့်ပြုသည်သို့သော်Qဝင်ရမည်",
-    colors: "#EB4D4D",
-  },
-  {
-    name: "ထွန်းထွန်း",
-    nrc: "7/KhaThaKha(N)222222",
-    phone: "09684554545",
-    status: "လက်ခံသည်",
-    colors: "#25DF31",
-  },
-  {
-    name: "ထွန်းထွန်း",
-    nrc: "7/KhaThaKha(N)222222",
-    phone: "09684554545",
-    status: "ပြင်ဆင်ရန်",
-    colors: "#FFC65D",
-  },
-  {
-    name: "ထွန်းထွန်း",
-    nrc: "7/KhaThaKha(N)222222",
-    phone: "09684554545",
-    status: "စောင့်ကြည့်ခံရမည်",
-    colors: "#EB4D4D",
-    backColor:"#EB4D4D",
-    borderColor:"#EB4D4D",
-    textColor:"white"
-  },
 ];
 export default class TravelNote extends React.Component {
   constructor(props) {
@@ -77,11 +43,28 @@ export default class TravelNote extends React.Component {
       isLoading: false,
       refreshing: false,
       isFooterLoading: false,
+      data: [],
+      tempData: [],
+      searchTravel: [],
+      isSearched: false,
+      arrIndex: null,
+      changestartDate: null,
+      changeendDate: null,
+      statusname: null,
+      qstatus: null,
     };
     this.BackHandler = null;
+    this.page = 1;
+    this.TravelNoteApi = new TravelNoteApi();
   }
   async componentDidMount() {
+    const { navigation } = this.props;
+    // this.focusListener = navigation.addListener("didFocus", async () => {
+    //   await this.getAllTravelNote(this.page);
+    // });
     this.setBackHandler();
+    this._getNewDate();
+    await this.getAllTravelNote(this.page);
     // this.setState({isLoading:true})
   }
   setBackHandler() {
@@ -97,6 +80,76 @@ export default class TravelNote extends React.Component {
   UNSAFE_componentWillUnmount() {
     this.focusListener.remove();
   }
+  _getNewDate(){
+    var today = new Date();
+    var dd = today.getDate();
+    
+    var mm = today.getMonth()+1; 
+    var yyyy = today.getFullYear();
+    if(dd<10) 
+    {
+        dd='0'+dd;
+    } 
+
+    if(mm<10) 
+    {
+        mm='0'+mm;
+    } 
+    today = dd+'-'+mm+'-'+yyyy;
+    this.setState({
+      changestartDate:today,
+      changeendDate:today
+    })
+  }
+
+  getAllTravelNote = async (page) => {
+    // console.log(getCustomersapi);
+    if (this.state.isSearched) {
+      this.setState({
+        data: [],
+        isSearched: false,
+      });
+    }
+    var access_token = await AsyncStorage.getItem("access_token");
+    var user_id = await AsyncStorage.getItem("userid");
+    var self = this;
+    let bodyParam = {
+      start_date:self.state.changestartDate,
+      end_date:self.state.changeendDate,
+      page: page,
+      userId: user_id,
+      status: "all",
+    };
+    axios
+      .post(RegisterHistoryApi, bodyParam, {
+        headers: {
+          Accept: "application/json",
+          Authorization: "Bearer " + access_token,
+        },
+      })
+      .then(function (response) {
+        // console.log(response.data.history.data);
+        self.setState({
+          data: [...self.state.data, ...response.data.history.data],
+          refreshing: false,
+          // statusname:response.data.history.data.status,
+          // qstatus:response.data.history.data.q_status,
+          isLoading: false,
+          isFooterLoading: false,
+          tempData: response.data.history.data,
+        });
+      })
+      .catch(function (err) {
+        // alert("Error");
+        self.setState({
+          refreshing: false,
+          isLoading: false,
+          isFooterLoading: false,
+        });
+        // console.log("Customer Error", err);
+      });
+  };
+
   _handleOnSelect(value, label) {
     this.setState({
       status: { value: value, label: label },
@@ -104,8 +157,11 @@ export default class TravelNote extends React.Component {
   }
   onRefresh = () => {
     this.setState({
-      refreshing: true, // start top loading
+      data: [],
+      refreshing: false, // start top loading
     });
+    this.page = 1;
+    this.getAllTravelNote(this.page);
   };
 
   renderFilter() {
@@ -113,10 +169,10 @@ export default class TravelNote extends React.Component {
       <View>
         <View style={styles.secondContainer}>
           <DatePicker
-            date="1/1/2020"
+            date={this.state.changestartDate}
             mode="date"
             format="DD-MM-YYYY"
-            maxDate={Moment().endOf("day").toDate()}
+            // maxDate={Moment().endOf("day").toDate()}
             confirmBtnText="Confirm"
             cancelBtnText="Cancel"
             iconSource={require("@images/calendar.png")}
@@ -126,10 +182,10 @@ export default class TravelNote extends React.Component {
               dateInput: Style.datePickerDateInput,
               dateText: Style.datePickerDateText,
             }}
-            // onDateChange={(date) => this.setState({ changeDate: date })}
+            onDateChange={(date) => this.setState({ changestartDate: date })}
           />
           <DatePicker
-            date="1/1/2020"
+            date={this.state.changeendDate}
             mode="date"
             format="DD-MM-YYYY"
             maxDate={Moment().endOf("day").toDate()}
@@ -142,7 +198,7 @@ export default class TravelNote extends React.Component {
               dateInput: Style.datePickerDateInput,
               dateText: Style.datePickerDateText,
             }}
-            // onDateChange={(date) => this.setState({ changeDate: date })}
+            onDateChange={(date) => this.setState({ changeendDate: date })}
           />
         </View>
         <View
@@ -184,6 +240,8 @@ export default class TravelNote extends React.Component {
   //retrieve More data
   handleLoadMore = () => {
     this.setState({ isFooterLoading: true }); // Start Footer loading
+    this.page = this.page + 1; // increase page by 1
+    this.getAllTravelNote(this.page); // method for API call
   };
 
   FlatListItemSeparator = () => {
@@ -197,11 +255,30 @@ export default class TravelNote extends React.Component {
       />
     );
   };
+  _handleTravelNoteDetail(arrIndex, item) {
+    // console.log(item);
+    if (arrIndex == 1 && item.status == 2) {
+      this.props.navigation.navigate("Edit",{userid:item.id});
+    } 
+    else if (arrIndex == 1 && item.status == 1) {
+      this.props.navigation.navigate("TravelQr",{data:item});
+    }
+    else if(arrIndex == 1) {
+       this.props.navigation.navigate("TravelNoteDetail", { userid: item.id });
+    }
+  }
 
   render() {
+    // console.log(this.state.changeendDate);
+ 
+    // console.log(today);
     if (this.state.isLoading) {
       return <Loading />;
     }
+    const { isSearched, data, searchTravel } = this.state;
+    const dataList = isSearched ? searchTravel : data;
+    // console.log(data);
+
     return (
       <View style={styles.container}>
         <Header
@@ -212,7 +289,7 @@ export default class TravelNote extends React.Component {
 
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={DATA}
+          data={dataList}
           // extraData={this.state}
           refreshControl={
             <RefreshControl
@@ -222,18 +299,27 @@ export default class TravelNote extends React.Component {
           }
           ItemSeparatorComponent={this.FlatListItemSeparator}
           renderItem={({ item }) => (
+            // console.log(item),
             <View style={{ marginTop: 5 }}>
               <TravelNoteCard
                 name={item.name}
-                date="1/1/2020"
-                phone={item.phone}
-                status={item.status}
-                nrc={item.nrc}
-                colors={item.colors}
-                backColor={item.backColor ? item.backColor :null}
-                borderColor={item.borderColor ? item.borderColor :null}
-                textColor={item.textColor ? item.textColor :null}
-                OnPress={() => this.props.navigation.navigate("ToleGate")}
+                date={Moment(item.created_at).format("DD-MM-YYYY")}
+                phone={item.ph_no}
+                passportNo={item.passport}
+                nrcstatus={item.citizen_status}
+                statusname={item.status}
+                q_statusColor={item.q_status}
+                nrc={
+                  (item.nrc_code +
+                  "/" +
+                  item.nrc_state +
+                  "(" +
+                  item.nrc_type +
+                  ")" +
+                  item.nrc_no)
+                }
+                OnPress={() => this._handleTravelNoteDetail(1, item)}
+                arrIndex={1}
               />
             </View>
           )}
@@ -243,68 +329,17 @@ export default class TravelNote extends React.Component {
           onEndReachedThreshold={0.5}
           contentContainerStyle={{
             flexGrow: 1,
-            }}
-          // onEndReached={() => (!isSearched ? this.handleLoadMore() : {})}
+          }}
+          onEndReached={() => (!isSearched ? this.handleLoadMore() : {})}
         />
-
-        {/* <TravelNoteCard
-            name="လှလှ"
-            date="1/1/2020"
-            phone="0912345678"
-            status="လာရောက်ခွင့်ပြုသည်"
-            nrc="1/1/2020"
-            colors="#308DCC"
-            OnPress={() => this.props.navigation.navigate("ToleGate")}
-          />
-          <TravelNoteCard
-            name="လှလှ"
-            date="1/1/2020"
-            phone="0912345678"
-            status="လာရောက်ခွင့်ပြုသည်သို့သော်Qဝင်ရမည်"
-            nrc="1/1/2020"
-            colors="#EB4D4D"
-            OnPress={() => this.props.navigation.navigate("ToleGate")}
-          />
-         
-          <TravelNoteCard
-            name="လှလှ"
-            date="1/1/2020"
-            phone="0912345678"
-            status="လက်ခံသည်"
-            nrc="1/1/2020"
-            colors="#25DF31"
-            OnPress={() => this.props.navigation.navigate("TravelNoteDetail")}
-          />
-          <TravelNoteCard
-            name="လှလှ"
-            date="1/1/2020"
-            phone="0912345678"
-            status="ပြင်ဆင်ရန်"
-            nrc="1/1/2020"
-            colors="#FFC65D"
-            OnPress={() => this.props.navigation.navigate("Edit")}
-          />
-           <TravelNoteCard
-            name="လှလှ"
-            date="1/1/2020"
-            phone="0912345678"
-            status="စောင့်ကြည့်ခံရမည်"
-            nrc="1/1/2020"
-            backColor="#EB4D4D"
-            borderColor="#EB4D4D"
-            colors="white"
-            textColor="white"
-            OnPress={() => this.props.navigation.navigate("TravelNoteDetail")}
-          /> */}
-        {/* </ScrollView> */}
       </View>
     );
   }
 }
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-    },
+  container: {
+    flex: 1,
+  },
   secondContainer: {
     marginTop: 10,
     justifyContent: "space-between",

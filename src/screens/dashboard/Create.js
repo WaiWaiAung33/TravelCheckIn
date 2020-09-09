@@ -550,8 +550,8 @@ export default class Create extends React.Component {
         : null,
       passport: this.state.pass,
       q_status: this.state.qstatus
-        ? this.state.qstatusboolean
-        : this.state.qtownstatusboolean,
+        ? this.state.qstatus
+        : this.state.qtownstatus,
       ministry_id: this.state.education.value
         ? this.state.education.value
         : null,
@@ -816,7 +816,7 @@ export default class Create extends React.Component {
     }
   }
   render() {
-    // console.log(this.state.user_id);
+    // console.log("Ministray Name",this.state.townshipministrayname);
     return (
       <View style={{ flex: 1 }}>
         {this.state.showStepOne ? (

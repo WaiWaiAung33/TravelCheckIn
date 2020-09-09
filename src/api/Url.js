@@ -18,3 +18,11 @@ export const CreateApi = BaseUrl + "regrister";
 //qr list
 export const QRListApi = BaseUrl + "qrgenerate";
 
+//cancel
+export const CancelApi = BaseUrl + "adminCheck";
+
+//Register History Detail
+export const RegisterHistoryDetailApi= BaseUrl + "historyDetail";
+export const RegisterHistoryApi = BaseUrl +"getHistory";
+export const EditApi = BaseUrl + "editData";
+

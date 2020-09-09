@@ -1,8 +1,15 @@
 import React from "react";
-import { View, StyleSheet, BackHandler, AsyncStorage,ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  BackHandler,
+  AsyncStorage,
+  ScrollView,
+} from "react-native";
 //import components
 import ToleGateCard from "@components/ToleGateCard";
 import Header from "@components/Header";
+import Moment from "moment";
 
 //import Api
 const axios = require("axios");
@@ -14,7 +21,11 @@ export default class ToleGate extends React.Component {
     this.state = {
       userid: null,
       access_token: null,
-      data:[]
+      data: [],
+      nrccode: "",
+      nrcstate: "",
+      nrcstaus: "",
+      nrcnumber: "",
     };
     this.BackHandler = null;
   }
@@ -45,7 +56,7 @@ export default class ToleGate extends React.Component {
       Authorization: "Bearer " + self.state.access_token,
     };
     let bodyParam = {
-        userId: this.state.userid,
+      userId: this.state.userid,
     };
     // console.log(GetTownshipApi);
     axios
@@ -53,8 +64,15 @@ export default class ToleGate extends React.Component {
         headers,
       })
       .then(function (response) {
-        console.log("Qr List",response.data);
-        self.setState({data:response.data.list})
+        const list = response.data.list[0];
+        console.log("Qr List", response.data.list[0].nrc_type);
+        self.setState({
+          data: response.data.list,
+          nrccode: list.nrc_code,
+          nrcstate: list.nrc_state,
+          nrcstaus: list.nrc_type,
+          nrcnumber: list.nrc_no,
+        });
       })
       .catch(function (err) {
         console.log(err);
@@ -62,7 +80,8 @@ export default class ToleGate extends React.Component {
   }
 
   render() {
-    console.log(this.state.userid);
+    // const nrcnumber =this.state.nrccode+"/"+this.state.nrcstate+"("+this.state.nrcstaus+")"+this.state.nrcnumber;
+    // console.log(this.state.data);
     return (
       <View style={styles.container}>
         <Header
@@ -70,13 +89,43 @@ export default class ToleGate extends React.Component {
           Onpress={() => this.props.navigation.navigate("Home")}
         />
         <ScrollView>
-        <ToleGateCard
-          date="3.3.2020"
-          name="hla hla"
-          nrc="7/KhaThaKha(N)111111"
-          phoneNo="09123434544"
-          OnPressCard={() => this.props.navigation.navigate("ToleGate")}
-        />
+          {this.state.data.map((item, index) => {
+            return (
+              <View key={index}>
+                <ToleGateCard
+                  date={Moment(item.created_at).format("DD-MM-YYYY")}
+                  name={item.name}
+                  nrc={item.nrc_code+"/"+item.nrc_state+"("+item.nrc_type+")"+item.nrc_no}
+                  phoneNo={item.ph_no}
+                  OnPressCard={() => this.props.navigation.navigate("ToleGate",{datas:item})}
+                />
+              </View>
+            );
+          })}
+
+          {/* {this.state.data.map((item, index) => {
+            //   console.log(item.name);
+            return (
+              <View key={index}>
+                <ToleGateCard
+                  date={Moment(item.created_at).format("DD-MM-YYYY")}
+                  name={item.name}
+                  nrc={
+                    item.nrc_code +
+                    "/" +
+                    item.nrc_state +
+                    "(" +
+                    item.nrc_type +
+                    ")" +
+                    item.nrc_no
+                  }
+                  phoneNo={item.ph_no}
+                  OnPressCard={() => this.props.navigation.navigate("ToleGate")}
+                />
+                ;
+              </View>
+            );
+          })} */}
         </ScrollView>
       </View>
     );

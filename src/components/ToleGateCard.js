@@ -33,8 +33,12 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderWidth: 1,
     padding: 10,
-    borderColor: "#308DCC",
+    borderColor: "#ffffff",
     borderRadius: 5,
+    elevation:3,
+    shadowOffset:{width:2,height:2},
+    shadowOpacity:0.5,
+    backgroundColor:"#ffffff"
   },
   firstText: {
     width: "35%",

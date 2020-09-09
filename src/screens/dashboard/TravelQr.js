@@ -42,7 +42,7 @@ export default class ToleGate extends React.Component {
     );
   }
   _handleBackButton = () => {
-    this.props.navigation.navigate("Home");
+    this.props.navigation.navigate("TravelNote");
     return true;
   };
   UNSAFE_componentWillUnmount() {
@@ -55,7 +55,7 @@ export default class ToleGate extends React.Component {
       Authorization: "Bearer " + self.state.access_token,
     };
     let bodyParam = {
-      userId: this.props.navigation.getParam("datas").id,
+      userId: this.props.navigation.getParam("data").id,
       status: 4,
       qr_status: 2,
       cancel_status: 2,
@@ -75,32 +75,21 @@ export default class ToleGate extends React.Component {
   }
   _handleOnClose() {
     this.setState({ isOpenSuccessModel: false });
-    this.props.navigation.navigate("Home");
+    this.props.navigation.navigate("TravelNote");
   }
   render() {
-    // console.log(this.props.navigation.getParam("datas").id);
-    let data = this.props.navigation.getParam("datas");
-    // console.log(data.id.toString());
-    // console.log(data);
-    // const nrcNo =
-    //   data.nrc_code +
-    //   "/" +
-    //   data.nrc_state +
-    //   "(" +
-    //   data.nrc_type +
-    //   ")" +
-    //   data.nrc_no;
-
+    let data = this.props.navigation.getParam("data");
+    // console.log("Travel Qr", data);
     return (
       <View style={styles.container}>
         <Header
           name="QR Code ဖတ်ရန်"
-          Onpress={() => this.props.navigation.navigate("ToleGateList")}
+          Onpress={() => this.props.navigation.navigate("TravelNote")}
         />
         <ScrollView>
           <TouchableOpacity style={styles.qrcodeBox}>
             <QRCode
-              content={data.id.toString()}
+              //   content={data.id.toString()}
               codeStyle="square"
               size={100}
             />
@@ -140,8 +129,16 @@ export default class ToleGate extends React.Component {
           <ToleGateCardOne
             date={Moment(data.created_at).format("DD-MM-YYYY")}
             name={data.name}
-            nrc={data.nrc_code+"/"+data.nrc_state+"("+data.nrc_type+")"+data.nrc_no}
-            passportNo={data.passport ? data.passport :null}
+            nrc={
+              data.nrc_code +
+              "/" +
+              data.nrc_state +
+              "(" +
+              data.nrc_type +
+              ")" +
+              data.nrc_no
+            }
+            passportNo={data.passport ? data.passport : null}
             phoneNo={data.ph_no}
             OnPressCard={() => this.props.navigation.navigate("Detail")}
             cityzien={data.citizen_status}
