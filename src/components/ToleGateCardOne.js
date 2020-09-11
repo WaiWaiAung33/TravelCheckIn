@@ -16,6 +16,13 @@ export default class ToleGateCard extends React.Component {
       return "မှတ်ပုံတင်နံပါတ်";
     }
   }
+  _showNRCText() {
+    if (this.props.cityzien == 4) {
+      return this.props.passportNo;
+    } else {
+      return this.props.nrc;
+    }
+  }
   render() {
     console.log(this.props.cityzien);
     return (
@@ -38,7 +45,8 @@ export default class ToleGateCard extends React.Component {
             >
               <Text style={styles.firstText}>{this.NrcFilter()}</Text>
               <Text style={styles.secondText}>
-                {this.props.nrc ? this.props.nrc : this.props.passportNo}
+                {this._showNRCText()}
+                {/* {this.props.nrc ? this.props.nrc : this.props.passportNo} */}
               </Text>
             </View>
             <View

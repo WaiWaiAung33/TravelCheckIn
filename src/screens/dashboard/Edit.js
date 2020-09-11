@@ -13,6 +13,7 @@ import {
 } from "react-native";
 
 const axios = require("axios");
+import FormData from "form-data";
 import {
   RegisterHistoryDetailApi,
   GetCityApi,
@@ -28,12 +29,15 @@ import Header from "@components/Header";
 import ImgUploadBtn from "@components/ImgUploadBtn";
 import SuccessModal from "@components/SuccessModal";
 
+//import services
+import { t, getLang } from "@services/Localization";
+
 const USERTYPE = [
-  { value: "1", label: "ပြည်သူ" },
-  { value: "2", label: "နိုင်ငံဝန်ထမ်း" },
-  { value: "3", label: "ရဟန်းရှင်" },
-  { value: "4", label: "တပ်မတော်" },
-  { value: "5", label: "နိုင်ငံခြားသား" },
+  { value: 0, label: "ပြည်သူ" },
+  { value: 1, label: "နိုင်ငံဝန်ထမ်း" },
+  { value: 2, label: "ရဟန်းရှင်" },
+  { value: 3, label: "တပ်မတော်" },
+  { value: 4, label: "နိုင်ငံခြားသား" },
 ];
 
 export default class Create extends React.Component {
@@ -79,6 +83,7 @@ export default class Create extends React.Component {
       moName: "",
       approvephotoName: "",
       isOpenSuccessModel: false,
+      locale: null,
     };
   }
   async componentDidMount() {
@@ -86,6 +91,8 @@ export default class Create extends React.Component {
     this.focusListener = navigation.addListener("didFocus", async () => {
       await this.setState({ showcheckbox: false });
     });
+    const res = await getLang();
+    this.setState({ locale: res });
     const access_token = await AsyncStorage.getItem("access_token");
     this.setState({ access_token: access_token });
     await this.getAllTravelNote();
@@ -117,27 +124,27 @@ export default class Create extends React.Component {
         const endtown = response.data.endplace_township;
         // console.log(datas);
         console.log(response.data);
-        if (citizen == 1) {
+        if (citizen == 0) {
           self.setState({
             usertype: { value: citizen, label: "ပြည်သူ" },
           });
         }
-        if (citizen == 2) {
+        if (citizen == 1) {
           self.setState({
             usertype: { value: citizen, label: "နိုင်ငံဝန်ထမ်း" },
           });
         }
-        if (citizen == 3) {
+        if (citizen == 2) {
           self.setState({
             usertype: { value: citizen, label: "ရဟန်းရှင်" },
           });
         }
-        if (citizen == 4) {
+        if (citizen == 3) {
           self.setState({
             usertype: { value: citizen, label: "တပ်မတော်" },
           });
         }
-        if (citizen == 5) {
+        if (citizen == 4) {
           self.setState({
             usertype: { value: citizen, label: "နိုင်ငံခြားသား" },
           });
@@ -163,10 +170,26 @@ export default class Create extends React.Component {
           endtownshipone: { value: datas.end_place_township, label: endtown },
           endplace: datas.end_place,
           imagePath: datas.path,
-          nrcfrontName: datas.nrc_front,
-          nrcbackName: datas.nrc_back,
-          moName: datas.mo_photo,
-          approvephotoName: datas.approve_photo,
+          nrcfrontName:
+            "http://128.199.79.79/Covid/public/" +
+            datas.path +
+            "/" +
+            datas.nrc_front,
+          nrcbackName:
+            "http://128.199.79.79/Covid/public/" +
+            datas.path +
+            "/" +
+            datas.nrc_back,
+          moName:
+            "http://128.199.79.79/Covid/public/" +
+            datas.path +
+            "/" +
+            datas.mo_photo,
+          approvephotoName:
+            "http://128.199.79.79/Covid/public/" +
+            datas.path +
+            "/" +
+            datas.approve_photo,
         });
         // console.log(citizen);
       })
@@ -180,35 +203,86 @@ export default class Create extends React.Component {
     const headers = {
       Accept: "application/json",
       Authorization: "Bearer " + self.state.access_token,
+      "Content-Type": "multipart/form-data",
     };
-    let bodyParam = {
-      citizen_status: self.state.usertype.value,
-      userId: self.props.navigation.getParam("userid"),
-      name: self.state.name,
-      nrc_code_id: self.state.nrccode.value,
-      nrc_state_id: self.state.nrcstate.value,
-      nrc_type_id: self.state.nrcstatus.value,
-      nrc_no: self.state.nrcnumber,
-      phone_no: self.state.phone,
-      vehicle_no: self.state.carnumber,
-      startcity_id: self.state.city.value,
-      starttownship_id: self.state.township.value,
-      start_place: self.state.startplace,
-      ministry_status: self.state.ministraystatus,
-      endPlace_id: self.state.endtownship.value,
-      end_place: self.state.endplace,
-      nrc_back: null,
-      nrc_front: null,
-      approved_photo: null,
-      mo_photo: null,
-      passport: self.state.passport ? self.state.passport : null,
-      ministry_id: self.state.education.value
-        ? self.state.education.value
-        : null,
-    };
-    // console.log(bodyParam);
+    const formData = new FormData();
+    const { nrcfrontName } = self.state;
+    const { nrcbackName } = self.state;
+    const { approvephotoName } = self.state;
+    const { moName } = self.state;
+    formData.append("citizen_status", self.state.usertype.value);
+    formData.append("userId", self.props.navigation.getParam("userid"));
+    formData.append("name", self.state.name);
+    formData.append("nrc_code_id", self.state.nrccode.value);
+    formData.append("nrc_state_id", self.state.nrcstate.value);
+    formData.append("nrc_type_id", self.state.nrcstatus.value);
+    formData.append("nrc_no", self.state.nrcnumber);
+    formData.append("phone_no", self.state.phone);
+    formData.append("vehicle_no", self.state.carnumber);
+    formData.append("startcity_id", self.state.city.value);
+    formData.append("starttownship_id", self.state.township.value);
+    formData.append("start_place", self.state.startplace);
+    formData.append("ministry_status", self.state.ministraystatus);
+    formData.append("endPlace_id", self.state.endtownship.value);
+    formData.append("end_place", self.state.endplace);
+    if (nrcbackName) {
+      const uriPart = nrcbackName.split(".");
+      const fileExtension = uriPart[uriPart.length - 1];
+      const fileName = nrcbackName.substr(nrcbackName.lastIndexOf("/") + 1);
+
+      formData.append("nrc_back", {
+        uri: nrcbackName,
+        name: fileName,
+        type: `image/${fileExtension}`,
+      });
+    }
+    if (nrcfrontName) {
+      const uriPart = nrcfrontName.split(".");
+      const fileExtension = uriPart[uriPart.length - 1];
+      const fileName = nrcfrontName.substr(nrcfrontName.lastIndexOf("/") + 1);
+
+      formData.append("nrc_front", {
+        uri: nrcfrontName,
+        name: fileName,
+        type: `image/${fileExtension}`,
+      });
+    }
+    if (approvephotoName) {
+      const uriPart = approvephotoName.split(".");
+      const fileExtension = uriPart[uriPart.length - 1];
+      const fileName = approvephotoName.substr(
+        approvephotoName.lastIndexOf("/") + 1
+      );
+
+      formData.append("approved_photo", {
+        uri: approvephotoName,
+        name: fileName,
+        type: `image/${fileExtension}`,
+      });
+    }
+    if (moName) {
+      const uriPart = moName.split(".");
+      const fileExtension = uriPart[uriPart.length - 1];
+      const fileName = moName.substr(moName.lastIndexOf("/") + 1);
+
+      formData.append("mo_photo", {
+        uri: moName,
+        name: fileName,
+        type: `image/${fileExtension}`,
+      });
+    }
+    formData.append(
+      "passport",
+      self.state.passport ? self.state.passport : null
+    );
+    formData.append(
+      "ministry_id",
+      self.state.education.value ? self.state.education.value : null
+    );
+    console.log(formData);
+
     axios
-      .post(EditApi, bodyParam, {
+      .post(EditApi, formData, {
         headers,
       })
       .then(function (response) {
@@ -544,14 +618,7 @@ export default class Create extends React.Component {
     });
   }
   _changeImage() {
-    const nrcfront =
-      BaseUrl + this.state.imagePath + "/" + this.state.nrcfrontName;
-    const nrcback =
-      BaseUrl + this.state.imagePath + "/" + this.state.nrcbackName;
-    const mophoto = BaseUrl + this.state.imagePath + "/" + this.state.moName;
-    const support =
-      BaseUrl + this.state.imagePath + "/" + this.state.approvephotoName;
-    if (this.state.usertype.value == 1) {
+    if (this.state.usertype.value == 0) {
       return (
         <View>
           <View
@@ -563,24 +630,66 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အရှေ့ဘက်</Text>
+              <Text>{t("nrcfront", this.state.locale)}</Text>
               <ImgUploadBtn
-                imagePath={nrcfront}
+                imagePath={this.state.nrcfrontName}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အနောက်ဘက်</Text>
+              <Text>{t("nrcback", this.state.locale)}</Text>
               <ImgUploadBtn
-                imagePath={nrcback}
+                imagePath={this.state.nrcbackName}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
             </View>
           </View>
           <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>ထောက်ခံစာများ</Text>
+            <Text>{t("support", this.state.locale)}</Text>
             <ImgUploadBtn
-              imagePath={support}
+              imagePath={this.state.approvephotoName}
+              onChooseImage={this._handleOnChooseImageSupport.bind(this)}
+            />
+          </View>
+        </View>
+      );
+    } else if (this.state.usertype.value == 1) {
+      return (
+        <View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 10,
+              flex: 1,
+            }}
+          >
+            <View style={{ width: "45%" }}>
+              <Text>{t("nrcfront", this.state.locale)}</Text>
+              <ImgUploadBtn
+                imagePath={this.state.nrcfrontName}
+                onChooseImage={this._handleOnChooseImage.bind(this)}
+              />
+            </View>
+            <View style={{ width: "45%" }}>
+              <Text>{t("nrcback", this.state.locale)}</Text>
+              <ImgUploadBtn
+                imagePath={this.state.nrcbackName}
+                onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
+              />
+            </View>
+          </View>
+          <View style={{ width: "45%", marginTop: 10 }}>
+            <Text>{t("mo", this.state.locale)}</Text>
+            <ImgUploadBtn
+              imagePath={this.state.moName}
+              onChooseImage={this._handleOnChooseImageMo.bind(this)}
+            />
+          </View>
+          <View style={{ width: "45%", marginTop: 10 }}>
+            <Text>{t("support", this.state.locale)}</Text>
+            <ImgUploadBtn
+              imagePath={this.state.approvephotoName}
               onChooseImage={this._handleOnChooseImageSupport.bind(this)}
             />
           </View>
@@ -598,31 +707,24 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အရှေ့ဘက်</Text>
+              <Text>{t("religion", this.state.locale)}</Text>
               <ImgUploadBtn
-                imagePath={nrcfront}
+                imagePath={this.state.nrcfrontName}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အနောက်ဘက်</Text>
+              <Text>{t("retligionback", this.state.locale)}</Text>
               <ImgUploadBtn
-                imagePath={nrcback}
+                imagePath={this.state.nrcbackName}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
             </View>
           </View>
           <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>ခရီးသွားလာခွန့်အမိန့်MO</Text>
+            <Text>{t("support", this.state.locale)}</Text>
             <ImgUploadBtn
-              imagePath={mophoto}
-              onChooseImage={this._handleOnChooseImageMo.bind(this)}
-            />
-          </View>
-          <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>ထောက်ခံစာများ</Text>
-            <ImgUploadBtn
-              imagePath={support}
+              imagePath={this.state.approvephotoName}
               onChooseImage={this._handleOnChooseImageSupport.bind(this)}
             />
           </View>
@@ -640,59 +742,24 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>သာသနာဝင်စိစစ်ရေးကဒ်ပြားအရှေ့ဘက်</Text>
+              <Text>{t("nrcfront", this.state.locale)}</Text>
               <ImgUploadBtn
-                imagePath={nrcfront}
+                imagePath={this.state.nrcfrontName}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>သာသနာဝင်စိစစ်ရေးကဒ်ပြားအနောက်ဘက်</Text>
+              <Text>{t("nrcback", this.state.locale)}</Text>
               <ImgUploadBtn
-                imagePath={nrcback}
+                imagePath={this.state.nrcbackName}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
             </View>
           </View>
           <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>ထောက်ခံစာများ</Text>
+            <Text>{t("support", this.state.locale)}</Text>
             <ImgUploadBtn
-              imagePath={support}
-              onChooseImage={this._handleOnChooseImageSupport.bind(this)}
-            />
-          </View>
-        </View>
-      );
-    } else if (this.state.usertype.value == 4) {
-      return (
-        <View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: 10,
-              flex: 1,
-            }}
-          >
-            <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အရှေ့ဘက်</Text>
-              <ImgUploadBtn
-                imagePath={nrcfront}
-                onChooseImage={this._handleOnChooseImage.bind(this)}
-              />
-            </View>
-            <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အနောက်ဘက်</Text>
-              <ImgUploadBtn
-                imagePath={nrcback}
-                onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
-              />
-            </View>
-          </View>
-          <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>ထောက်ခံစာများ</Text>
-            <ImgUploadBtn
-              imagePath={support}
+              imagePath={this.state.approvephotoName}
               onChooseImage={this._handleOnChooseImageSupport.bind(this)}
             />
           </View>
@@ -710,24 +777,24 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>နိုင်ငံကူးလက်မှတ်</Text>
+              <Text>{t("forising", this.state.locale)}</Text>
               <ImgUploadBtn
-                imagePath={nrcfront}
+                imagePath={this.state.nrcfrontName}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>ဗီဇာပုံ</Text>
+              <Text>{t("visa", this.state.locale)}</Text>
               <ImgUploadBtn
-                imagePath={nrcback}
+                imagePath={this.state.nrcbackName}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
             </View>
           </View>
           <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>ထောက်ခံစာများ</Text>
+            <Text>{t("support", this.state.locale)}</Text>
             <ImgUploadBtn
-              imagePath={support}
+              imagePath={this.state.approvephotoName}
               onChooseImage={this._handleOnChooseImageSupport.bind(this)}
             />
           </View>
@@ -745,32 +812,28 @@ export default class Create extends React.Component {
   }
   render() {
     // alert(this.state.showcheckbox);
+    console.log(this.state.nrcfrontName);
     return (
       <View style={{ flex: 1 }}>
         {this.state.showStepOne ? (
           <View style={{ flex: 1 }}>
             <Header
-              name="အချက်အလက်များပြင်ရန်"
+              name={t("edittitle", this.state.locale)}
               number="1"
               Onpress={() => this.props.navigation.navigate("TravelNote")}
             />
             <View style={styles.constiner}>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <KeyboardAvoidingView
-                  style={{
-                    flex: 1,
-                    flexDirection: "column",
-                    justifyContent: "center",
-                  }}
-                  // behavior="position"
-                  enabled
-                  behavior={Platform.OS == "ios" ? "position" : null}
-
-                  // keyboardVerticalOffset={100}
-                >
+              <KeyboardAvoidingView
+                // behavior="padding"
+                behavior={Platform.OS == "ios" ? "padding" : null}
+                enabled
+                // keyboardVerticalOffset={100}
+                style={{ flex: 1 }}
+              >
+                <ScrollView showsVerticalScrollIndicator={false}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.text}>
-                      အသုံးပြုသူအမျိုးအစားရွေးချယ်ရန်
+                      {t("usertype", this.state.locale)}
                     </Text>
                     <View style={{ marginTop: 10 }}>
                       <DropDown
@@ -785,16 +848,20 @@ export default class Create extends React.Component {
                     </View>
                   </View>
                   <View style={styles.secondContainer}>
-                    <Text style={styles.text}>အမည်</Text>
+                    <Text style={styles.text}>
+                      {t("name", this.state.locale)}
+                    </Text>
                     <TextInput
                       style={styles.textInput}
                       value={this.state.name}
                       onChangeText={(value) => this.setState({ name: value })}
                     />
                   </View>
-                  {this.state.usertype.value == "5" ? (
+                  {this.state.usertype.value == 4 ? (
                     <View style={styles.secondContainer}>
-                      <Text style={styles.text}>နိုင်ငံကူးနံပါတ်</Text>
+                      <Text style={styles.text}>
+                        {t("forino", this.state.locale)}
+                      </Text>
                       <TextInput
                         style={styles.textInput}
                         value={this.state.passport}
@@ -808,7 +875,7 @@ export default class Create extends React.Component {
                   ) : (
                     <View style={styles.secondContainer}>
                       <Text style={styles.text}>
-                        နိုင်းငံသားစီစစ်ရေးကဒ်ပြားနံပါတ်
+                        {t("nrcno", this.state.locale)}
                       </Text>
                       <View
                         style={{
@@ -872,7 +939,9 @@ export default class Create extends React.Component {
                   )}
 
                   <View style={styles.secondContainer}>
-                    <Text style={styles.text}>ဖုန်းနံပါတ်</Text>
+                    <Text style={styles.text}>
+                      {t("phone", this.state.locale)}
+                    </Text>
                     <TextInput
                       style={styles.textInput}
                       value={this.state.phone}
@@ -880,7 +949,9 @@ export default class Create extends React.Component {
                     />
                   </View>
                   <View style={styles.secondContainer}>
-                    <Text style={styles.text}>ယာဉ်နံပါတ်</Text>
+                    <Text style={styles.text}>
+                      {t("vehical", this.state.locale)}
+                    </Text>
                     <TextInput
                       value={this.state.carnumber}
                       style={styles.textInput}
@@ -894,7 +965,7 @@ export default class Create extends React.Component {
                     onPress={() => this._gotoStep(2)}
                   >
                     <Text style={{ color: "white", fontWeight: "bold" }}>
-                      အဆင့်(၂)သို့
+                      {t("gotostep", this.state.locale)}
                     </Text>
                   </TouchableOpacity>
 
@@ -903,8 +974,8 @@ export default class Create extends React.Component {
                       1 of 2
                     </Text>
                   </View>
-                </KeyboardAvoidingView>
-              </ScrollView>
+                </ScrollView>
+              </KeyboardAvoidingView>
             </View>
           </View>
         ) : null}
@@ -912,27 +983,24 @@ export default class Create extends React.Component {
         {this.state.showStepTwo ? (
           <View style={{ flex: 1 }}>
             <Header
-              name="အချက်အလက်များပြင်ရန်"
+              name={t("edittitle", this.state.locale)}
               number="2"
               Onpress={() => this._gotoStep(1)}
             />
             <View style={styles.constiner}>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <KeyboardAvoidingView
-                  style={{
-                    flex: 1,
-                    flexDirection: "column",
-                    justifyContent: "center",
-                  }}
-                  // behavior="position"
-                  enabled
-                  behavior={Platform.OS == "ios" ? "position" : null}
-
-                  // keyboardVerticalOffset={100}
-                >
+              <KeyboardAvoidingView
+                // behavior="padding"
+                behavior={Platform.OS == "ios" ? "padding" : null}
+                enabled
+                // keyboardVerticalOffset={100}
+                style={{ flex: 1 }}
+              >
+                <ScrollView showsVerticalScrollIndicator={false}>
                   <View>
                     <View tyle={styles.secondContainer}>
-                      <Text style={styles.text}>စတင်ထွက်ခွာသည့်မြို့</Text>
+                      <Text style={styles.text}>
+                        {t("startcity", this.state.locale)}
+                      </Text>
                       <View
                         style={{
                           flexDirection: "row",
@@ -942,7 +1010,6 @@ export default class Create extends React.Component {
                       >
                         <View style={{ width: "48%" }}>
                           <DropDown
-                            placeholder="ပဲခူတိုင်း"
                             value={this.state.city}
                             options={this.state.CITY}
                             onSelect={(value, label) =>
@@ -953,7 +1020,6 @@ export default class Create extends React.Component {
                         </View>
                         <View style={{ width: "48%" }}>
                           <DropDown
-                            placeholder="ပဲနွယ်ကုန်း"
                             optionsContainerWidth="45%"
                             value={this.state.township}
                             options={this.state.TOWNSHIP}
@@ -972,7 +1038,9 @@ export default class Create extends React.Component {
                       />
                     </View>
                     <View tyle={styles.secondContainer}>
-                      <Text style={styles.text}>သွားရောက်လိုသည့်နေရာ</Text>
+                      <Text style={styles.text}>
+                        {t("endplace", this.state.locale)}
+                      </Text>
                       <View
                         style={{
                           flexDirection: "row",
@@ -980,17 +1048,7 @@ export default class Create extends React.Component {
                           justifyContent: "space-between",
                         }}
                       >
-                        {this.state.showcheckbox ||
-                        !this.state.ministraystatus == 1 ? (
-                          <TouchableOpacity
-                            onPress={() => this._onChangeCheckBox()}
-                            style={{ marginTop: 5 }}
-                          >
-                            <View
-                              style={{ width: 25, height: 25, borderWidth: 1 }}
-                            />
-                          </TouchableOpacity>
-                        ) : (
+                        {this.state.showcheckbox ? (
                           <TouchableOpacity
                             onPress={() => this._onChangeCheckBox()}
                             style={{ marginTop: 5 }}
@@ -1010,10 +1068,18 @@ export default class Create extends React.Component {
                               />
                             </View>
                           </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity
+                            onPress={() => this._onChangeCheckBox()}
+                            style={{ marginTop: 5 }}
+                          >
+                            <View
+                              style={{ width: 25, height: 25, borderWidth: 1 }}
+                            />
+                          </TouchableOpacity>
                         )}
 
-                        {this.state.showcheckbox ||
-                        this.state.ministraystatus == 1 ? (
+                        {this.state.showcheckbox ? (
                           <View
                             style={{
                               flexDirection: "row",
@@ -1021,12 +1087,11 @@ export default class Create extends React.Component {
                             }}
                           >
                             <View style={{ justifyContent: "center" }}>
-                              <Text>ဝန်ကြီးဌာန</Text>
+                              <Text>{t("ministray", this.state.locale)}</Text>
                             </View>
 
                             <View style={{ width: "70%", marginTop: 10 }}>
                               <DropDown
-                                placeholder="ဝန်ကြီးဌာန"
                                 optionsContainerWidth="55%"
                                 value={this.state.education}
                                 options={this.state.EDUCATION}
@@ -1038,8 +1103,7 @@ export default class Create extends React.Component {
                           </View>
                         ) : null}
                       </View>
-                      {this.state.showcheckbox ||
-                      this.state.ministraystatus == 1 ? (
+                      {this.state.showcheckbox ? (
                         <View style={{ marginTop: 10 }}>
                           {/* <TextInput
                             style={[styles.textInput]}
@@ -1073,8 +1137,7 @@ export default class Create extends React.Component {
                         </View>
                       )}
 
-                      {this.state.showcheckbox ||
-                      this.state.ministraystatus == 1 ? (
+                      {this.state.showcheckbox ? (
                         <TextInput
                           style={[styles.textInput]}
                           value={this.state.endplace}
@@ -1115,7 +1178,7 @@ export default class Create extends React.Component {
                       onPress={() => this._handleSave()}
                     >
                       <Text style={{ color: "white", fontWeight: "bold" }}>
-                        သိမ်းမည်
+                        {t("save", this.state.locale)}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -1125,8 +1188,9 @@ export default class Create extends React.Component {
                       2 of 2
                     </Text>
                   </View>
-                </KeyboardAvoidingView>
-              </ScrollView>
+                </ScrollView>
+              </KeyboardAvoidingView>
+
               <SuccessModal
                 isOpen={this.state.isOpenSuccessModel}
                 text="အချက်အလက်ပြင်ဆင်မူအောင်မြင်ပါသည်"

@@ -13,6 +13,9 @@ import {
 //import components
 import Header from "@components/Header";
 
+//import services
+import { t, getLang } from "@services/Localization";
+
 const axios = require("axios");
 import { RegisterHistoryDetailApi } from "@api/Url";
 import { TouchableHighlight, BaseUrl } from "react-native-gesture-handler";
@@ -36,10 +39,13 @@ export default class ToleGateCard extends React.Component {
       moName: "",
       approvephotoName: "",
       ministatystatus: null,
+      locale: null,
     };
     this.BackHandler = null;
   }
   async componentDidMount() {
+    const res = await getLang();
+    this.setState({ locale: res });
     const access_token = await AsyncStorage.getItem("access_token");
     this.setState({ access_token: access_token });
     this.setBackHandler();
@@ -78,16 +84,19 @@ export default class ToleGateCard extends React.Component {
           passport: data.historyDetail.passport,
           citizenstatus: data.historyDetail.citizen_status,
           start_place:
-            data.historyDetail.start_place_city +" "+
-            data.historyDetail.start_place_township +" "+
+            data.historyDetail.city +
+            " " +
+            data.historyDetail.township +
+            " " +
             data.historyDetail.start_place,
-          end_place: data.historyDetail.township + " "+data.historyDetail.end_place,
+          end_place:
+            data.endplace_township + " " + data.historyDetail.end_place,
           imagePath: data.historyDetail.path,
           nrcfrontName: data.historyDetail.nrc_front,
           nrcbackName: data.historyDetail.nrc_back,
           moName: data.historyDetail.mo_photo,
           approvephotoName: data.historyDetail.approve_photo,
-          ministatystatus: data.historyDetail.ministry_status,
+          // citizenstatus: data.historyDetail.ministry_status,
         });
         // self.setState({ isOpenSuccessModel: true });
       })
@@ -111,11 +120,18 @@ export default class ToleGateCard extends React.Component {
   }
   _showName() {
     if (this.state.citizenstatus == 2) {
-      return "သာသနာစိစစ်ရေးကဒ်ပြား";
+      return t("religionNo", this.state.locale);
     } else if (this.state.citizenstatus == 4) {
-      return "နိုင်ငံကူးနံပါတ်";
+      return t("forino", this.state.locale);
     } else {
-      return "မှတ်ပုံတင်နံပါတ်";
+      return t("nrcno", this.state.locale);
+    }
+  }
+  showNameNo() {
+    if (this.state.citizenstatus == 4) {
+      return this.state.passport;
+    } else {
+      return this.state.nrc;
     }
   }
   render() {
@@ -123,7 +139,7 @@ export default class ToleGateCard extends React.Component {
     return (
       <View>
         <Header
-          name="အသေးစိတ်အချက်အလက်များ"
+          name={t("detail", this.state.locale)}
           Onpress={() => this.props.navigation.navigate("TravelNote")}
         />
         <ScrollView>
@@ -132,7 +148,9 @@ export default class ToleGateCard extends React.Component {
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
               <Text style={styles.firstText}>
-                {this.state.citizenstatus == 2 ? "ရဟန်းရှင်" : "အမည်"}
+                {this.state.citizenstatus == 2
+                  ? t("Bhikkhu", this.state.locale)
+                  : t("name", this.state.locale)}
               </Text>
               <Text style={styles.secondText}>{this.state.name}</Text>
             </View>
@@ -141,20 +159,25 @@ export default class ToleGateCard extends React.Component {
             >
               <Text style={styles.firstText}>{this._showName()}</Text>
               <Text style={styles.secondText}>
-                {this.state.nrc ? this.state.nrc : this.state.passport}
+                {this.showNameNo()}
+                {/* {this.state.passport !=null ? this.state.passport : this.state.nrc} */}
               </Text>
             </View>
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <Text style={styles.firstText}>ဖုန်းနံပါတ်</Text>
+              <Text style={styles.firstText}>
+                {t("phone", this.state.locale)}
+              </Text>
               <Text style={styles.secondText}>{this.state.phone}</Text>
             </View>
 
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <Text style={styles.firstText}>ယာဉ်နံပါတ်</Text>
+              <Text style={styles.firstText}>
+                {t("vehical", this.state.locale)}
+              </Text>
               <Text style={styles.secondText}>{this.state.vehical}</Text>
             </View>
           </View>
@@ -168,14 +191,16 @@ export default class ToleGateCard extends React.Component {
             }}
           />
           <View style={styles.container}>
-            <Text>စတင်ထွက်ခွာသည့်မြို့</Text>
+            <Text>{t("startcity", this.state.locale)}</Text>
             <TextInput
               style={styles.textInput}
               value={this.state.start_place}
               // placeholder="ပဲခူးတိုင်း၊ကျောက်တံခါးမြို့နယ်၊ပဲနွယ်ကုန်းမြို့"
               // placeholderTextColor="black"
             />
-            <Text style={{ marginTop: 5 }}>သွားရောက်လိုသည့်နေရာ</Text>
+            <Text style={{ marginTop: 5 }}>
+              {t("endplace", this.state.locale)}
+            </Text>
             <TextInput
               style={styles.textInput}
               value={this.state.end_place}
@@ -197,11 +222,12 @@ export default class ToleGateCard extends React.Component {
               margin: 10,
               flexDirection: "row",
               justifyContent: "space-between",
+              // marginTop:10
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အရှေ့ဘက်</Text>
-              <View
+              <Text>{t("nrcfront", this.state.locale)}</Text>
+              {/* <View
                 style={{
                   height: 100,
                   borderWidth: 1,
@@ -215,22 +241,22 @@ export default class ToleGateCard extends React.Component {
                   shadowOpacity: 0.5,
                   marginTop: 5,
                 }}
-              >
-                <Image
-                  source={{
-                    uri:
-                      BaseUrl +
-                      this.state.imagePath +
-                      "/" +
-                      this.state.nrcfrontName,
-                  }}
-                  style={{ width: 100, height: 100 }}
-                />
-              </View>
+              > */}
+              <Image
+                source={{
+                  uri:
+                    "http://128.199.79.79/Covid/public/" +
+                    this.state.imagePath +
+                    "/" +
+                    this.state.nrcfrontName,
+                }}
+                style={{ width: 150, height: 150, marginTop: 5 }}
+              />
+              {/* </View> */}
             </View>
             <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အနောက်ဘက်</Text>
-              <View
+              <Text>{t("nrcback", this.state.locale)}</Text>
+              {/* <View
                 style={{
                   height: 100,
                   borderWidth: 1,
@@ -244,54 +270,26 @@ export default class ToleGateCard extends React.Component {
                   shadowOpacity: 0.5,
                   marginTop: 5,
                 }}
-              >
-                <Image
-                  source={{
-                    uri:
-                      BaseUrl +
-                      this.state.imagePath +
-                      "/" +
-                      this.state.nrcbackName,
-                  }}
-                  style={{ width: 100, height: 100 }}
-                />
-              </View>
+              > */}
+              <Image
+                source={{
+                  uri:
+                    "http://128.199.79.79/Covid/public/" +
+                    this.state.imagePath +
+                    "/" +
+                    this.state.nrcbackName,
+                }}
+                style={{ width: 150, height: 150, marginTop: 5 }}
+              />
+              {/* </View> */}
             </View>
           </View>
-          {this.state.ministatystatus == 1 ? (
-            <View style={{ width: "45%", marginLeft: 10 }}>
-              <Text>Moထောက်ခံစာ</Text>
-              <View
-                style={{
-                  height: 100,
-                  borderWidth: 1,
-                  borderRadius: 5,
-                  borderColor: "#E3EEF5",
-                  backgroundColor: "#E3EEF5",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  elevation: 3,
-                  shadowOffset: { width: 2, height: 2 },
-                  shadowOpacity: 0.5,
-                  marginTop: 5,
-                }}
-              >
-                <Image
-                  source={{
-                    uri:
-                      BaseUrl + this.state.imagePath + "/" + this.state.moName,
-                  }}
-                  style={{ width: 100, height: 100 }}
-                />
-              </View>
-            </View>
-          ) : null}
-
-          <View style={{ width: "45%", marginLeft: 10 }}>
-            <Text>ထောက်ခံစာ</Text>
-            <View
+          {this.state.citizenstatus == 1 ? (
+            <View style={{ width: "45%", marginLeft: 10, marginTop: 10 }}>
+              <Text>{t("mo", this.state.locale)}</Text>
+              {/* <View
               style={{
-                height: 100,
+                height: 150,
                 borderWidth: 1,
                 borderRadius: 5,
                 borderColor: "#E3EEF5",
@@ -303,19 +301,50 @@ export default class ToleGateCard extends React.Component {
                 shadowOpacity: 0.5,
                 marginTop: 5,
               }}
-            >
+            > */}
               <Image
                 source={{
                   uri:
-                    BaseUrl +
+                    "http://128.199.79.79/Covid/public/" +
                     this.state.imagePath +
                     "/" +
-                    this.state.approvephotoName,
+                    this.state.moName,
                 }}
-                style={{ width: 100, height: 100 }}
+                style={{ width: 150, height: 150, marginTop: 5 }}
               />
+              {/* </View> */}
             </View>
+          ) : null}
+
+          <View style={{ width: "45%", marginLeft: 10, marginTop: 10 }}>
+            <Text>{t("support", this.state.locale)}</Text>
+            {/* <View
+              style={{
+                height: 150,
+                borderWidth: 1,
+                borderRadius: 5,
+                borderColor: "#E3EEF5",
+                backgroundColor: "#E3EEF5",
+                justifyContent: "center",
+                alignItems: "center",
+                elevation: 3,
+                shadowOffset: { width: 2, height: 2 },
+                shadowOpacity: 0.5,
+                marginTop: 5,
+              }}
+            > */}
+            <Image
+              source={{
+                uri:
+                  "http://128.199.79.79/Covid/public/" +
+                  this.state.imagePath +
+                  "/" +
+                  this.state.approvephotoName,
+              }}
+              style={{ width: 150, height: 150, marginTop: 5 }}
+            />
           </View>
+          {/* </View> */}
         </ScrollView>
       </View>
     );

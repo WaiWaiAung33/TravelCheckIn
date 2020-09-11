@@ -8,6 +8,7 @@ export default class ToleGateCard extends React.Component {
       color: "",
       backcolor: "",
       text: "",
+      namecolor: "",
     };
   }
   componentDidMount() {
@@ -19,60 +20,86 @@ export default class ToleGateCard extends React.Component {
     }
   }
   NrcFilter() {
-    if (this.props.nrcstatus == 5) {
+    if (this.props.nrcstatus == 4) {
       return this.props.passportNo;
-    } else {
+    }
+    if (this.props.nrcstatus == 1) {
+      return this.props.nrc;
+    }
+    if (this.props.nrcstatus == 2) {
+      return this.props.nrc;
+    }
+    if (this.props.nrcstatus == 3) {
+      return this.props.nrc;
+    }
+    if (this.props.nrcstatus == 0) {
       return this.props.nrc;
     }
   }
   _showTextStatus() {
     if (this.props.statusname == 3 && this.props.q_statusColor == 1) {
       return this.setState({
-        color: "white",
-        backcolor: "red",
+        color: "#ffffff",
+        backcolor: "#FF0000",
         text: "စောင့်ကြည့်ခံရမည်",
+        namecolor: "#ffffff",
       });
     } else if (this.props.statusname == 3 && this.props.q_statusColor == 0) {
       return this.setState({
-        color: "green",
-        backcolor: "white",
+        color: "#00FF00",
+        backcolor: "#ffffff",
         text: "လက်ခံသည်",
+        namecolor: "#000",
       });
     } else if (this.props.statusname == 1 && this.props.q_statusColor == 1) {
       return this.setState({
-        color: "red",
-        backcolor: "white",
+        color: "#FF0000",
+        backcolor: "#ffffff",
         text: "လာရောက်ခွင့်ပြုသည်Qဝင်ရမည်",
+        namecolor: "#000",
       });
     } else if (this.props.statusname == 1 && this.props.q_statusColor == 0) {
       return this.setState({
-        color: "blue",
-        backcolor: "white",
+        color: "#0000FF",
+        backcolor: "#ffffff",
         text: "လာရောက်ခွင့်ပြုသည်",
+        namecolor: "#000",
       });
     } else if (this.props.statusname == 4) {
       return this.setState({
         color: "#000",
-        backcolor: "white",
+        backcolor: "#ffffff",
         text: "လျှောက်လွှာပယ်ဖျက်မည်",
+        namecolor: "#000",
       });
     } else if (this.props.statusname == 0) {
       return this.setState({
         text: "လျှောက်လွှာတင်ထားသည်",
         color: "#000",
-        backcolor: "white",
+        backcolor: "#ffffff",
+        namecolor: "#000",
       });
     } else if (this.props.statusname == 2) {
       return this.setState({
         text: "ပြင်ဆင်ရန်",
-        color: "orange",
-        backcolor: "white",
+        color: "#FFA500",
+        backcolor: "#ffffff",
+        namecolor: "#000",
       });
+    }
+  }
+  _showName() {
+    if (this.props.nrcstatus == 4) {
+      return this.props.passportNo;
+    } else {
+      return this.props.nrc;
     }
   }
   render() {
     const { color } = this.state;
     const { backcolor } = this.state;
+    const { namecolor } = this.state;
+    // console.log("Passport No",this.props.passportNo)
     return (
       <View
         style={[
@@ -88,33 +115,65 @@ export default class ToleGateCard extends React.Component {
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <Text style={[styles.firstText]}>{this.props.name}</Text>
-              <Text style={[styles.secondText]}>{this.props.date}</Text>
-            </View>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <View style={{width:"50%"}}>
-              <Text>{this.NrcFilter()}</Text>
-              </View>
-              <View style={{width:"50%",alignItems:"flex-end"}}>
+              <Text
+                style={[
+                  styles.firstText,
+                  { color: namecolor ? namecolor : null },
+                ]}
+              >
+                {this.props.name}
+              </Text>
               <Text
                 style={[
                   styles.secondText,
-                  {
-                    fontSize: 12,
-                    color: color,
-                    textAlign:"right",
-                    // backgroundColor:"red"
-                  },
+                  { color: namecolor ? namecolor : null },
                 ]}
               >
-                {this.state.text}
+                {this.props.date}
               </Text>
+            </View>
+            <View style={{ flexDirection: "row", flex: 1 }}>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={[
+                    styles.firstText,
+                    { width: 150, color: namecolor ? namecolor : null },
+                  ]}
+                >
+                  {this.props.phone}
+                </Text>
+
+                {/* <Text>{this.NrcFilter()}</Text> */}
+              </View>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text
+                  style={[
+                    styles.secondText,
+                    {
+                      fontSize: 12,
+                      color: color,
+                      textAlign: "right",
+                      width: 150,
+                      color: color ? color : null,
+
+                      // backgroundColor:"red"
+                    },
+                  ]}
+                >
+                  {this.state.text}
+                </Text>
               </View>
             </View>
             <View>
-              <Text style={[styles.firstText]}>{this.props.phone}</Text>
+              <Text style={{ color: namecolor ? namecolor : null }}>
+                {this._showName()}
+                {/* {this.props.passportNo != null
+                    ? this.props.passportNo
+                    : this.state.nrc} */}
+                {/* {this.props.passportNo == null
+                    ? this.props.nrc
+                    : this.props.passportNo} */}
+              </Text>
             </View>
           </View>
         </TouchableOpacity>

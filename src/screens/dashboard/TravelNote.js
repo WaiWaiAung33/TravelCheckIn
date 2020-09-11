@@ -28,18 +28,22 @@ const axios = require("axios");
 import { RegisterHistoryApi } from "@api/Url";
 import TravelNoteApi from "@api/TravelNoteApi";
 
+//import services
+import { t, getLang } from "@services/Localization";
+
 const STATUS = [
-  { value: "1", label: "လာရောက်ခွင့်ပြုသည်" },
-  { value: "2", label: "လာရောက်ခွင့်ပြုသည်သို့သော်Qဝင်ရမည်" },
-  { value: "3", label: "စောင့်ကြည့်ခံရမည်" },
-  { value: "4", label: "လက်ခံသည်" },
-  { value: "5", label: "ပြင်ဆင်ရန်" },
+  { value: 0, label: "အားလုံး" },
+  { value: 1, label: "လာရောက်ခွင့်ပြုသည်" },
+  { value: 2, label: "ပြင်ဆင်ရန်" },
+  { value: 3, label: "လက်ခံသည်" },
+  { value: 4, label: "စောင့်ကြည့်ခံရမည်" },
+  { value: 5, label: "လျှောက်လွှာပယ်ဖျက်သည်" },
 ];
 export default class TravelNote extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      status: { value: null, label: null },
+      status: { value: 0, label: "အားလုံး" },
       isLoading: false,
       refreshing: false,
       isFooterLoading: false,
@@ -51,7 +55,11 @@ export default class TravelNote extends React.Component {
       changestartDate: null,
       changeendDate: null,
       statusname: null,
-      qstatus: null,
+      qStatus: 0,
+      usertype: "",
+      locale: null,
+      user_id: null,
+      access_token: null,
     };
     this.BackHandler = null;
     this.page = 1;
@@ -59,9 +67,14 @@ export default class TravelNote extends React.Component {
   }
   async componentDidMount() {
     const { navigation } = this.props;
+    const res = await getLang();
+    this.setState({ locale: res });
     // this.focusListener = navigation.addListener("didFocus", async () => {
     //   await this.getAllTravelNote(this.page);
     // });
+    const userid = await AsyncStorage.getItem("userid");
+    const access_token = await AsyncStorage.getItem("access_token");
+    this.setState({ user_id: userid, access_token: access_token });
     this.setBackHandler();
     this._getNewDate();
     await this.getAllTravelNote(this.page);
@@ -80,26 +93,24 @@ export default class TravelNote extends React.Component {
   UNSAFE_componentWillUnmount() {
     this.focusListener.remove();
   }
-  _getNewDate(){
+  _getNewDate() {
     var today = new Date();
     var dd = today.getDate();
-    
-    var mm = today.getMonth()+1; 
-    var yyyy = today.getFullYear();
-    if(dd<10) 
-    {
-        dd='0'+dd;
-    } 
 
-    if(mm<10) 
-    {
-        mm='0'+mm;
-    } 
-    today = dd+'-'+mm+'-'+yyyy;
+    var mm = today.getMonth() + 1;
+    var yyyy = today.getFullYear();
+    if (dd < 10) {
+      dd = "0" + dd;
+    }
+
+    if (mm < 10) {
+      mm = "0" + mm;
+    }
+    today = dd + "-" + mm + "-" + yyyy;
     this.setState({
-      changestartDate:today,
-      changeendDate:today
-    })
+      changestartDate: today,
+      changeendDate: today,
+    });
   }
 
   getAllTravelNote = async (page) => {
@@ -114,8 +125,8 @@ export default class TravelNote extends React.Component {
     var user_id = await AsyncStorage.getItem("userid");
     var self = this;
     let bodyParam = {
-      start_date:self.state.changestartDate,
-      end_date:self.state.changeendDate,
+      start_date: self.state.changestartDate,
+      end_date: self.state.changeendDate,
       page: page,
       userId: user_id,
       status: "all",
@@ -133,7 +144,7 @@ export default class TravelNote extends React.Component {
           data: [...self.state.data, ...response.data.history.data],
           refreshing: false,
           // statusname:response.data.history.data.status,
-          // qstatus:response.data.history.data.q_status,
+          // qStatus:response.data.history.data.q_status,
           isLoading: false,
           isFooterLoading: false,
           tempData: response.data.history.data,
@@ -150,10 +161,82 @@ export default class TravelNote extends React.Component {
       });
   };
 
+  _handleSearch(page, status, statusid) {
+    alert("Status" + status + "QStatus" + statusid);
+    const self = this;
+    self.setState({ isSearched: true });
+    let bodyParam = {
+      userId: self.state.user_id,
+      status: status,
+      start_date: self.state.changestartDate,
+      end_date: self.state.changeendDate,
+      page: page,
+      q_status: statusid,
+    };
+    axios
+      .post(RegisterHistoryApi, bodyParam, {
+        headers: {
+          Accept: "application/json",
+          Authorization: "Bearer " + self.state.access_token,
+        },
+      })
+      .then(function (response) {
+        // console.log(response.data.history.data);
+        self.setState({
+          searchTravel: response.data.history.data,
+        });
+      })
+      .catch(function (err) {
+        // alert("Error");
+        self.setState({
+          refreshing: false,
+          isLoading: false,
+          isFooterLoading: false,
+        });
+        // console.log("Customer Error", err);
+      });
+  }
+  _hadleChangeUserType(status) {
+    // alert(status);
+    if (status == 0) {
+      this.setState({
+        usertype: "all",
+        qStatus: 0,
+      });
+    } else if (status == 1) {
+      this.setState({
+        usertype: "1",
+        qStatus: 0,
+      });
+    } else if (status == 2) {
+      this.setState({
+        usertype: "2",
+        qStatus: 0,
+      });
+    } else if (status == 3) {
+      this.setState({
+        usertype: "3",
+        qStatus: 0,
+      });
+    } else if (status == 4) {
+      this.setState({
+        usertype: "3",
+        qStatus: 1,
+      });
+    } else {
+      this.setState({
+        usertype: "4",
+        qStatus: 0,
+      });
+    }
+    // alert("Status"+status+"qStatus"+this.state.qStatus)
+  }
+
   _handleOnSelect(value, label) {
     this.setState({
       status: { value: value, label: label },
     });
+    this._hadleChangeUserType(value);
   }
   onRefresh = () => {
     this.setState({
@@ -218,9 +301,18 @@ export default class TravelNote extends React.Component {
             />
           </View>
           <View style={{ width: "30%" }}>
-            <TouchableOpacity style={styles.touchBtn}>
+            <TouchableOpacity
+              style={styles.touchBtn}
+              onPress={() =>
+                this._handleSearch(
+                  this.page,
+                  this.state.usertype,
+                  this.state.qStatus
+                )
+              }
+            >
               <Image source={require("@images/search.png")} />
-              <Text style={styles.text}>Search</Text>
+              <Text style={styles.text}>{t("search", this.state.locale)}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -258,19 +350,17 @@ export default class TravelNote extends React.Component {
   _handleTravelNoteDetail(arrIndex, item) {
     // console.log(item);
     if (arrIndex == 1 && item.status == 2) {
-      this.props.navigation.navigate("Edit",{userid:item.id});
-    } 
-    else if (arrIndex == 1 && item.status == 1) {
-      this.props.navigation.navigate("TravelQr",{data:item});
-    }
-    else if(arrIndex == 1) {
-       this.props.navigation.navigate("TravelNoteDetail", { userid: item.id });
+      this.props.navigation.navigate("Edit", { userid: item.id });
+    } else if (arrIndex == 1 && item.status == 1) {
+      this.props.navigation.navigate("TravelQr", { data: item });
+    } else if (arrIndex == 1) {
+      this.props.navigation.navigate("TravelNoteDetail", { userid: item.id });
     }
   }
 
   render() {
     // console.log(this.state.changeendDate);
- 
+
     // console.log(today);
     if (this.state.isLoading) {
       return <Loading />;
@@ -310,13 +400,13 @@ export default class TravelNote extends React.Component {
                 statusname={item.status}
                 q_statusColor={item.q_status}
                 nrc={
-                  (item.nrc_code +
+                  item.nrc_code +
                   "/" +
                   item.nrc_state +
                   "(" +
                   item.nrc_type +
                   ")" +
-                  item.nrc_no)
+                  item.nrc_no
                 }
                 OnPress={() => this._handleTravelNoteDetail(1, item)}
                 arrIndex={1}

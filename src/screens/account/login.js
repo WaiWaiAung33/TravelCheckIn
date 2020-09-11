@@ -8,12 +8,23 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  AsyncStorage
+  AsyncStorage,
 } from "react-native";
+import { Updates } from "expo";
+
 //import Api
 import NetInfo from "@react-native-community/netinfo";
 const axios = require("axios");
 import { LoginApi } from "@api/Url";
+
+//import LanguageModal
+import LanguageModal from "@components/LanguageModal";
+import { t, getLang } from "@services/Localization";
+
+//import consts
+import { LANGUAGE } from "@consts/Const";
+
+import { setItem } from "@services/Storage";
 
 const { height, width } = Dimensions.get("window");
 export default class Login extends React.Component {
@@ -23,8 +34,22 @@ export default class Login extends React.Component {
       isOnline: false,
       userId: null,
       editable: true,
+      mylang: "MM",
+      isOpenErrorModal: false,
+      isOpenLangModal: false,
+      locale: null,
     };
   }
+
+  async componentWillMount() {
+    const reslocale = await getLang();
+    if (reslocale == "MM") {
+      this.setState({
+        mylang: reslocale,
+      });
+    }
+  }
+
   async componentDidMount() {
     NetInfo.addEventListener((state) => {
       this.setState({ isOnline: state.isConnected });
@@ -36,6 +61,8 @@ export default class Login extends React.Component {
     const userid = await AsyncStorage.getItem("loginID");
     const routeName = userid != null ? "Home" : "Login";
     this.props.navigation.navigate(routeName);
+    const res = await getLang();
+    this.setState({ locale: res });
   }
   _handleLogin = async () => {
     var self = this;
@@ -80,22 +107,100 @@ export default class Login extends React.Component {
     }
   };
 
+  async handleGetLocale(locale) {
+    await setItem(LANGUAGE, locale);
+    this.setState({
+      isOpenLangModal: false,
+      mylang: locale,
+    });
+
+    Updates.reload();
+  }
+
+  _handleSetLocaleAsyncStorage = async () => {
+    this.setState({ confirmLocaleModalOpen: false });
+  };
+
   render() {
+    // alert(this.state.locale);
     return (
       <View style={styles.container}>
         <StatusBar style="auto" />
+
         <View style={styles.secondContainer}>
-          <View style={styles.imgContainer}>
-            <Image
-              source={require("@images/councillogo.png")}
-              style={styles.img}
-            />
+          {this.state.locale == "MM" ? (
+            <View style={{ alignItems: "flex-end" }}>
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  marginRight: 15,
+                  marginTop:20,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => this.setState({ isOpenLangModal: true })}
+              >
+              
+                  <Image
+                  source={require("@images/unnamed.png")}
+                  style={{ width: 30, height: 30 }}
+                /> 
+            
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    paddingLeft:4,
+                  }}
+                >
+                  {this.state.mylang == "MM" ? "မြန်မာ" : "Eng"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={{ alignItems: "flex-end" }}>
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  marginRight: 15,
+                  marginTop: 10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => this.setState({ isOpenLangModal: true })}
+              >
+                <Image
+                  source={require("@images/english.png")}
+                  style={{ width: 30, height: 30 }}
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    paddingLeft:4,
+                  }}
+                >
+                  English
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          <View style={{ alignItems: "center", flex: 1 }}>
+            <View style={styles.imgContainer}>
+              <Image
+                source={require("@images/councillogo.png")}
+                style={styles.img}
+              />
+            </View>
           </View>
         </View>
 
         <View style={styles.thirdContainer}>
-          <Text style={styles.headerText}>နေပြည်တော်ဝင်ခွင့်လျှောက်လွှာမှ</Text>
-          <Text style={styles.headerText}>ကြိုဆိုပါ၏</Text>
+          <Text style={styles.headerText}>
+            {/* {" "} */}
+            {t("title", this.state.locale)}
+          </Text>
           <View
             style={{
               flexDirection: "row",
@@ -119,9 +224,10 @@ export default class Login extends React.Component {
             style={styles.touchBtn}
             onPress={() => (this.state.editable ? this._handleLogin() : null)}
           >
-            <Text style={styles.text}>လျှောက်လွှာတင်မည်</Text>
+            <Text style={styles.text}>{t("login", this.state.locale)}</Text>
           </TouchableOpacity>
         </View>
+
         <View
           style={{
             position: "absolute",
@@ -143,6 +249,11 @@ export default class Login extends React.Component {
             Develop by LINN @2020
           </Text>
         </View>
+        <LanguageModal
+          isOpen={this.state.isOpenLangModal}
+          getCheckLang={(locale) => this.handleGetLocale(locale)}
+          onClose={() => this.setState({ isOpenLangModal: false })}
+        />
       </View>
     );
   }
@@ -155,11 +266,14 @@ const styles = StyleSheet.create({
   secondContainer: {
     height: 300,
     backgroundColor: "#308DCC",
-    alignItems: "center",
+    // alignItems: "center",
+    // flexDirection:"row",
+    // justifyContent:"space-between"
   },
   img: {
-    width: 100,
-    height: 100,
+    width: 115,
+    height: 115,
+    // padding:2
   },
   imgContainer: {
     backgroundColor: "white",
@@ -167,8 +281,8 @@ const styles = StyleSheet.create({
     height: 110,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 65,
-    marginTop: "10%",
+    borderRadius: 95,
+    // marginTop: "10%",
   },
   thirdContainer: {
     backgroundColor: "#E3EEF5",

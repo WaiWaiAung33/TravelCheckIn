@@ -19,22 +19,25 @@ import Header from "@components/Header";
 import ImgUploadBtn from "@components/ImgUploadBtn";
 import SuccessModal from "@components/SuccessModal";
 import ErrorText from "@components/ErrorText";
+import { t, getLang } from "@services/Localization";
 
 //import api
 const axios = require("axios");
+import FormData from "form-data";
 import {
   GetCityApi,
   GetTownshipApi,
   GetNrcStateApi,
   CreateApi,
 } from "@api/Url";
+import { locale } from "expo-localization";
 
 const USERTYPE = [
-  { value: "1", label: "ပြည်သူ" },
-  { value: "2", label: "နိုင်ငံဝန်ထမ်း" },
-  { value: "3", label: "ရဟန်းရှင်" },
-  { value: "4", label: "တပ်မတော်" },
-  { value: "5", label: "နိုင်ငံခြားသား" },
+  { value: 0, label: "ပြည်သူ" },
+  { value: 1, label: "နိုင်ငံဝန်ထမ်း" },
+  { value: 2, label: "ရဟန်းရှင်" },
+  { value: 3, label: "တပ်မတော်" },
+  { value: 4, label: "နိုင်ငံခြားသား" },
 ];
 
 export default class Create extends React.Component {
@@ -51,7 +54,7 @@ export default class Create extends React.Component {
       NRCSTATE: [],
       nrcstatus: { value: 1, label: "N" },
       NRCSTATUS: [],
-      usertype: { value: 1, label: "ပြည်သူ" },
+      usertype: { value: 0, label: "ပြည်သူ" },
       endtownship: { value: null, label: null },
       ENDTOWNSHIP: [],
       education: { value: null, label: null },
@@ -90,18 +93,31 @@ export default class Create extends React.Component {
       townshipministrayname: "",
       isOpenSuccessModel: false,
 
-      ISERRORNAME:false,
-      ISERRORNRCNUMBER:false,
-      ISERRORVERICHAL:false
+      ISERRORNAME: false,
+      ISERRORNRCNUMBER: false,
+      ISERRORVERICHAL: false,
+      ISERRORPASSPORT: false,
+      ISERRORSTARTPLACE: false,
+      ISERRORENDPLACE: false,
+      ISERRORNRCCODE: false,
+      ISERRRORNRCSTATE: false,
+      ISERRORSTARTCITY: false,
+      ISERRORSTARTTOWNSHIP: false,
+      ISERRRORENDTOWNSHIP: false,
+      ISERRORNRCFRONT: false,
+      ISERRORNRCBACK: false,
+      ISERRORSUPPORT: false,
+      ISERRORMO: false,
+      isserrorclaer: false,
+      locale: null,
     };
     this.BackHandler = null;
   }
 
   async componentDidMount() {
     const { navigation } = this.props;
-    // this.focusListener = navigation.addListener("didFocus", async () => {
-    //   await this.setState({ showcheckbox: false });
-    // });
+    const res = await getLang();
+    this.setState({ locale: res });
     this.setBackHandler();
     const access_token = await AsyncStorage.getItem("access_token");
     const loginID = await AsyncStorage.getItem("loginID");
@@ -346,7 +362,7 @@ export default class Create extends React.Component {
         endtownship.map((data, index) => {
           // console.log("Ministray",data);
           if (value == data.id) {
-            console.log("Ministry", data);
+            // console.log("Ministry", data);
             self.setState({
               townshipministrayname: data.township,
               townshipministrayid: data.id,
@@ -371,10 +387,10 @@ export default class Create extends React.Component {
     });
   }
 
-  _handleOnSelect(vlaue, label) {
-    if (vlaue) {
+  _handleOnSelect(value, label) {
+    if (value) {
       setTimeout(() => {
-        var searchdata = this.searching(vlaue);
+        var searchdata = this.searching(value);
         this.setState({ tempData: searchdata });
         this.setState({ qstatus: this.state.tempData[0].status });
         if (this.state.qstatus == 1) {
@@ -383,11 +399,12 @@ export default class Create extends React.Component {
         // console.log(this.state.qstatusboolean);
       }, 100);
     }
-    // alert(vlaue)
+    // alert(value)
     this.setState({
-      city: { vlaue: vlaue, label: label },
+      city: { value: value, label: label },
+      ISERRORSTARTCITY: false,
     });
-    this.getTownshipAll(vlaue);
+    this.getTownshipAll(value);
   }
 
   //search
@@ -401,10 +418,10 @@ export default class Create extends React.Component {
     });
   }
 
-  _handleOnSelectTownShip(vlaue, label) {
-    if (vlaue) {
+  _handleOnSelectTownShip(value, label) {
+    if (value) {
       setTimeout(() => {
-        var searchdata = this.searchingTownship(vlaue);
+        var searchdata = this.searchingTownship(value);
         this.setState({ tempTownship: searchdata });
         this.setState({ qtownstatus: this.state.tempTownship[0].status });
         if (this.state.qtownstatus == 1) {
@@ -415,23 +432,26 @@ export default class Create extends React.Component {
     }
 
     this.setState({
-      township: { vlaue: vlaue, label: label },
+      township: { value: value, label: label },
+      ISERRORSTARTTOWNSHIP: false,
     });
   }
-  _handleOnSelectNRCCode(vlaue, label) {
+  _handleOnSelectNRCCode(value, label) {
     this.setState({
-      nrccode: { vlaue: vlaue, label: label },
+      nrccode: { value: value, label: label },
+      ISERRORNRCCODE: false,
     });
-    this.getAllNrcState(vlaue);
+    this.getAllNrcState(value);
   }
-  _handleOnSelectNRCState(vlaue, label) {
+  _handleOnSelectNRCState(value, label) {
     this.setState({
-      nrcstate: { vlaue: vlaue, label: label },
+      nrcstate: { value: value, label: label },
+      ISERRRORNRCSTATE: false,
     });
   }
-  _handleOnSelectNRCStatus(vlaue, label) {
+  _handleOnSelectNRCStatus(value, label) {
     this.setState({
-      nrcstatus: { vlaue: vlaue, label: label },
+      nrcstatus: { value: value, label: label },
     });
   }
   _handleOnSelectUserType(value, label) {
@@ -442,6 +462,7 @@ export default class Create extends React.Component {
   _handleOnSelectEndTownship(value, label) {
     this.setState({
       endtownship: { value: value, label: label },
+      ISERRRORENDTOWNSHIP: false,
     });
   }
 
@@ -453,21 +474,19 @@ export default class Create extends React.Component {
     });
   }
   _handleOnSelectEducation(value, label) {
+    const self = this;
     if (value) {
-      setTimeout(() => {
-        const searched = this.searchingMinistray(value);
-        this.setState({ tempMinistray: searched });
-        this.setState({
-          ministrayTownship: this.state.tempMinistray[0].township_id,
+      const searched = this.searchingMinistray(value);
+      {
+        searched.map((data, index) => {
+          return this._handleMinistoryTownship(data.id);
         });
-        // console.log("TempMinistray",this.state.tempMinistray);
-      }, 100);
+      }
     }
-    this.setState({
+    self.setState({
       education: { value: value, label: label },
       address: label,
     });
-    this._handleMinistoryTownship(this.state.ministrayTownship);
   }
   _handleOnClose() {
     this.setState({ isOpenSuccessModel: false });
@@ -475,133 +494,203 @@ export default class Create extends React.Component {
   }
 
   _handleSave() {
+    // alert("helo")
+    // alert(this.state.nrccode.value);
+    let isError = false;
+    if (this.state.startplaces == "") {
+      // alert("Helo");
+      this.setState({ ISERRORSTARTPLACE: true });
+      isError = true;
+    }
+    if (this.state.showcheckbox == false) {
+      if (this.state.addressText == "") {
+        this.setState({ ISERRORENDPLACE: true });
+        isError = true;
+      }
+    }
+    if (this.state.city.value == null) {
+      // alert("Helo");
+      this.setState({ ISERRORSTARTCITY: true });
+      isError = true;
+    }
 
-    const self = this;
-    const headers = {
-      Accept: "application/json",
-      Authorization: "Bearer " + self.state.access_token,
-    };
+    if (this.state.township.value == null) {
+      // alert("Helo");
+      this.setState({ ISERRORSTARTTOWNSHIP: true });
+      isError = true;
+    }
+    if (this.state.showcheckbox == false) {
+      if (this.state.endtownship.value == null) {
+        // alert("Helo");
+        this.setState({ ISERRRORENDTOWNSHIP: true });
+        isError = true;
+      }
+    }
 
-    let bodyParam = {
-      citizen_status: this.state.usertype.value,
-      userId: this.state.user_id,
-      name: this.state.name,
-      nrc_code_id: this.state.nrccode.vlaue,
-      nrc_state_id: this.state.nrcstate.vlaue,
-      nrc_type_id: this.state.nrcstatus.vlaue,
-      nrc_no: this.state.nrcnumber,
-      phone_no: this.state.loginID,
-      vehicle_no: this.state.vehicle,
-      startcity_id: this.state.city.vlaue,
-      starttownship_id: this.state.township.vlaue,
-      start_place: this.state.startplaces,
-      ministry_status: this.state.showcheckbox ? 1 : 0,
-      endPlace_id: this.state.endtownship.value
-        ? this.state.endtownship.value
-        : this.state.townshipministrayid,
-      end_place: this.state.addressText
-        ? this.state.addressText
-        : this.state.address,
-      nrc_back: this.state.imagePathNrcBack
-        ? {
-            uri: this.state.imagePathNrcBack,
-            name: this.state.imagePathNrcBack.substr(
-              this.state.imagePathNrcBack.lastIndexOf("/") + 1
-            ),
-            type: `image/${
-              this.state.imagePathNrcBack.split(".")[
-                this.state.imagePathNrcBack.split(".").length - 1
-              ]
-            }`,
+    if (this.state.imagePath == null) {
+      // alert("Helo");
+      this.setState({ ISERRORNRCFRONT: true });
+      isError = true;
+    }
+
+    if (this.state.imagePathNrcBack == null) {
+      // alert("Helo");
+      this.setState({ ISERRORNRCBACK: true });
+      isError = true;
+    }
+
+    if (this.state.imagePathSupport == null) {
+      // alert("Helo");
+      this.setState({ ISERRORSUPPORT: true });
+      isError = true;
+    }
+    if (this.state.usertype.value == 1) {
+      if (this.state.imagePathMo == null) {
+        // alert("Helo");
+        this.setState({ ISERRORMO: true });
+        isError = true;
+      }
+    }
+
+    if (!isError) {
+      // alert("Hello");
+      const self = this;
+      const headers = {
+        Accept: "application/json",
+        Authorization: "Bearer " + self.state.access_token,
+        "Content-Type": "multipart/form-data",
+      };
+      const formData = new FormData();
+      const { imagePathNrcBack } = this.state;
+      const { imagePath } = this.state;
+      const { imagePathSupport } = this.state;
+      const { imagePathMo } = this.state;
+
+      formData.append("citizen_status", this.state.usertype.value);
+      formData.append("userId", this.state.user_id);
+      formData.append("name", this.state.name);
+      formData.append("nrc_code_id", this.state.nrccode.value);
+      formData.append("nrc_state_id", this.state.nrcstate.value);
+      formData.append("nrc_type_id", this.state.nrcstatus.value);
+      formData.append("nrc_no", this.state.nrcnumber);
+      formData.append("phone_no", this.state.loginID);
+      formData.append("vehicle_no", this.state.vehicle);
+      formData.append("startcity_id", this.state.city.value);
+      formData.append("starttownship_id", this.state.township.value);
+      formData.append("start_place", this.state.startplaces);
+      formData.append("ministry_status", this.state.showcheckbox ? 1 : 0);
+      formData.append(
+        "endPlace_id",
+        this.state.endtownship.value
+          ? this.state.endtownship.value
+          : this.state.townshipministrayid
+      );
+      formData.append(
+        "end_place",
+        this.state.addressText ? this.state.addressText : this.state.address
+      );
+      if (imagePathNrcBack) {
+        const uriPart = imagePathNrcBack.split(".");
+        const fileExtension = uriPart[uriPart.length - 1];
+        const fileName = imagePathNrcBack.substr(
+          imagePathNrcBack.lastIndexOf("/") + 1
+        );
+
+        formData.append("nrc_back", {
+          uri: imagePathNrcBack,
+          name: fileName,
+          type: `image/${fileExtension}`,
+        });
+      }
+      if (imagePath) {
+        const uriPart = imagePath.split(".");
+        const fileExtension = uriPart[uriPart.length - 1];
+        const fileName = imagePath.substr(imagePath.lastIndexOf("/") + 1);
+
+        formData.append("nrc_front", {
+          uri: imagePath,
+          name: fileName,
+          type: `image/${fileExtension}`,
+        });
+      }
+      if (imagePathSupport) {
+        const uriPart = imagePathSupport.split(".");
+        const fileExtension = uriPart[uriPart.length - 1];
+        const fileName = imagePathSupport.substr(
+          imagePathSupport.lastIndexOf("/") + 1
+        );
+
+        formData.append("approved_photo", {
+          uri: imagePathSupport,
+          name: fileName,
+          type: `image/${fileExtension}`,
+        });
+      }
+      if (imagePathMo) {
+        const uriPart = imagePathMo.split(".");
+        const fileExtension = uriPart[uriPart.length - 1];
+        const fileName = imagePathMo.substr(imagePathMo.lastIndexOf("/") + 1);
+
+        formData.append("mo_photo", {
+          uri: imagePathMo,
+          name: fileName,
+          type: `image/${fileExtension}`,
+        });
+      }
+      formData.append("passport", this.state.pass);
+      formData.append(
+        "q_status",
+        this.state.qstatus ? this.state.qstatus : this.state.qtownstatus
+      );
+      formData.append(
+        "ministry_id",
+        this.state.education.value ? this.state.education.value : null
+      );
+      // console.log(formData);
+      axios
+        .post(CreateApi, formData, {
+          headers,
+        })
+        .then(function (response) {
+          if (response.data.status == 1) {
+            // alert(response.data.message);
+            // setTimeout(function() {
+            //   self.setState({ isOpenSuccessModal: true });
+            // },10);
+            self.setState({
+              name: "",
+              nrccode: { value: null, label: null },
+              nrcstatus: { value: null, label: null },
+              nrcstate: { value: null, label: null },
+              city: { value: null, label: null },
+              township: { value: null, label: null },
+              endtownship: { value: null, label: null },
+              townshipministrayid: null,
+              showcheckbox: false,
+              qstatusboolean: false,
+              qtownstatusboolean: false,
+              education: { value: null, label: null },
+              nrcnumber: "",
+              vehicle: "",
+              startplaces: "",
+              address: "",
+              addressText: "",
+              imagePath: null,
+              imagePathMo: null,
+              imagePathNrcBack: null,
+              passport: "",
+              imagePathSupport: null,
+              isserrorclaer: true,
+              isOpenSuccessModel: true,
+            });
+          } else {
+            alert(response.data.message);
           }
-        : null,
-      nrc_front: this.state.imagePath
-        ? {
-            uri: this.state.imagePath,
-            name: this.state.imagePath.substr(
-              this.state.imagePath.lastIndexOf("/") + 1
-            ),
-            type: `image/${
-              this.state.imagePath.split(".")[
-                this.state.imagePath.split(".").length - 1
-              ]
-            }`,
-          }
-        : null,
-      approved_photo: this.state.imagePathSupport
-        ? {
-            uri: this.state.imagePathSupport,
-            name: this.state.imagePathSupport.substr(
-              this.state.imagePathSupport.lastIndexOf("/") + 1
-            ),
-            type: `image/${
-              this.state.imagePathSupport.split(".")[
-                this.state.imagePathSupport.split(".").length - 1
-              ]
-            }`,
-          }
-        : null,
-      mo_photo: this.state.imagePathMo
-        ? {
-            uri: this.state.imagePathMo,
-            name: this.state.imagePathMo.substr(
-              this.state.imagePathMo.lastIndexOf("/") + 1
-            ),
-            type: `image/${
-              this.state.imagePathMo.split(".")[
-                this.state.imagePathMo.split(".").length - 1
-              ]
-            }`,
-          }
-        : null,
-      passport: this.state.pass,
-      q_status: this.state.qstatus
-        ? this.state.qstatus
-        : this.state.qtownstatus,
-      ministry_id: this.state.education.value
-        ? this.state.education.value
-        : null,
-    };
-    // console.log(bodyParam);
-    axios
-      .post(CreateApi, bodyParam, {
-        headers,
-      })
-      .then(function (response) {
-        if (response.data.status == 1) {
-          // alert(response.data.message);
-          self.setState({
-            name: "",
-            nrccode:{vlaue:null,label:null},
-            nrcstatus:{vlaue:null,label:null},
-            nrcstate:{vlaue:null,label:null},
-            city:{vlaue:null,label:null},
-            township:{vlaue:null,label:null},
-            endtownship:{value:null,label:null},
-            townshipministrayid:null,
-            showcheckbox:false,
-            qstatusboolean:false,
-            qtownstatusboolean:false,
-            education:{value:null,label:null},
-            nrcnumber: "",
-            vehicle: "",
-            startplaces: "",
-            address: "",
-            addressText: "",
-            imagePath: null,
-            imagePathMo: null,
-            imagePathNrcBack: null,
-            passport: "",
-            imagePathSupport: null,
-            isOpenSuccessModel: true,
-          });
-        } else {
-          alert(response.data.message);
-        }
-      })
-      .catch(function (err) {
-        console.log("Error", err);
-      });
+        })
+        .catch(function (err) {
+          console.log("Error", err);
+        });
+    }
   }
 
   _gotoStep(step) {
@@ -611,29 +700,121 @@ export default class Create extends React.Component {
       this.setState({ ISERRORNAME: true });
       isError = true;
     }
-    if (this.state.nrcnumber == "") {
-      // alert("Helo");
-      this.setState({ ISERRORNRCNUMBER: true });
-      isError = true;
+    // if (this.state.nrcnumber == "" && this.state.pass) {
+    //   // alert("Helo");
+    //   this.setState({ ISERRORNRCNUMBER: true,ISERRORPASSPORT:true});
+    //   isError = true;
+    // }
+    if (this.state.usertype.value == 4) {
+      if (this.state.pass == "") {
+        this.setState({ ISERRORPASSPORT: true });
+        isError = true;
+      }
     }
+    if (this.state.usertype.value == 0) {
+      if (this.state.nrcnumber == "") {
+        // alert("Helo");
+        this.setState({ ISERRORNRCNUMBER: true });
+        isError = true;
+      }
+    }
+    if (this.state.usertype.value == 1) {
+      if (this.state.nrcnumber == "") {
+        // alert("Helo");
+        this.setState({ ISERRORNRCNUMBER: true });
+        isError = true;
+      }
+    }
+    if (this.state.usertype.value == 2) {
+      if (this.state.nrcnumber == "") {
+        // alert("Helo");
+        this.setState({ ISERRORNRCNUMBER: true });
+        isError = true;
+      }
+    }
+    if (this.state.usertype.value == 3) {
+      if (this.state.nrcnumber == "") {
+        // alert("Helo");
+        this.setState({ ISERRORNRCNUMBER: true });
+        isError = true;
+      }
+    }
+
     if (this.state.vehicle == "") {
       // alert("Helo");
       this.setState({ ISERRORVERICHAL: true });
       isError = true;
     }
-    if (!isError){
-    if (step == 1) {
-      this.setState({
-        showStepOne: true,
-        showStepTwo: false,
-      });
-    } else if (step == 2) {
-      this.setState({
-        showStepOne: false,
-        showStepTwo: true,
-      });
+
+    if (this.state.usertype.value == 0) {
+      if (this.state.nrccode.value == null) {
+        // alert("Helo");
+        this.setState({ ISERRORNRCCODE: true });
+        isError = true;
+      }
     }
-  }
+    if (this.state.usertype.value == 1) {
+      if (this.state.nrccode.value == null) {
+        // alert("Helo");
+        this.setState({ ISERRORNRCCODE: true });
+        isError = true;
+      }
+    }
+    if (this.state.usertype.value == 2) {
+      if (this.state.nrccode.value == null) {
+        // alert("Helo");
+        this.setState({ ISERRORNRCCODE: true });
+        isError = true;
+      }
+    }
+    if (this.state.usertype.value == 3) {
+      if (this.state.nrccode.value == null) {
+        // alert("Helo");
+        this.setState({ ISERRORNRCCODE: true });
+        isError = true;
+      }
+    }
+    if (this.state.usertype.value == 0) {
+      if (this.state.nrcstate.value == null) {
+        // alert("Helo");
+        this.setState({ ISERRRORNRCSTATE: true });
+        isError = true;
+      }
+    }
+    if (this.state.usertype.value == 1) {
+      if (this.state.nrcstate.value == null) {
+        // alert("Helo");
+        this.setState({ ISERRRORNRCSTATE: true });
+        isError = true;
+      }
+    }
+    if (this.state.usertype.value == 2) {
+      if (this.state.nrcstate.value == null) {
+        // alert("Helo");
+        this.setState({ ISERRRORNRCSTATE: true });
+        isError = true;
+      }
+    }
+    if (this.state.usertype.value == 3) {
+      if (this.state.nrcstate.value == null) {
+        // alert("Helo");
+        this.setState({ ISERRRORNRCSTATE: true });
+        isError = true;
+      }
+    }
+    if (!isError || this.state.isserrorclaer == true) {
+      if (step == 1) {
+        this.setState({
+          showStepOne: true,
+          showStepTwo: false,
+        });
+      } else if (step == 2) {
+        this.setState({
+          showStepOne: false,
+          showStepTwo: true,
+        });
+      }
+    }
   }
   _onChangeCheckBox() {
     this.setState({
@@ -642,20 +823,20 @@ export default class Create extends React.Component {
   }
 
   _handleOnChooseImage(image) {
-    this.setState({ imagePath: image.uri });
+    this.setState({ imagePath: image.uri, ISERRORNRCFRONT: false });
   }
   _handleOnChooseImageNrcBack(image) {
-    this.setState({ imagePathNrcBack: image.uri });
+    this.setState({ imagePathNrcBack: image.uri, ISERRORNRCBACK: false });
   }
   _handleOnChooseImageSupport(image) {
-    this.setState({ imagePathSupport: image.uri });
+    this.setState({ imagePathSupport: image.uri, ISERRORSUPPORT: false });
   }
   _handleOnChooseImageMo(image) {
-    this.setState({ imagePathMo: image.uri });
+    this.setState({ imagePathMo: image.uri, ISERRORMO: false });
   }
 
   _changeImage() {
-    if (this.state.usertype.value == 5) {
+    if (this.state.usertype.value == 4) {
       return (
         <View>
           <View
@@ -667,25 +848,95 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>နိုင်ငံကူးလက်မှတ်</Text>
+              <Text>{t("forising", this.state.locale)}</Text>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
+              <ErrorText
+                errMessage="နိုင်ငံကူးလက်မှတ်ပုံထည့်ပေးပါရန်"
+                isShow={this.state.ISERRORNRCFRONT}
+              />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>ဗီဇာပုံ</Text>
+              <Text>{t("visa", this.state.locale)}</Text>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
+              <ErrorText
+                errMessage="ဗီဇာပုံထည့်ပေးပါရန်"
+                isShow={this.state.ISERRORNRCBACK}
+              />
             </View>
           </View>
           <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>ထောက်ခံစာများ</Text>
+            <Text>{t("support", this.state.locale)}</Text>
             <ImgUploadBtn
               imagePath={this.state.imagePathSupport}
               onChooseImage={this._handleOnChooseImageSupport.bind(this)}
+            />
+            <ErrorText
+              errMessage="ထောက်ခံစာပုံထည့်ပေးပါရန်"
+              isShow={this.state.ISERRORSUPPORT}
+            />
+          </View>
+        </View>
+      );
+    } else if (this.state.usertype.value == 1) {
+      return (
+        <View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 10,
+              flex: 1,
+            }}
+          >
+            <View style={{ width: "45%" }}>
+              <Text>{t("nrcfront", this.state.locale)}</Text>
+              <ImgUploadBtn
+                imagePath={this.state.imagePath}
+                onChooseImage={this._handleOnChooseImage.bind(this)}
+              />
+              <ErrorText
+                errMessage="မှတ်ပုံတင်အရှေ့ဘက်ပုံထည့်ပေးပါရန်"
+                isShow={this.state.ISERRORNRCFRONT}
+              />
+            </View>
+            <View style={{ width: "45%" }}>
+              <Text>{t("nrcback", this.state.locale)}</Text>
+              <ImgUploadBtn
+                imagePath={this.state.imagePathNrcBack}
+                onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
+              />
+              <ErrorText
+                errMessage="မှတ်ပုံတင်အနောက်ဘက်ပုံထည့်ပေးပါရန်"
+                isShow={this.state.ISERRORNRCBACK}
+              />
+            </View>
+          </View>
+          <View style={{ width: "45%", marginTop: 10 }}>
+            <Text>{t("mo", this.state.locale)}</Text>
+            <ImgUploadBtn
+              imagePath={this.state.imagePathMo}
+              onChooseImage={this._handleOnChooseImageMo.bind(this)}
+            />
+            <ErrorText
+              errMessage="ခရီးသွားလာခွင့်အမိန့်MOပုံထည့်ပေးပါရန်"
+              isShow={this.state.ISERRORMO}
+            />
+          </View>
+          <View style={{ width: "45%", marginTop: 10 }}>
+            <Text>{t("support", this.state.locale)}</Text>
+            <ImgUploadBtn
+              imagePath={this.state.imagePathSupport}
+              onChooseImage={this._handleOnChooseImageSupport.bind(this)}
+            />
+            <ErrorText
+              errMessage="ထောက်ခံစာပုံထည့်ပေးပါရန်"
+              isShow={this.state.ISERRORSUPPORT}
             />
           </View>
         </View>
@@ -702,32 +953,37 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အရှေ့ဘက်</Text>
+              <Text>{t("religion", this.state.locale)}</Text>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
+              <ErrorText
+                errMessage="သာသနာဝင်စိစစ်ရေးကဒ်ပြားအရှေ့ဘက်ပုံထည့်ပေးပါရန်"
+                isShow={this.state.ISERRORNRCFRONT}
+              />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အနောက်ဘက်</Text>
+              <Text>{t("retligionback", this.state.locale)}</Text>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
+              <ErrorText
+                errMessage="သာသနာဝင်စိစစ်ရေးကဒ်ပြားအနောက်ဘက်ပုံထည့်ပေးပါရန်"
+                isShow={this.state.ISERRORNRCBACK}
+              />
             </View>
           </View>
           <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>ခရီးသွားလာခွန့်အမိန့်MO</Text>
-            <ImgUploadBtn
-              imagePath={this.state.imagePathMo}
-              onChooseImage={this._handleOnChooseImageMo.bind(this)}
-            />
-          </View>
-          <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>ထောက်ခံစာများ</Text>
+            <Text>{t("support", this.state.locale)}</Text>
             <ImgUploadBtn
               imagePath={this.state.imagePathSupport}
               onChooseImage={this._handleOnChooseImageSupport.bind(this)}
+            />
+            <ErrorText
+              errMessage="ထောက်ခံစာပုံထည့်ပေးပါရန်"
+              isShow={this.state.ISERRORSUPPORT}
             />
           </View>
         </View>
@@ -744,60 +1000,37 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>သာသနာဝင်စိစစ်ရေးကဒ်ပြားအရှေ့ဘက်</Text>
+              <Text>{t("nrcfront", this.state.locale)}</Text>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
+              <ErrorText
+                errMessage="မှတ်ပုံတင်အရှေ့ဘက်ပုံထည့်ပေးပါရန်"
+                isShow={this.state.ISERRORNRCFRONT}
+              />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>သာသနာဝင်စိစစ်ရေးကဒ်ပြားအနောက်ဘက်</Text>
+              <Text>{t("nrcback", this.state.locale)}</Text>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
+              <ErrorText
+                errMessage="မှတ်ပုံတင်အနောက်ဘက်ပုံထည့်ပေးပါရန်"
+                isShow={this.state.ISERRORNRCBACK}
+              />
             </View>
           </View>
           <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>ထောက်ခံစာများ</Text>
+            <Text>{t("support", this.state.locale)}</Text>
             <ImgUploadBtn
-              imagePath={this.state.imagePathMo}
-              onChooseImage={this._handleOnChooseImageMo.bind(this)}
+              imagePath={this.state.imagePathSupport}
+              onChooseImage={this._handleOnChooseImageSupport.bind(this)}
             />
-          </View>
-        </View>
-      );
-    } else if (this.state.usertype.value == 4) {
-      return (
-        <View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: 10,
-              flex: 1,
-            }}
-          >
-            <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အရှေ့ဘက်</Text>
-              <ImgUploadBtn
-                imagePath={this.state.imagePath}
-                onChooseImage={this._handleOnChooseImage.bind(this)}
-              />
-            </View>
-            <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အနောက်ဘက်</Text>
-              <ImgUploadBtn
-                imagePath={this.state.imagePathNrcBack}
-                onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
-              />
-            </View>
-          </View>
-          <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>ထောက်ခံစာများ</Text>
-            <ImgUploadBtn
-              imagePath={this.state.imagePathMo}
-              onChooseImage={this._handleOnChooseImageMo.bind(this)}
+            <ErrorText
+              errMessage="ထောက်ခံစာပုံထည့်ပေးပါရန်"
+              isShow={this.state.ISERRORSUPPORT}
             />
           </View>
         </View>
@@ -814,25 +1047,37 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အရှေ့ဘက်</Text>
+              <Text>{t("nrcfront", this.state.locale)}</Text>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
+              <ErrorText
+                errMessage="မှတ်ပုံတင်အနောက်ဘက်ပုံထည့်ပေးပါရန်"
+                isShow={this.state.ISERRORNRCFRONT}
+              />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>မှတ်ပုံတင်အနောက်ဘက်</Text>
+              <Text>{t("nrcback", this.state.locale)}</Text>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
+              <ErrorText
+                errMessage="မှတ်ပုံတင်အနောက်ဘက်ပုံထည့်ပေးပါရန်"
+                isShow={this.state.ISERRORNRCBACK}
+              />
             </View>
           </View>
           <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>ထောက်ခံစာများ</Text>
+            <Text>{t("support", this.state.locale)}</Text>
             <ImgUploadBtn
               imagePath={this.state.imagePathSupport}
               onChooseImage={this._handleOnChooseImageSupport.bind(this)}
+            />
+            <ErrorText
+              errMessage="ထောက်ခံစာပုံထည့်ပေးပါရန်"
+              isShow={this.state.ISERRORSUPPORT}
             />
           </View>
         </View>
@@ -840,33 +1085,30 @@ export default class Create extends React.Component {
     }
   }
   render() {
-    // console.log("Ministray Name",this.state.townshipministrayname);
+    // console.log("Create", this.state.imagePath);
+    console.log("Ministray Township Name", this.state.townshipministrayname);
     return (
       <View style={{ flex: 1 }}>
         {this.state.showStepOne ? (
           <View style={{ flex: 1 }}>
             <Header
-              name="အချက်အလက်များဖြည့်ရန်"
+              name={t("createtitle", this.state.locale)}
               number="1"
               Onpress={() => this.props.navigation.navigate("Home")}
             />
             <View style={styles.constiner}>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <KeyboardAvoidingView
-                  style={{
-                    flex: 1,
-                    flexDirection: "column",
-                    justifyContent: "center",
-                  }}
-                  // behavior="position"
-                  enabled
-                  behavior={Platform.OS == "ios" ? "position" : null}
-
-                  // keyboardVerticalOffset={100}
-                >
+              <KeyboardAvoidingView
+                // behavior="padding"
+                behavior={Platform.OS == "ios" ? "padding" : null}
+                enabled
+                // keyboardVerticalOffset={100}
+                style={{ flex: 1 }}
+              >
+                <ScrollView showsVerticalScrollIndicator={false}>
+              
                   <View style={{ flex: 1 }}>
                     <Text style={styles.text}>
-                      အသုံးပြုသူအမျိုးအစားရွေးချယ်ရန်
+                      {t("usertype", this.state.locale)}
                     </Text>
                     <View style={{ marginTop: 10 }}>
                       <DropDown
@@ -881,31 +1123,50 @@ export default class Create extends React.Component {
                     </View>
                   </View>
                   <View style={styles.secondContainer}>
-                    <Text style={styles.text}>အမည်</Text>
+                    {this.state.usertype.value == 2 ? (
+                      <Text style={styles.text}>
+                        {t("Bhikkhu", this.state.locale)}
+                      </Text>
+                    ) : (
+                      <Text style={styles.text}>
+                        {t("name", this.state.locale)}
+                      </Text>
+                    )}
+
                     <TextInput
                       value={this.state.name}
                       style={styles.textInput}
                       placeholder="လှလှ"
-                      onChangeText={(value) => this.setState({ name: value,ISERRORNAME:false })}
+                      onChangeText={(value) =>
+                        this.setState({ name: value, ISERRORNAME: false })
+                      }
                     />
-                     <ErrorText
-                    errMessage="အမည်ထည့်ပေးပါရန်"
-                    isShow={this.state.ISERRORNAME}
-                />
+                    <ErrorText
+                      errMessage="အမည်ထည့်ပေးပါရန်"
+                      isShow={this.state.ISERRORNAME}
+                    />
                   </View>
-                  {this.state.usertype.value == "5" ? (
+                  {this.state.usertype.value == 4 ? (
                     <View style={styles.secondContainer}>
-                      <Text style={styles.text}>နိုင်ငံကူးနံပါတ်</Text>
+                      <Text style={styles.text}>
+                        {t("forino", this.state.locale)}
+                      </Text>
                       <TextInput
                         style={styles.textInput}
                         value={this.state.pass}
-                        onChangeText={(value) => this.setState({ pass: value })}
+                        onChangeText={(value) =>
+                          this.setState({ pass: value, ISERRORPASSPORT: false })
+                        }
+                      />
+                      <ErrorText
+                        errMessage="နိုင်ငံကူးနံပါတ်ထည့်ပေးပါရန်"
+                        isShow={this.state.ISERRORPASSPORT}
                       />
                     </View>
                   ) : (
                     <View style={styles.secondContainer}>
                       <Text style={styles.text}>
-                        နိုင်းငံသားစီစစ်ရေးကဒ်ပြားနံပါတ်
+                        {t("nrcno", this.state.locale)}
                       </Text>
                       <View
                         style={{
@@ -924,6 +1185,10 @@ export default class Create extends React.Component {
                               this._handleOnSelectNRCCode(value, label)
                             }
                           />
+                          <ErrorText
+                            errMessage="NRC_CODE ရွေးပေးပါရန်"
+                            isShow={this.state.ISERRORNRCCODE}
+                          />
                         </View>
                         <View style={{ width: "50%" }}>
                           <DropDown
@@ -934,6 +1199,10 @@ export default class Create extends React.Component {
                             onSelect={(value, label) =>
                               this._handleOnSelectNRCState(value, label)
                             }
+                          />
+                          <ErrorText
+                            errMessage="NRC_STATE ရွေးပေးပါရန်"
+                            isShow={this.state.ISERRRORNRCSTATE}
                           />
                         </View>
                         <View style={{ width: "20%" }}>
@@ -960,19 +1229,25 @@ export default class Create extends React.Component {
                             keyboardType="number-pad"
                             placeholder="111111"
                             onChangeText={(value) =>
-                              this.setState({ nrcnumber: value,ISERRORNRCNUMBER:false})
+                              this.setState({
+                                nrcnumber: value,
+                                ISERRORNRCNUMBER: false,
+                              })
                             }
                           />
-                             <ErrorText
+                          <ErrorText
                             errMessage="မှတ်ပုံတင်နံပါတ်ထည့်ပေးပါရန်"
-                            isShow={this.state.ISERRORNRCNUMBER}/>
+                            isShow={this.state.ISERRORNRCNUMBER}
+                          />
                         </View>
                       </View>
                     </View>
                   )}
 
                   <View style={styles.secondContainer}>
-                    <Text style={styles.text}>ဖုန်းနံပါတ်</Text>
+                    <Text style={styles.text}>
+                      {t("phone", this.state.locale)}
+                    </Text>
                     <TextInput
                       style={styles.textInput}
                       value={this.state.loginID}
@@ -980,25 +1255,31 @@ export default class Create extends React.Component {
                     />
                   </View>
                   <View style={styles.secondContainer}>
-                    <Text style={styles.text}>ယာဉ်နံပါတ်</Text>
+                    <Text style={styles.text}>
+                      {t("vehical", this.state.locale)}
+                    </Text>
                     <TextInput
                       value={this.state.vehicle}
                       style={styles.textInput}
                       placeholder="7K/1234"
                       onChangeText={(value) =>
-                        this.setState({ vehicle: value,ISERRORVERICHAL:false })
+                        this.setState({
+                          vehicle: value,
+                          ISERRORVERICHAL: false,
+                        })
                       }
                     />
-                       <ErrorText
-                    errMessage="ယာဉ်နံပါတ်ထည့်ပေးပါရန်"
-                    isShow={this.state.ISERRORVERICHAL}/>
+                    <ErrorText
+                      errMessage="ယာဉ်နံပါတ်ထည့်ပေးပါရန်"
+                      isShow={this.state.ISERRORVERICHAL}
+                    />
                   </View>
                   <TouchableOpacity
                     style={styles.touchBtn}
                     onPress={() => this._gotoStep(2)}
                   >
                     <Text style={{ color: "white", fontWeight: "bold" }}>
-                      အဆင့်(၂)သို့
+                      {t("gotostep", this.state.locale)}
                     </Text>
                   </TouchableOpacity>
 
@@ -1007,8 +1288,10 @@ export default class Create extends React.Component {
                       1 of 2
                     </Text>
                   </View>
-                </KeyboardAvoidingView>
-              </ScrollView>
+                </ScrollView>
+              </KeyboardAvoidingView>
+              {/* </KeyboardAvoidingView>
+              </ScrollView> */}
             </View>
           </View>
         ) : null}
@@ -1016,27 +1299,24 @@ export default class Create extends React.Component {
         {this.state.showStepTwo ? (
           <View style={{ flex: 1 }}>
             <Header
-              name="အချက်အလက်များဖြည့်ရန်"
+              name={t("createtitle", this.state.locale)}
               number="2"
               Onpress={() => this._gotoStep(1)}
             />
             <View style={styles.constiner}>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <KeyboardAvoidingView
-                  style={{
-                    flex: 1,
-                    flexDirection: "column",
-                    justifyContent: "center",
-                  }}
-                  // behavior="position"
-                  enabled
-                  behavior={Platform.OS == "ios" ? "position" : null}
-
-                  // keyboardVerticalOffset={100}
-                >
+            <KeyboardAvoidingView
+                // behavior="padding"
+                behavior={Platform.OS == "ios" ? "padding" : null}
+                enabled
+                // keyboardVerticalOffset={100}
+                style={{ flex: 1 }}
+              >
+                <ScrollView showsVerticalScrollIndicator={false}>
                   <View>
                     <View tyle={styles.secondContainer}>
-                      <Text style={styles.text}>စတင်ထွက်ခွာသည့်မြို့</Text>
+                      <Text style={styles.text}>
+                        {t("startcity", this.state.locale)}
+                      </Text>
                       <View
                         style={{
                           flexDirection: "row",
@@ -1054,6 +1334,10 @@ export default class Create extends React.Component {
                               this._handleOnSelect(value, label)
                             }
                           />
+                          <ErrorText
+                            errMessage="မြို့ရွေးချယ်ပေးရန်"
+                            isShow={this.state.ISERRORSTARTCITY}
+                          />
                         </View>
                         <View style={{ width: "48%" }}>
                           <DropDown
@@ -1065,6 +1349,10 @@ export default class Create extends React.Component {
                               this._handleOnSelectTownShip(value, label)
                             }
                           />
+                          <ErrorText
+                            errMessage="မြို့နယ်ရွေးချယ်ပေးရန်"
+                            isShow={this.state.ISERRORSTARTTOWNSHIP}
+                          />
                         </View>
                       </View>
                       <TextInput
@@ -1072,12 +1360,21 @@ export default class Create extends React.Component {
                         placeholder="လိပ်စာ"
                         value={this.state.startplaces}
                         onChangeText={(value) =>
-                          this.setState({ startplaces: value })
+                          this.setState({
+                            startplaces: value,
+                            ISERRORSTARTPLACE: false,
+                          })
                         }
+                      />
+                      <ErrorText
+                        errMessage="လိပ်စာထည့်ပေးပါရန်"
+                        isShow={this.state.ISERRORSTARTPLACE}
                       />
                     </View>
                     <View tyle={styles.secondContainer}>
-                      <Text style={styles.text}>သွားရောက်လိုသည့်နေရာ</Text>
+                      <Text style={styles.text}>
+                        {t("endplace", this.state.locale)}
+                      </Text>
                       <View
                         style={{
                           flexDirection: "row",
@@ -1086,34 +1383,51 @@ export default class Create extends React.Component {
                         }}
                       >
                         {this.state.showcheckbox ? (
-                          <TouchableOpacity
-                            onPress={() => this._onChangeCheckBox()}
-                            style={{ marginTop: 5 }}
-                          >
-                            <View
-                              style={{
-                                width: 25,
-                                height: 25,
-                                borderWidth: 1,
-                                backgroundColor: "#308DCC",
-                                borderColor: "#308DCC",
-                              }}
+                          <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity
+                              onPress={() => this._onChangeCheckBox()}
+                              style={{ marginTop: 5 }}
                             >
-                              <Image
-                                source={require("@images/true.png")}
-                                style={{ width: 20, height: 20 }}
-                              />
-                            </View>
-                          </TouchableOpacity>
+                              <View
+                                style={{
+                                  width: 25,
+                                  height: 25,
+                                  borderWidth: 1,
+                                  backgroundColor: "#308DCC",
+                                  borderColor: "#308DCC",
+                                  // flexDirection:"row"
+                                }}
+                              >
+                                <Image
+                                  source={require("@images/true.png")}
+                                  style={{ width: 20, height: 20 }}
+                                />
+                              </View>
+                              {/* <View style={{ justifyContent: "center" }}>
+                              <Text>{t("ministray", this.state.locale)}</Text>
+                            </View> */}
+                            </TouchableOpacity>
+                          </View>
                         ) : (
-                          <TouchableOpacity
-                            onPress={() => this._onChangeCheckBox()}
-                            style={{ marginTop: 5 }}
-                          >
-                            <View
-                              style={{ width: 25, height: 25, borderWidth: 1 }}
-                            />
-                          </TouchableOpacity>
+                          <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity
+                              onPress={() => this._onChangeCheckBox()}
+                              style={{ marginTop: 5 }}
+                            >
+                              <View
+                                style={{
+                                  width: 25,
+                                  height: 25,
+                                  borderWidth: 1,
+                                }}
+                              />
+                            </TouchableOpacity>
+                            <View style={{ justifyContent: "center" }}>
+                              <Text style={{ paddingLeft: 10 }}>
+                                {t("ministray", this.state.locale)}
+                              </Text>
+                            </View>
+                          </View>
                         )}
 
                         {this.state.showcheckbox ? (
@@ -1124,7 +1438,7 @@ export default class Create extends React.Component {
                             }}
                           >
                             <View style={{ justifyContent: "center" }}>
-                              <Text>ဝန်ကြီးဌာန</Text>
+                              <Text>{t("ministray", this.state.locale)}</Text>
                             </View>
 
                             <View style={{ width: "70%", marginTop: 10 }}>
@@ -1159,6 +1473,10 @@ export default class Create extends React.Component {
                               this._handleOnSelectEndTownship(value, label)
                             }
                           />
+                          <ErrorText
+                            errMessage="မြို့နယ်ရွေးချယ်ပေးရန်"
+                            isShow={this.state.ISERRRORENDTOWNSHIP}
+                          />
                         </View>
                       )}
 
@@ -1172,14 +1490,23 @@ export default class Create extends React.Component {
                           // }
                         />
                       ) : (
-                        <TextInput
-                          style={[styles.textInput]}
-                          value={this.state.addressText}
-                          placeholder="လိပ်စာ"
-                          onChangeText={(value) =>
-                            this.setState({ addressText: value })
-                          }
-                        />
+                        <View>
+                          <TextInput
+                            style={[styles.textInput]}
+                            value={this.state.addressText}
+                            placeholder="လိပ်စာ"
+                            onChangeText={(value) =>
+                              this.setState({
+                                addressText: value,
+                                ISERRORENDPLACE: false,
+                              })
+                            }
+                          />
+                          <ErrorText
+                            errMessage="လိပ်စာထည့်ပေးပါရန်"
+                            isShow={this.state.ISERRORENDPLACE}
+                          />
+                        </View>
                       )}
                     </View>
                   </View>
@@ -1197,7 +1524,7 @@ export default class Create extends React.Component {
                       onPress={() => this._handleSave()}
                     >
                       <Text style={{ color: "white", fontWeight: "bold" }}>
-                        အသစ်ထည့်မည်
+                        {t("createnew", this.state.locale)}
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -1205,7 +1532,7 @@ export default class Create extends React.Component {
                       onPress={() => this._handleSave()}
                     >
                       <Text style={{ color: "white", fontWeight: "bold" }}>
-                        သိမ်းမည်
+                        {t("save", this.state.locale)}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -1215,11 +1542,12 @@ export default class Create extends React.Component {
                       2 of 2
                     </Text>
                   </View>
-                </KeyboardAvoidingView>
-              </ScrollView>
+                </ScrollView>
+              </KeyboardAvoidingView>
+
               <SuccessModal
                 isOpen={this.state.isOpenSuccessModel}
-                text="Created Successfully"
+                text="လျှောက်လွှာတင်ခြင်းအောင်မြင်ပါသည်"
                 onClose={() => this._handleOnClose()}
               />
             </View>

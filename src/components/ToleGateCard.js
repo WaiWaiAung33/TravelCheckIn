@@ -7,17 +7,24 @@ export default class ToleGateCard extends React.Component {
       this.props.OnPressCard();
     }
   }
+  _showNRCNumber() {
+    if (this.props.citizen == 4) {
+      return this.props.passport;
+    } else {
+      return this.props.nrc;
+    }
+  }
   render() {
     return (
       <View style={styles.container}>
         <TouchableOpacity onPress={() => this._OnPress()} activeOpacity={0.8}>
           <View>
             <Text style={{ textAlign: "right", fontWeight: "bold" }}>
-             {this.props.date}
+              {this.props.date}
             </Text>
             <View>
               <Text style={styles.secondText}>{this.props.name}</Text>
-              <Text style={styles.secondText}>{this.props.nrc}</Text>
+              <Text style={styles.secondText}>{this._showNRCNumber()}</Text>
               <Text style={styles.secondText}>{this.props.phoneNo}</Text>
             </View>
           </View>
@@ -35,17 +42,16 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: "#ffffff",
     borderRadius: 5,
-    elevation:3,
-    shadowOffset:{width:2,height:2},
-    shadowOpacity:0.5,
-    backgroundColor:"#ffffff"
+    elevation: 3,
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.5,
+    backgroundColor: "#ffffff",
   },
   firstText: {
     width: "35%",
   },
   secondText: {
     // width: "65%",
-    paddingTop:6
-
+    paddingTop: 6,
   },
 });

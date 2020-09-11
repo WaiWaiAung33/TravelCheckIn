@@ -10,22 +10,43 @@ import {
   TextInput,
   TouchableOpacity,
   BackHandler,
-  AsyncStorage
+  AsyncStorage,
 } from "react-native";
+import { Updates } from "expo";
+//import LanguageModal
+import LanguageModal from "@components/LanguageModal";
+import { t, getLang } from "@services/Localization";
+
+//import consts
+import { LANGUAGE } from "@consts/Const";
+
+import { setItem } from "@services/Storage";
+
 const { height, width } = Dimensions.get("window");
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      locale: null,
+      mylang: "MM",
+      isOpenErrorModal: false,
+      isOpenLangModal: false,
+      locale: null,
+    };
     this.BackHandler = null;
   }
   async componentDidMount() {
-    this.setBackHandler();
+    await this.setBackHandler();
+    const res = await getLang();
+    this.setState({ locale: res });
   }
-  setBackHandler() {
+  async setBackHandler() {
     BackHandler.addEventListener(
       "hardwareBackPress",
       this._handleBackButton.bind(this)
     );
+    const res = await getLang();
+    this.setState({ locale: res });
   }
 
   _handleBackButton = () => {
@@ -38,42 +59,95 @@ export default class Home extends React.Component {
     // Remove the event listener before removing the screen from the stack
     this.focusListener.remove();
   }
-  async _handleLogout(){
+  async _handleLogout() {
     await AsyncStorage.clear();
     this.props.navigation.navigate("Login");
     return true;
   }
+
+  async handleGetLocale(locale) {
+    await setItem(LANGUAGE, locale);
+    this.setState({
+      isOpenLangModal: false,
+      mylang: locale,
+    });
+
+    Updates.reload();
+  }
+
+  _handleSetLocaleAsyncStorage = async () => {
+    this.setState({ confirmLocaleModalOpen: false });
+  };
+
   render() {
     return (
       <View style={styles.container}>
         <StatusBar style="auto" />
         <View style={styles.secondContainer}>
-          <View
-            style={{
-              flexDirection: "row",
+          <View style={{  flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-end",
               marginRight: 15,
-              marginTop: 10,
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                marginRight: 15,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Image
-                source={require("@images/unnamed.png")}
-                style={styles.touchImg}
-              />
-              <Text style={{ color: "white", fontWeight: "bold" }}>My</Text>
-            </TouchableOpacity>
+              marginTop: 10,}}>
+            {this.state.locale == "MM" ? (
+              <View style={{ alignItems: "flex-end" }}>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: "row",
+                    marginRight: 5,
+                    marginTop: 10,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={() => this.setState({ isOpenLangModal: true })}
+                >
+                  <Image
+                    source={require("@images/unnamed.png")}
+                    style={{ width: 30, height: 30 }}
+                  />
+
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "bold",
+                      paddingLeft: 4,
+                    }}
+                  >
+                    {this.state.mylang == "MM" ? "မြန်မာ" : "Eng"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={{ alignItems: "flex-end" }}>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: "row",
+                    marginRight: 5,
+                    marginTop: 10,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={() => this.setState({ isOpenLangModal: true })}
+                >
+                  <Image
+                    source={require("@images/english.png")}
+                    style={{ width: 30, height: 30 }}
+                  />
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "bold",
+                      paddingLeft: 4,
+                    }}
+                  >
+                    English
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
             <TouchableOpacity
               onPress={() => this._handleLogout()}
-              style={{width:50,alignItems:"flex-end"}}
+              style={{ width: 50, alignItems: "flex-end" ,marginTop:10}}
             >
               <Image
                 source={require("@images/logout.png")}
@@ -81,6 +155,7 @@ export default class Home extends React.Component {
               />
             </TouchableOpacity>
           </View>
+
           <View style={{ alignItems: "center" }}>
             <View style={styles.imgContainer}>
               <Image
@@ -114,23 +189,34 @@ export default class Home extends React.Component {
             activeOpacity={0.8}
             onPress={() => this.props.navigation.navigate("Create")}
           >
-            <Text style={styles.text}>အချက်အလက်များဖြည့်ရန်</Text>
+            <Text style={styles.text}>
+              {t("createform", this.state.locale)}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.8}
             style={[styles.touchBtn, { backgroundColor: "#E99944" }]}
             onPress={() => this.props.navigation.navigate("ToleGateList")}
           >
-            <Text style={styles.text}>စစ်ဆေးရေးဂိတ်တွင်ပြရန်</Text>
+            <Text style={styles.text}>
+              {t("tolegatelist", this.state.locale)}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.8}
             style={[styles.touchBtn, { backgroundColor: "#C716F1" }]}
             onPress={() => this.props.navigation.navigate("TravelNote")}
           >
-            <Text style={styles.text}>ခရီးသွားမှတ်တမ်းများ</Text>
+            <Text style={styles.text}>
+              {t("travelnote", this.state.locale)}
+            </Text>
           </TouchableOpacity>
         </View>
+        <LanguageModal
+          isOpen={this.state.isOpenLangModal}
+          getCheckLang={(locale) => this.handleGetLocale(locale)}
+          onClose={() => this.setState({ isOpenLangModal: false })}
+        />
       </View>
     );
   }
@@ -157,7 +243,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginTop: 10,
-    padding: 30,
+    padding: 25,
     backgroundColor: "#308DCC",
     borderRadius: 5,
     justifyContent: "center",
@@ -173,8 +259,8 @@ const styles = StyleSheet.create({
     // alignItems: "center",
   },
   imgHeader: {
-    width: 100,
-    height: 100,
+    width: 110,
+    height: 110,
   },
   imgContainer: {
     backgroundColor: "white",

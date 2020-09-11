@@ -19,6 +19,9 @@ import Moment from "moment";
 const axios = require("axios");
 import { CancelApi } from "@api/Url";
 
+//import services
+import { t, getLang } from "@services/Localization";
+
 export default class ToleGate extends React.Component {
   constructor(props) {
     super(props);
@@ -26,10 +29,13 @@ export default class ToleGate extends React.Component {
       userid: null,
       access_token: null,
       isOpenSuccessModel: false,
+      locale: null,
     };
     this.BackHandler = null;
   }
   async componentDidMount() {
+    const res = await getLang();
+    this.setState({ locale: res });
     const user_id = await AsyncStorage.getItem("userid");
     const access_token = await AsyncStorage.getItem("access_token");
     this.setState({ userid: user_id, access_token: access_token });
@@ -94,7 +100,7 @@ export default class ToleGate extends React.Component {
     return (
       <View style={styles.container}>
         <Header
-          name="QR Code ဖတ်ရန်"
+          name={t("qrlist", this.state.locale)}
           Onpress={() => this.props.navigation.navigate("ToleGateList")}
         />
         <ScrollView>
@@ -134,14 +140,24 @@ export default class ToleGate extends React.Component {
               }}
               onPress={() => this._handleCancel()}
             >
-              <Text style={{ color: "white" }}>လျှောက်လွှာပယ်ဖျက်မည်</Text>
+              <Text style={{ color: "white" }}>
+                {t("cancelregister", this.state.locale)}
+              </Text>
             </TouchableOpacity>
           </View>
           <ToleGateCardOne
             date={Moment(data.created_at).format("DD-MM-YYYY")}
             name={data.name}
-            nrc={data.nrc_code+"/"+data.nrc_state+"("+data.nrc_type+")"+data.nrc_no}
-            passportNo={data.passport ? data.passport :null}
+            nrc={
+              data.nrc_code +
+              "/" +
+              data.nrc_state +
+              "(" +
+              data.nrc_type +
+              ")" +
+              data.nrc_no
+            }
+            passportNo={data.passport ? data.passport : null}
             phoneNo={data.ph_no}
             OnPressCard={() => this.props.navigation.navigate("Detail")}
             cityzien={data.citizen_status}

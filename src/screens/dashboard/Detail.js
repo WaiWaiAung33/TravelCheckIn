@@ -11,14 +11,21 @@ import {
 
 //import components
 import Header from "@components/Header";
+//import services
+import { t, getLang } from "@services/Localization";
 
 export default class ToleGateCard extends React.Component {
   constructor(props){
     super(props);
+    this.state={
+      locale: null
+    };
     this.BackHandler=null;
   }
   async componentDidMount() {
     this.setBackHandler();
+    const res = await getLang();
+    this.setState({ locale: res });
   }
   setBackHandler() {
     BackHandler.addEventListener(
@@ -37,7 +44,7 @@ export default class ToleGateCard extends React.Component {
     return (
       <View>
         <Header
-          name="အသေးစိတ်အချက်အလက်များ"
+          name={t("detail",this.state.locale)}
           Onpress={() => this.props.navigation.navigate("ToleGate")}
         />
         <ScrollView>

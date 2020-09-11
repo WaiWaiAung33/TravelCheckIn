@@ -15,6 +15,9 @@ import Moment from "moment";
 const axios = require("axios");
 import { QRListApi } from "@api/Url";
 
+//import services
+import { t, getLang } from "@services/Localization";
+
 export default class ToleGate extends React.Component {
   constructor(props) {
     super(props);
@@ -26,10 +29,13 @@ export default class ToleGate extends React.Component {
       nrcstate: "",
       nrcstaus: "",
       nrcnumber: "",
+      locale: null
     };
     this.BackHandler = null;
   }
   async componentDidMount() {
+    const res = await getLang();
+    this.setState({ locale: res });
     const user_id = await AsyncStorage.getItem("userid");
     const access_token = await AsyncStorage.getItem("access_token");
     this.setState({ userid: user_id, access_token: access_token });
@@ -85,14 +91,17 @@ export default class ToleGate extends React.Component {
     return (
       <View style={styles.container}>
         <Header
-          name="စစ်ဆေးရေးဂိတ်တွင်ပြရန်"
+          name={t("tolegatelist",this.state.locale)}
           Onpress={() => this.props.navigation.navigate("Home")}
         />
         <ScrollView>
           {this.state.data.map((item, index) => {
+            // console.log("ToleGateLsit",item)
             return (
               <View key={index}>
                 <ToleGateCard
+                  citizen={item.citizen_status}
+                  passport={item.passport}
                   date={Moment(item.created_at).format("DD-MM-YYYY")}
                   name={item.name}
                   nrc={item.nrc_code+"/"+item.nrc_state+"("+item.nrc_type+")"+item.nrc_no}
