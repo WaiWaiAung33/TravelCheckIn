@@ -10,6 +10,7 @@ import TravelNoteDetail from "@screens/dashboard/TravelNoteDetail";
 import ToleGateList from "@screens/dashboard/ToleGateList";
 import Edit from "@screens/dashboard/Edit";
 import TravelQr from "@screens/dashboard/TravelQr";
+import CreateNew from "@screens/dashboard/CreateNew";;
 export default createAppContainer(
   createStackNavigator(
     {
@@ -38,6 +39,22 @@ export default createAppContainer(
       },
       ToleGate:{
         screen:ToleGate,
+        navigationOptions: ({ navigation }) => ({
+          headerShown:false
+          // headerTitle: "QR Code ဖတ်ရန်",
+          // headerTintColor:"white",
+          // headerStyle: {
+          //   backgroundColor: "#308DCC",
+          // },
+
+          // headerTitleStyle: {
+          //   fontWeight: "bold",
+          //   fontSize:18
+          // },
+        }),
+      },
+      CreateNew:{
+        screen:CreateNew,
         navigationOptions: ({ navigation }) => ({
           headerShown:false
           // headerTitle: "QR Code ဖတ်ရန်",

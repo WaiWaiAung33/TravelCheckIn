@@ -31,14 +31,7 @@ import TravelNoteApi from "@api/TravelNoteApi";
 //import services
 import { t, getLang } from "@services/Localization";
 
-const STATUS = [
-  { value: 0, label: "အားလုံး" },
-  { value: 1, label: "လာရောက်ခွင့်ပြုသည်" },
-  { value: 2, label: "ပြင်ဆင်ရန်" },
-  { value: 3, label: "လက်ခံသည်" },
-  { value: 4, label: "စောင့်ကြည့်ခံရမည်" },
-  { value: 5, label: "လျှောက်လွှာပယ်ဖျက်သည်" },
-];
+
 export default class TravelNote extends React.Component {
   constructor(props) {
     super(props);
@@ -74,7 +67,9 @@ export default class TravelNote extends React.Component {
     // });
     const userid = await AsyncStorage.getItem("userid");
     const access_token = await AsyncStorage.getItem("access_token");
-    this.setState({ user_id: userid, access_token: access_token });
+    this.setState({ user_id: userid, access_token: access_token ,
+      status: { value: 0, label:t("all",this.state.locale) },
+    });
     this.setBackHandler();
     this._getNewDate();
     await this.getAllTravelNote(this.page);
@@ -162,7 +157,7 @@ export default class TravelNote extends React.Component {
   };
 
   _handleSearch(page, status, statusid) {
-    alert("Status" + status + "QStatus" + statusid);
+    this.state.data =[];
     const self = this;
     self.setState({ isSearched: true });
     let bodyParam = {
@@ -183,7 +178,8 @@ export default class TravelNote extends React.Component {
       .then(function (response) {
         // console.log(response.data.history.data);
         self.setState({
-          searchTravel: response.data.history.data,
+          data: [...self.state.data, ...response.data.history.data],
+          // searchTravel: response.data.history.data,
         });
       })
       .catch(function (err) {
@@ -248,6 +244,14 @@ export default class TravelNote extends React.Component {
   };
 
   renderFilter() {
+    const STATUS = [
+      { value: 0, label: t("all",this.state.locale) },
+      { value: 1, label:t("allow",this.state.locale) },
+      { value: 2, label:t("tofix",this.state.locale) },
+      { value: 3, label:t("approve",this.state.locale)},
+      { value: 4, label:t("quartine",this.state.locale)},
+      { value: 5, label:t("cancelregister",this.state.locale) },
+    ];
     return (
       <View>
         <View style={styles.secondContainer}>
@@ -359,20 +363,21 @@ export default class TravelNote extends React.Component {
   }
 
   render() {
-    // console.log(this.state.changeendDate);
-
-    // console.log(today);
+   
     if (this.state.isLoading) {
       return <Loading />;
     }
-    const { isSearched, data, searchTravel } = this.state;
-    const dataList = isSearched ? searchTravel : data;
+    var { isSearched, data, searchTravel } = this.state;
+    // var dataList = isSearched ? searchTravel : data;
+    var dataList = data;
+
     // console.log(data);
 
     return (
+      
       <View style={styles.container}>
         <Header
-          name="ခရီးသွားမှတ်တမ်းများ"
+          name={t("travelnote",this.state.locale)}
           Onpress={() => this.props.navigation.navigate("Home")}
         />
         {/* <ScrollView showsVerticalScrollIndicator={false}> */}

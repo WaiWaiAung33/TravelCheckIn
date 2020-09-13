@@ -143,7 +143,7 @@ export default class Login extends React.Component {
               
                   <Image
                   source={require("@images/unnamed.png")}
-                  style={{ width: 30, height: 30 }}
+                  style={{ width: 25, height: 25 }}
                 /> 
             
                 <Text
@@ -163,7 +163,7 @@ export default class Login extends React.Component {
                 style={{
                   flexDirection: "row",
                   marginRight: 15,
-                  marginTop: 10,
+                  marginTop: 20,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
@@ -171,7 +171,7 @@ export default class Login extends React.Component {
               >
                 <Image
                   source={require("@images/english.png")}
-                  style={{ width: 30, height: 30 }}
+                  style={{ width: 25, height: 25 }}
                 />
                 <Text
                   style={{

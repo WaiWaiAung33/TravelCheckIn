@@ -28,17 +28,10 @@ import DropDown from "@components/DropDown";
 import Header from "@components/Header";
 import ImgUploadBtn from "@components/ImgUploadBtn";
 import SuccessModal from "@components/SuccessModal";
+import LoadingModal from "@components/LoadingModal";
 
 //import services
 import { t, getLang } from "@services/Localization";
-
-const USERTYPE = [
-  { value: 0, label: "ပြည်သူ" },
-  { value: 1, label: "နိုင်ငံဝန်ထမ်း" },
-  { value: 2, label: "ရဟန်းရှင်" },
-  { value: 3, label: "တပ်မတော်" },
-  { value: 4, label: "နိုင်ငံခြားသား" },
-];
 
 export default class Create extends React.Component {
   constructor(props) {
@@ -84,6 +77,11 @@ export default class Create extends React.Component {
       approvephotoName: "",
       isOpenSuccessModel: false,
       locale: null,
+      modalVisible: false,
+      townshipministrayname: "",
+      address: "",
+      addressText: "",
+      townshipministrayid: null,
     };
   }
   async componentDidMount() {
@@ -94,17 +92,21 @@ export default class Create extends React.Component {
     const res = await getLang();
     this.setState({ locale: res });
     const access_token = await AsyncStorage.getItem("access_token");
-    this.setState({ access_token: access_token });
-    await this.getAllTravelNote();
+    this.setState({
+      access_token: access_token,
+      usertype: { value: 0, label: t("people", this.state.locale) },
+    });
+    this.getAllTravelNote();
     this.getAllNrcCode();
     this.getAllNrcStatus();
     this.getAllCity();
-    this.getAllTownshipOne();
     this.getAllEducation();
+    this.getEndtownshipAll();
   }
 
-  async getAllTravelNote() {
+  getAllTravelNote() {
     const self = this;
+    self.setState({ modalVisible: true });
     const headers = {
       Accept: "application/json",
       Authorization: "Bearer " + self.state.access_token,
@@ -122,8 +124,14 @@ export default class Create extends React.Component {
         const citizen = response.data.historyDetail.citizen_status;
         const datas = response.data.historyDetail;
         const endtown = response.data.endplace_township;
-        // console.log(datas);
-        console.log(response.data);
+        // alert(endtown);
+        console.log(datas);
+        // console.log(response.data);
+        // alert(datas.ministry_status);
+        if (datas.ministry_status == 1) {
+          self.setState({ showcheckbox: true });
+        }
+
         if (citizen == 0) {
           self.setState({
             usertype: { value: citizen, label: "ပြည်သူ" },
@@ -165,10 +173,13 @@ export default class Create extends React.Component {
             label: datas.township,
           },
           startplace: datas.start_place,
+          addressText: datas.end_place,
           education: { value: datas.ministry_id, label: datas.ministry },
           endtownship: { value: datas.end_place_township, label: endtown },
-          endtownshipone: { value: datas.end_place_township, label: endtown },
+          townshipministrayname: endtown,
+          // endtownshipone: { value: datas.end_place_township, label: endtown },
           endplace: datas.end_place,
+          address: datas.ministry,
           imagePath: datas.path,
           nrcfrontName:
             "http://128.199.79.79/Covid/public/" +
@@ -190,10 +201,12 @@ export default class Create extends React.Component {
             datas.path +
             "/" +
             datas.approve_photo,
+          modalVisible: false,
         });
         // console.log(citizen);
       })
       .catch(function (err) {
+        self.setState({ modalVisible: false });
         // console.log("TravelNoteDetail Error");
       });
   }
@@ -222,9 +235,17 @@ export default class Create extends React.Component {
     formData.append("startcity_id", self.state.city.value);
     formData.append("starttownship_id", self.state.township.value);
     formData.append("start_place", self.state.startplace);
-    formData.append("ministry_status", self.state.ministraystatus);
-    formData.append("endPlace_id", self.state.endtownship.value);
-    formData.append("end_place", self.state.endplace);
+    formData.append("ministry_status", this.state.showcheckbox ? 1 : 0);
+    formData.append(
+      "endPlace_id",
+      self.state.showcheckbox
+        ? this.state.townshipministrayid
+        : this.state.endtownship.value
+    );
+    formData.append(
+      "end_place",
+      self.state.showcheckbox ? self.state.address : self.state.addressText
+    );
     if (nrcbackName) {
       const uriPart = nrcbackName.split(".");
       const fileExtension = uriPart[uriPart.length - 1];
@@ -408,7 +429,7 @@ export default class Create extends React.Component {
       });
   }
 
-  getAllTownshipOne() {
+  getEndtownshipAll() {
     const self = this;
     const headers = {
       Accept: "application/json",
@@ -421,17 +442,17 @@ export default class Create extends React.Component {
         headers,
       })
       .then(function (response) {
-        // console.log("Township",response.data.city);
-        let township = response.data.Township;
+        // console.log("Township",response.data);
+        let endtownship = response.data.Township;
         let arr = [];
-        township.map((data, index) => {
+        endtownship.map((data, index) => {
           var obj = { value: data.id, label: data.township };
           arr.push(obj);
         });
-        self.setState({ ENDTOWNSHIPONE: arr });
+        self.setState({ ENDTOWNSHIP: arr });
       })
       .catch(function (err) {
-        console.log("NRC Code Erro", err);
+        console.log(err);
       });
   }
 
@@ -571,21 +592,83 @@ export default class Create extends React.Component {
       return ministrys.toLowerCase().includes(word.toString().toLowerCase());
     });
   }
-  _handleOnSelectEducation(value, label) {
-    if (value) {
-      setTimeout(() => {
-        const searched = this.searchingMinistray(value);
-        this.setState({ tempMinistray: searched });
-        this.setState({
-          ministrayTownship: this.state.tempMinistray[0].township_id,
+
+  _handleMinistoryTownship(value) {
+    // alert(value);
+    const self = this;
+    const headers = {
+      Accept: "application/json",
+      Authorization: "Bearer " + self.state.access_token,
+    };
+
+    // console.log(GetTownshipApi);
+    axios
+      .get(GetCityApi, {
+        headers,
+      })
+      .then(function (response) {
+        // console.log("Township",response.data);
+        let endtownship = response.data.Township;
+        let arr = [];
+        endtownship.map((data, index) => {
+          // console.log("Ministray",data);
+          if (value == data.id) {
+            // console.log("Ministry", data);
+            self.setState({
+              townshipministrayname: data.township,
+              townshipministrayid: data.id,
+            });
+          }
+          // arr.push(obj);
         });
-        // console.log("TempMinistray",this.state.tempMinistray);
-      }, 100);
-    }
-    this.setState({
-      education: { value: value, label: label },
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+  }
+
+  searchingMinistray(word) {
+    return this.state.MINISTRAY.filter((data) => {
+      const ministry = data.id != null ? data.id : "";
+      const ministrys = ministry.toString();
+      return ministrys.toLowerCase().includes(word.toString().toLowerCase());
     });
   }
+  _handleOnSelectEducation(value, label) {
+    const self = this;
+    if (value) {
+      const searched = this.searchingMinistray(value);
+      {
+        searched.map((data, index) => {
+          return this._handleMinistoryTownship(data.id);
+        });
+      }
+    }
+    self.setState({
+      education: { value: value, label: label },
+      address: label,
+    });
+    // if (value) {
+    //   setTimeout(() => {
+    //     const searched = this.searchingMinistray(value);
+    //     this.setState({ tempMinistray: searched });
+    //     this.setState({
+    //       ministrayTownship: this.state.tempMinistray[0].township_id,
+    //     });
+    //     // console.log("TempMinistray",this.state.tempMinistray);
+    //   }, 100);
+    // }
+    // this.setState({
+    //   education: { value: value, label: label },
+    // });
+  }
+
+  _handleOnSelectEndTownship(value, label) {
+    this.setState({
+      endtownship: { value: value, label: label },
+    });
+  }
+
   _handleOnChooseImage(image) {
     this.setState({ nrcfrontName: image.uri });
   }
@@ -811,8 +894,15 @@ export default class Create extends React.Component {
     this.setState({ isOpenSuccessModel: false });
   }
   render() {
+    const USERTYPE = [
+      { value: 0, label: t("people", this.state.locale) },
+      { value: 1, label: t("goverment", this.state.locale) },
+      { value: 2, label: t("bhikkhu", this.state.locale) },
+      { value: 3, label: t("army", this.state.locale) },
+      { value: 4, label: t("forigner", this.state.locale) },
+    ];
     // alert(this.state.showcheckbox);
-    console.log(this.state.nrcfrontName);
+    // console.log(this.state.nrcfrontName);
     return (
       <View style={{ flex: 1 }}>
         {this.state.showStepOne ? (
@@ -1049,34 +1139,51 @@ export default class Create extends React.Component {
                         }}
                       >
                         {this.state.showcheckbox ? (
-                          <TouchableOpacity
-                            onPress={() => this._onChangeCheckBox()}
-                            style={{ marginTop: 5 }}
-                          >
-                            <View
-                              style={{
-                                width: 25,
-                                height: 25,
-                                borderWidth: 1,
-                                backgroundColor: "#308DCC",
-                                borderColor: "#308DCC",
-                              }}
+                          <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity
+                              onPress={() => this._onChangeCheckBox()}
+                              style={{ marginTop: 5 }}
                             >
-                              <Image
-                                source={require("@images/true.png")}
-                                style={{ width: 20, height: 20 }}
-                              />
-                            </View>
-                          </TouchableOpacity>
+                              <View
+                                style={{
+                                  width: 25,
+                                  height: 25,
+                                  borderWidth: 1,
+                                  backgroundColor: "#308DCC",
+                                  borderColor: "#308DCC",
+                                  // flexDirection:"row"
+                                }}
+                              >
+                                <Image
+                                  source={require("@images/true.png")}
+                                  style={{ width: 20, height: 20 }}
+                                />
+                              </View>
+                              {/* <View style={{ justifyContent: "center" }}>
+                              <Text>{t("ministray", this.state.locale)}</Text>
+                            </View> */}
+                            </TouchableOpacity>
+                          </View>
                         ) : (
-                          <TouchableOpacity
-                            onPress={() => this._onChangeCheckBox()}
-                            style={{ marginTop: 5 }}
-                          >
-                            <View
-                              style={{ width: 25, height: 25, borderWidth: 1 }}
-                            />
-                          </TouchableOpacity>
+                          <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity
+                              onPress={() => this._onChangeCheckBox()}
+                              style={{ marginTop: 5 }}
+                            >
+                              <View
+                                style={{
+                                  width: 25,
+                                  height: 25,
+                                  borderWidth: 1,
+                                }}
+                              />
+                            </TouchableOpacity>
+                            <View style={{ justifyContent: "center" }}>
+                              <Text style={{ paddingLeft: 10 }}>
+                                {t("ministray", this.state.locale)}
+                              </Text>
+                            </View>
+                          </View>
                         )}
 
                         {this.state.showcheckbox ? (
@@ -1092,6 +1199,7 @@ export default class Create extends React.Component {
 
                             <View style={{ width: "70%", marginTop: 10 }}>
                               <DropDown
+                                placeholder="ဝန်ကြီးဌာန"
                                 optionsContainerWidth="55%"
                                 value={this.state.education}
                                 options={this.state.EDUCATION}
@@ -1105,22 +1213,9 @@ export default class Create extends React.Component {
                       </View>
                       {this.state.showcheckbox ? (
                         <View style={{ marginTop: 10 }}>
-                          {/* <TextInput
+                          <TextInput
                             style={[styles.textInput]}
-                            value={
-                              this.state.endtownshipname
-                                ? this.state.endtownshipname
-                                : this.state.endtownship
-                            }
-                          /> */}
-                          <DropDown
-                            placeholder="Select Township"
-                            optionsContainerWidth="95%"
-                            value={this.state.endtownship}
-                            options={this.state.ENDTOWNSHIP}
-                            // onSelect={(value, label) =>
-                            //   this._handleOnSelectEndTownship(value, label)
-                            // }
+                            value={this.state.townshipministrayname}
                           />
                         </View>
                       ) : (
@@ -1128,10 +1223,10 @@ export default class Create extends React.Component {
                           <DropDown
                             placeholder="Select Township"
                             optionsContainerWidth="95%"
-                            value={this.state.endtownshipone}
-                            options={this.state.ENDTOWNSHIPONE}
+                            value={this.state.endtownship}
+                            options={this.state.ENDTOWNSHIP}
                             onSelect={(value, label) =>
-                              this._handleOnSelectEndTownshipOne(value, label)
+                              this._handleOnSelectEndTownship(value, label)
                             }
                           />
                         </View>
@@ -1140,19 +1235,26 @@ export default class Create extends React.Component {
                       {this.state.showcheckbox ? (
                         <TextInput
                           style={[styles.textInput]}
-                          value={this.state.endplace}
-                          onChangeText={(value) =>
-                            this.setState({ endplace: value })
-                          }
+                          value={this.state.address}
+                          placeholder="လိပ်စာ"
+                          // onChangeText={(value) =>
+                          //   this.setState({ endplace: value })
+                          // }
                         />
                       ) : (
-                        <TextInput
-                          style={[styles.textInput]}
-                          value={this.state.endplace}
-                          onChangeText={(value) =>
-                            this.setState({ endplace: value })
-                          }
-                        />
+                        <View>
+                          <TextInput
+                            style={[styles.textInput]}
+                            value={this.state.addressText}
+                            placeholder="လိပ်စာ"
+                            onChangeText={(value) =>
+                              this.setState({
+                                addressText: value,
+                                ISERRORENDPLACE: false,
+                              })
+                            }
+                          />
+                        </View>
                       )}
                     </View>
                   </View>
@@ -1190,10 +1292,12 @@ export default class Create extends React.Component {
                   </View>
                 </ScrollView>
               </KeyboardAvoidingView>
-
+              <View>
+                <LoadingModal isOpenModal={this.state.modalVisible} />
+              </View>
               <SuccessModal
                 isOpen={this.state.isOpenSuccessModel}
-                text="အချက်အလက်ပြင်ဆင်မူအောင်မြင်ပါသည်"
+                text={t("editsuccess",this.state.locale)}
                 onClose={() => this._handleOnClose()}
               />
             </View>

@@ -13,6 +13,7 @@ import {
   AsyncStorage,
 } from "react-native";
 import { Updates } from "expo";
+import appjson from "@appjson";
 //import LanguageModal
 import LanguageModal from "@components/LanguageModal";
 import { t, getLang } from "@services/Localization";
@@ -170,10 +171,21 @@ export default class Home extends React.Component {
               textAlign: "center",
               paddingTop: 20,
               fontSize: 18,
-              fontWeight: "bold",
+              // fontWeight: "bold",
             }}
           >
-            WELCOME
+            Welcome To Naypyidaw Traveller
+          </Text>
+          <Text
+            style={{
+              color: "white",
+              textAlign: "center",
+              paddingTop:5,
+              fontSize: 18,
+              // fontWeight: "bold",
+            }}
+          >
+           Check-in
           </Text>
         </View>
 
@@ -211,7 +223,11 @@ export default class Home extends React.Component {
               {t("travelnote", this.state.locale)}
             </Text>
           </TouchableOpacity>
+        
         </View>
+        <View style={{alignItems:"center",flex:1,justifyContent:"flex-end",marginBottom:10}}>
+          <Text>Version {appjson.expo.version}</Text>
+          </View>
         <LanguageModal
           isOpen={this.state.isOpenLangModal}
           getCheckLang={(locale) => this.handleGetLocale(locale)}

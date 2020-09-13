@@ -492,11 +492,7 @@ export default class Create extends React.Component {
   }
   _handleOnClose() {
     this.setState({ isOpenSuccessModel: false });
-    this.props.navigation.navigate("Home")
-    // if(this.state.isserrorclaer == true){
-    //   this._gotoStep(1);
-    // }
-   
+    this.props.navigation.navigate("Create");
   }
 
   _handleSave() {
@@ -1536,7 +1532,7 @@ export default class Create extends React.Component {
                   >
                     <TouchableOpacity
                       style={[styles.touchBtn, { width: "45%" }]}
-                      onPress={() =>this.props.navigation.navigate("CreateNew")}
+                      onPress={() => this._handleSave()}
                     >
                       <Text style={{ color: "white", fontWeight: "bold" }}>
                         {t("createnew", this.state.locale)}
@@ -1544,7 +1540,7 @@ export default class Create extends React.Component {
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.touchBtn, { width: "45%" }]}
-                      onPress={() => this._handleSave()}
+                      onPress={() => this.props.navigation.navigate("Create")}
                     >
                       <Text style={{ color: "white", fontWeight: "bold" }}>
                         {t("save", this.state.locale)}

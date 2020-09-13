@@ -165,7 +165,7 @@ export default class ToleGate extends React.Component {
         </ScrollView>
         <SuccessModal
           isOpen={this.state.isOpenSuccessModel}
-          text="လျှောက်လွှာပယ်ဖျက်မူအောင်မြင်ပါသည်"
+          text={t("cancelsuccess",this.state.locale)}
           onClose={() => this._handleOnClose()}
         />
       </View>
