@@ -10,11 +10,11 @@ import {
   TextInput,
   TouchableOpacity,
   BackHandler,
-  AsyncStorage
+  AsyncStorage,
 } from "react-native";
 //import api
 const axios = require("axios");
-import { OTPCodeApi,LoginApi } from "@api/Url";
+import { OTPCodeApi, LoginApi } from "@api/Url";
 
 const { height, width } = Dimensions.get("window");
 export default class OTPCode extends React.Component {
@@ -32,7 +32,6 @@ export default class OTPCode extends React.Component {
   }
   async componentDidMount() {
     this.setBackHandler();
-   
   }
   setBackHandler() {
     BackHandler.addEventListener(
@@ -86,9 +85,7 @@ export default class OTPCode extends React.Component {
       this.state.five +
       this.state.six;
     if (otpcode == null || otpcode.length < 6) {
-     alert(
-        "Please fill valid 6 digit OTP Code !"
-      );
+      alert("Please fill valid 6 digit OTP Code !");
       return false;
     }
 
@@ -110,14 +107,13 @@ export default class OTPCode extends React.Component {
         if (response.data.status == 1) {
           // alert(response.data.user.id.toString());
           if (response.data.status === 1) {
-            var userid= response.data.user.id.toString();
-            console.log("User Id",userid);
+            var userid = response.data.user.id.toString();
+            console.log("User Id", userid);
             AsyncStorage.multiSet(
               [
-                ["access_token",response.data.access_token],
-                ["loginID",response.data.user.loginId],
-                ["userid",userid],
-              
+                ["access_token", response.data.access_token],
+                ["loginID", response.data.user.loginId],
+                ["userid", userid],
               ],
               (err) => {
                 if (err) {
@@ -254,9 +250,9 @@ export default class OTPCode extends React.Component {
         </TouchableOpacity>
         <View style={styles.textfooter}>
           <TouchableOpacity onPress={() => this.resenOTPCode()}>
-          <Text style={{ color: "#308DCC", fontWeight: "bold" }}>
-            ကုဒ်ပြန်ပို့ပေးပါရန်
-          </Text>
+            <Text style={{ color: "#308DCC", fontWeight: "bold" }}>
+              ကုဒ်ပြန်ပို့ပေးပါရန်
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -283,8 +279,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   imgHeader: {
-    width: 115,
-    height: 115,
+    width: 110,
+    height: 110,
   },
   headerText: {
     color: "white",
@@ -293,8 +289,8 @@ const styles = StyleSheet.create({
   },
   imgContainer: {
     backgroundColor: "white",
-    width: 110,
-    height: 110,
+    width: 120,
+    height: 120,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 65,

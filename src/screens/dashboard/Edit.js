@@ -28,7 +28,7 @@ import DropDown from "@components/DropDown";
 import Header from "@components/Header";
 import ImgUploadBtn from "@components/ImgUploadBtn";
 import SuccessModal from "@components/SuccessModal";
-import LoadingModal from "@components/LoadingModal";
+import Loading from "@components/Loading";
 
 //import services
 import { t, getLang } from "@services/Localization";
@@ -77,7 +77,7 @@ export default class Create extends React.Component {
       approvephotoName: "",
       isOpenSuccessModel: false,
       locale: null,
-      modalVisible: false,
+      isLoading: false,
       townshipministrayname: "",
       address: "",
       addressText: "",
@@ -106,7 +106,7 @@ export default class Create extends React.Component {
 
   getAllTravelNote() {
     const self = this;
-    self.setState({ modalVisible: true });
+    self.setState({ isLoading: true });
     const headers = {
       Accept: "application/json",
       Authorization: "Bearer " + self.state.access_token,
@@ -201,12 +201,12 @@ export default class Create extends React.Component {
             datas.path +
             "/" +
             datas.approve_photo,
-          modalVisible: false,
+          isLoading: false,
         });
         // console.log(citizen);
       })
       .catch(function (err) {
-        self.setState({ modalVisible: false });
+        self.setState({ isLoading: false });
         // console.log("TravelNoteDetail Error");
       });
   }
@@ -894,6 +894,9 @@ export default class Create extends React.Component {
     this.setState({ isOpenSuccessModel: false });
   }
   render() {
+    if (this.state.isLoading) {
+      return <Loading />;
+    }
     const USERTYPE = [
       { value: 0, label: t("people", this.state.locale) },
       { value: 1, label: t("goverment", this.state.locale) },
@@ -1292,12 +1295,9 @@ export default class Create extends React.Component {
                   </View>
                 </ScrollView>
               </KeyboardAvoidingView>
-              <View>
-                <LoadingModal isOpenModal={this.state.modalVisible} />
-              </View>
               <SuccessModal
                 isOpen={this.state.isOpenSuccessModel}
-                text={t("editsuccess",this.state.locale)}
+                text={t("editsuccess", this.state.locale)}
                 onClose={() => this._handleOnClose()}
               />
             </View>

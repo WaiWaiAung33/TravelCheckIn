@@ -26,3 +26,6 @@ export const RegisterHistoryDetailApi= BaseUrl + "historyDetail";
 export const RegisterHistoryApi = BaseUrl +"getHistory";
 export const EditApi = BaseUrl + "editData";
 
+//get version
+export const GetVersionApi = BaseUrl + "forceVersion";
+

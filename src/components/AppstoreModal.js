@@ -6,6 +6,8 @@ import {
   StyleSheet,
   Image,
   Text,
+  Linking,
+  BackHandler
 } from "react-native";
 
 //import services
@@ -15,62 +17,42 @@ export default class LanguageModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      languagecolor: null,
       local: "",
-      backstausmyanmar: false,
-      mmCheck: false,
-      enCheck: false,
-      locale: null,
-      isCheck: false,
-      mmcolor:"",
-      encolor:""
     };
+    this.BackHandler=null;
   }
-  async componentWillMount() {
-    const res = await getLang();
-    if (res == "MM") {
-      this.setState({
-        mmCheck: true,
-      
-      });
-    } else {
-      this.setState({
-        enCheck: true,
-      
-      });
-    }
+  async componentDidMount(){
+    await this.setBackHandler();
+  }
+  async setBackHandler() {
+    BackHandler.addEventListener(
+      "hardwareBackPress",
+      this._handleBackButton.bind(this)
+    );
+  }
+
+  _handleBackButton = () => {
+    BackHandler.exitApp();
+    return true;
+  };
+
+  UNSAFE_componentWillUnmount() {
+    this.removeBackHandler();
+    // Remove the event listener before removing the screen from the stack
+    this.focusListener.remove();
   }
   close() {
     if (this.props.onClose) {
       this.props.onClose();
     }
   }
-  _handleLanguage(locale) {
-    if (locale === "MM") {
-      this.setState({
-        mmCheck: true,
-        enCheck: this.state.enCheck,
-        local: "ဘာသာစကားရွေးချယ်ရန်",
-        // mmcolor:"#E5DEDE"
-      });
-    }
-
-    if (locale === "EN") {
-      this.setState({
-        mmCheck: false,
-        enCheck: true,
-        local: "Choose to Language",
-        // encolor:"#E5DEDE"
-      });
-    }
-
-    if (this.props.getCheckLang) {
-      this.props.getCheckLang(locale);
-    }
+  _handleLanguage(){
+    Linking.openURL(this.props.link);
   }
-  async componentDidMount() {
-    const res = await getLang();
-    this.setState({ locale: res });
+  _onPress(){
+    if(this.props.OnPress){
+        this.props.OnPress();
+    }
   }
   render() {
     return (
@@ -92,14 +74,10 @@ export default class LanguageModal extends React.Component {
                 <Text
                   style={{ paddingTop: 10, paddingBottom: 10, color: "white" }}
                 >
-                  {this.state.local ? this.state.local : "ဘာသာစကားရွေးချယ်ရန်"}
+                 App Version
                 </Text>
-                {/* <Image
-                  source={require("@images/language_icon.png")}
-                  style={styles.modalimg}
-                /> */}
               </View>
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 onPress={() => this.close()}
                 style={styles.closeBtn}
               >
@@ -107,38 +85,33 @@ export default class LanguageModal extends React.Component {
                   source={require("@images/cross.png")}
                   style={styles.closeIcon}
                 />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
             <View style={styles.chooseLangContainer}>
               <TouchableOpacity
-                onPress={() => this._handleLanguage("MM")}
+                onPress={() => this._handleLanguage()}
                 style={{
-                  backgroundColor: this.state.mmCheck
-                    ?"#E5DEDE"
-                    : "#ffffff",
+                  backgroundColor:"#E5DEDE",
+                  marginBottom:15
                 }}
               >
                 <View style={styles.myanmarCheck}>
-                  <Image source={require("@images/unnamed.png")} />
-                  <Text>မြန်မာ</Text>
+                  <Image source={require("@images/app.png")} style={{width:20,height:20}} />
+                  <Text style={{paddingLeft:10}}>Download from App Store</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => this._handleLanguage("EN")}
-                style={{
-                  backgroundColor: this.state.enCheck 
-                    ? "#E5DEDE"
-                    : "#ffffff",
-                }}
-              >
-                <View style={styles.englishCheck}>
-                  <Image
-                    source={require("@images/english.png")}
-                    style={{ width: 30, height: 30, marginLeft: 5 }}
-                  />
-                  <Text style={{ paddingLeft: 5 }}>English</Text>
-                </View>
-              </TouchableOpacity>
+           
+            </View>
+            <View style={{borderWidth:1,width:"100%",height:2,backgroundColor:"#000"}}/>
+            <View style={{justifyContent:"center",alignItems:"center",marginBottom:15}}>
+                <TouchableOpacity style={{width:80,height:35,
+                    backgroundColor:"#308DCC",marginTop:10,justifyContent:"center",
+                    alignItems:"center",borderWidth:1,borderColor:"#308DCC",borderRadius:5
+                    }}
+                    onPress={()=>this._onPress()}
+                    >
+                    <Text style={{color:"#ffffff"}}>Exit</Text>
+                </TouchableOpacity>
             </View>
           </View>
         </View>

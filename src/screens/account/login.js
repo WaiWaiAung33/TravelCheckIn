@@ -271,14 +271,14 @@ const styles = StyleSheet.create({
     // justifyContent:"space-between"
   },
   img: {
-    width: 115,
-    height: 115,
+    width: 110,
+    height: 110,
     // padding:2
   },
   imgContainer: {
     backgroundColor: "white",
-    width: 110,
-    height: 110,
+    width: 120,
+    height: 120,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 95,

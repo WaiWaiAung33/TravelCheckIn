@@ -31,12 +31,11 @@ import TravelNoteApi from "@api/TravelNoteApi";
 //import services
 import { t, getLang } from "@services/Localization";
 
-
 export default class TravelNote extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      status: { value: 0, label: "အားလုံး" },
+      status: { value: null, label: null },
       isLoading: false,
       refreshing: false,
       isFooterLoading: false,
@@ -62,16 +61,18 @@ export default class TravelNote extends React.Component {
     const { navigation } = this.props;
     const res = await getLang();
     this.setState({ locale: res });
-    // this.focusListener = navigation.addListener("didFocus", async () => {
-    //   await this.getAllTravelNote(this.page);
-    // });
+    this.focusListener = navigation.addListener("didFocus", async () => {
+      await this._getNewDate();
+    });
     const userid = await AsyncStorage.getItem("userid");
     const access_token = await AsyncStorage.getItem("access_token");
-    this.setState({ user_id: userid, access_token: access_token ,
-      status: { value: 0, label:t("all",this.state.locale) },
+    this.setState({
+      user_id: userid,
+      access_token: access_token,
+      // status: { value: 0, label:t("all",this.state.locale) },
     });
     this.setBackHandler();
-    this._getNewDate();
+    await this._getNewDate();
     await this.getAllTravelNote(this.page);
     // this.setState({isLoading:true})
   }
@@ -88,7 +89,7 @@ export default class TravelNote extends React.Component {
   UNSAFE_componentWillUnmount() {
     this.focusListener.remove();
   }
-  _getNewDate() {
+  async _getNewDate() {
     var today = new Date();
     var dd = today.getDate();
 
@@ -109,6 +110,7 @@ export default class TravelNote extends React.Component {
   }
 
   getAllTravelNote = async (page) => {
+    // alert(this.state.changestartDate);
     // console.log(getCustomersapi);
     if (this.state.isSearched) {
       this.setState({
@@ -156,18 +158,20 @@ export default class TravelNote extends React.Component {
       });
   };
 
-  _handleSearch(page, status, statusid) {
-    this.state.data =[];
+  _handleSearch(page, status, statusid, startdate, enddate) {
+    // alert(status);
+    this.state.data = [];
     const self = this;
     self.setState({ isSearched: true });
     let bodyParam = {
       userId: self.state.user_id,
       status: status,
-      start_date: self.state.changestartDate,
-      end_date: self.state.changeendDate,
+      start_date: startdate,
+      end_date: enddate,
       page: page,
       q_status: statusid,
     };
+    // console.log("bodyParam",bodyParam);
     axios
       .post(RegisterHistoryApi, bodyParam, {
         headers: {
@@ -232,6 +236,7 @@ export default class TravelNote extends React.Component {
     this.setState({
       status: { value: value, label: label },
     });
+
     this._hadleChangeUserType(value);
   }
   onRefresh = () => {
@@ -242,15 +247,19 @@ export default class TravelNote extends React.Component {
     this.page = 1;
     this.getAllTravelNote(this.page);
   };
+  _hadleChangeDate(date) {
+    this.setState({ changestartDate: date });
+    // alert(this.state.changestartDate)
+  }
 
   renderFilter() {
     const STATUS = [
-      { value: 0, label: t("all",this.state.locale) },
-      { value: 1, label:t("allow",this.state.locale) },
-      { value: 2, label:t("tofix",this.state.locale) },
-      { value: 3, label:t("approve",this.state.locale)},
-      { value: 4, label:t("quartine",this.state.locale)},
-      { value: 5, label:t("cancelregister",this.state.locale) },
+      { value: 0, label: t("all", this.state.locale) },
+      { value: 1, label: t("allow", this.state.locale) },
+      { value: 2, label: t("tofix", this.state.locale) },
+      { value: 3, label: t("approve", this.state.locale) },
+      { value: 4, label: t("quartine", this.state.locale) },
+      { value: 5, label: t("cancelregister", this.state.locale) },
     ];
     return (
       <View>
@@ -269,7 +278,7 @@ export default class TravelNote extends React.Component {
               dateInput: Style.datePickerDateInput,
               dateText: Style.datePickerDateText,
             }}
-            onDateChange={(date) => this.setState({ changestartDate: date })}
+            onDateChange={(date) => this._hadleChangeDate(date)}
           />
           <DatePicker
             date={this.state.changeendDate}
@@ -311,7 +320,9 @@ export default class TravelNote extends React.Component {
                 this._handleSearch(
                   this.page,
                   this.state.usertype,
-                  this.state.qStatus
+                  this.state.qStatus,
+                  this.state.changestartDate,
+                  this.state.changeendDate
                 )
               }
             >
@@ -363,21 +374,19 @@ export default class TravelNote extends React.Component {
   }
 
   render() {
-   
     if (this.state.isLoading) {
       return <Loading />;
     }
-    var { isSearched, data, searchTravel } = this.state;
+    var { isSearched, data } = this.state;
     // var dataList = isSearched ? searchTravel : data;
     var dataList = data;
 
     // console.log(data);
 
     return (
-      
       <View style={styles.container}>
         <Header
-          name={t("travelnote",this.state.locale)}
+          name={t("travelnote", this.state.locale)}
           Onpress={() => this.props.navigation.navigate("Home")}
         />
         {/* <ScrollView showsVerticalScrollIndicator={false}> */}
