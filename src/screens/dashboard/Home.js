@@ -221,10 +221,14 @@ export default class Home extends React.Component {
               onPress={() => this._handleLogout()}
               style={{ width: 50, alignItems: "flex-end", marginTop: 10 }}
             >
+              <ImageBackground source={require("@images/elisp.png")} 
+              style={{width:30,height:30,justifyContent:"center",alignItems:"center"}}>
               <Image
-                source={require("@images/logout.png")}
+                source={require("@images/logout1.png")}
                 style={styles.touchImg}
               />
+              </ImageBackground>
+            
             </TouchableOpacity>
           </View>
 
@@ -348,8 +352,8 @@ const styles = StyleSheet.create({
     // alignItems: "center"
   },
   touchImg: {
-    width: 20,
-    height: 20,
+    width: 15,
+    height: 15,
   },
   touchBtn: {
     marginLeft: 10,
