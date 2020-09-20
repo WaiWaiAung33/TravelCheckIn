@@ -12,7 +12,8 @@ import {
   BackHandler,
   AsyncStorage,
   Linking,
-  Platform
+  Platform,
+  ScrollView
 } from "react-native";
 import { Updates} from "expo";
 import appjson from "@appjson";
@@ -265,7 +266,18 @@ export default class Home extends React.Component {
         >
           <Image source={require("@images/logo.png")} />
         </ImageBackground> */}
+        <ScrollView>
         <View style={{ marginTop: 15 }}>
+        <TouchableOpacity
+            activeOpacity={0.8}
+            style={[styles.touchBtn, { backgroundColor: "#EBB318" }]}
+            onPress={() => this.props.navigation.navigate("ToleGateList")}
+          >
+            <Text style={styles.text}>
+              {t("tolegatelist", this.state.locale)}
+            </Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.touchBtn}
             activeOpacity={0.8}
@@ -294,6 +306,7 @@ export default class Home extends React.Component {
             </Text>
           </TouchableOpacity>
         </View>
+        </ScrollView>
         <View
           style={{
             alignItems: "center",

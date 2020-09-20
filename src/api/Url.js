@@ -1,8 +1,7 @@
 
 export const BaseUrl = "http://128.199.79.79/Covid/public/api/";
 //Login Api
-export const LoginApi = BaseUrl + "sendOtp";
-export const OTPCodeApi = BaseUrl +"verifyOtp";
+export const loginApi = BaseUrl + "login";
 
 //Get City Api
 export const GetCityApi=BaseUrl + "city_nrc_mini_nType";
