@@ -1,7 +1,20 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
+//import services
+import { t, getLang } from "@services/Localization";
+
 export default class ToleGateCard extends React.Component {
+  constructor(props){
+    super(props);
+    this.state={
+      locale: null,
+    }
+  }
+  async componentDidMount(){
+    const res = await getLang();
+    this.setState({ locale: res });
+  }
   _OnPress() {
     if (this.props.OnPressCard) {
       this.props.OnPressCard();
@@ -9,11 +22,11 @@ export default class ToleGateCard extends React.Component {
   }
   NrcFilter() {
     if (this.props.cityzien == 2) {
-      return "သာသနာဝင်စိစစ်ရေးကဒ်ပြားနံပါတ်";
+      return t("religionNo",this.state.locale);
     } else if (this.props.cityzien == 4) {
-      return "နိုင်ငံကူးနံပါတ်";
+      return t("forino",this.state.locale);
     } else {
-      return "မှတ်ပုံတင်နံပါတ်";
+      return t("nrcno",this.state.locale);
     }
   }
   _showNRCText() {
@@ -36,7 +49,7 @@ export default class ToleGateCard extends React.Component {
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
               <Text style={styles.firstText}>
-                {this.props.cityzien == 2 ? "ဘွဲ့တော်" : "အမည်"}
+                {this.props.cityzien == 2 ? t("Bhikkhuname",this.state.locale) : t("name",this.state.locale)}
               </Text>
               <Text style={styles.secondText}>{this.props.name}</Text>
             </View>
@@ -52,7 +65,7 @@ export default class ToleGateCard extends React.Component {
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <Text style={styles.firstText}>ဖုန်းနံပါတ်</Text>
+              <Text style={styles.firstText}>{t("phone",this.state.locale)}</Text>
               <Text style={styles.secondText}>{this.props.phoneNo}</Text>
             </View>
           </View>

@@ -95,7 +95,7 @@ export default class ToleGate extends React.Component {
         <ScrollView>
           <TouchableOpacity style={styles.qrcodeBox}>
             <QRCode
-              //   content={data.id.toString()}
+                content={data.id.toString()}
               codeStyle="square"
               size={100}
             />
@@ -148,7 +148,7 @@ export default class ToleGate extends React.Component {
             }
             passportNo={data.passport ? data.passport : null}
             phoneNo={data.ph_no}
-            OnPressCard={() => this.props.navigation.navigate("Detail")}
+            OnPressCard={() => this.props.navigation.navigate("TravelNoteDetail",{user_id:data.id,backRoute:"TravelQr"})}
             cityzien={data.citizen_status}
           />
         </ScrollView>

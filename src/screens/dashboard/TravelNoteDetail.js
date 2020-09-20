@@ -40,6 +40,11 @@ export default class ToleGateCard extends React.Component {
       approvephotoName: "",
       ministatystatus: null,
       locale: null,
+      department: "",
+      designation: "",
+      ministry_input: "",
+      check_by: "",
+      approve_by: "",
     };
     this.BackHandler = null;
   }
@@ -59,7 +64,9 @@ export default class ToleGateCard extends React.Component {
       Authorization: "Bearer " + self.state.access_token,
     };
     let bodyParam = {
-      userId: self.props.navigation.getParam("userid"),
+      userId: self.props.navigation.getParam("userid")
+        ? self.props.navigation.getParam("userid")
+        : self.props.navigation.getParam("user_id"),
     };
     // console.log(GetTownshipApi);
     axios
@@ -96,6 +103,11 @@ export default class ToleGateCard extends React.Component {
           nrcbackName: data.historyDetail.nrc_back,
           moName: data.historyDetail.mo_photo,
           approvephotoName: data.historyDetail.approve_photo,
+          designation: data.historyDetail.designation,
+          department: data.historyDetail.department,
+          ministry_input: data.historyDetail.ministry_input,
+          check_by: data.historyDetail.checked_by,
+          approve_by: data.historyDetail.approved_by,
           // citizenstatus: data.historyDetail.ministry_status,
         });
         // self.setState({ isOpenSuccessModel: true });
@@ -112,7 +124,8 @@ export default class ToleGateCard extends React.Component {
     );
   }
   _handleBackButton = () => {
-    this.props.navigation.navigate("TravelNote");
+    const data = this.props.navigation.getParam("backRoute");
+    this.props.navigation.navigate(data);
     return true;
   };
   UNSAFE_componentWillUnmount() {
@@ -136,20 +149,24 @@ export default class ToleGateCard extends React.Component {
   }
   render() {
     // console.log(this.props.navigation.getParam("userid"));
+    const data = this.props.navigation.getParam("backRoute");
     return (
       <View>
         <Header
           name={t("detail", this.state.locale)}
-          Onpress={() => this.props.navigation.navigate("TravelNote")}
+          Onpress={() => this.props.navigation.navigate(data)}
         />
-        <ScrollView>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={{ marginBottom: 100 }}
+        >
           <View style={styles.container}>
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
               <Text style={styles.firstText}>
                 {this.state.citizenstatus == 2
-                  ? t("Bhikkhu", this.state.locale)
+                  ? t("Bhikkhuname", this.state.locale)
                   : t("name", this.state.locale)}
               </Text>
               <Text style={styles.secondText}>{this.state.name}</Text>
@@ -163,6 +180,48 @@ export default class ToleGateCard extends React.Component {
                 {/* {this.state.passport !=null ? this.state.passport : this.state.nrc} */}
               </Text>
             </View>
+            {this.state.citizenstatus == 1 ? (
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text style={styles.firstText}>
+                    {t("designation", this.state.locale)}
+                  </Text>
+                  <Text style={styles.secondText}>
+                    {this.state.designation}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text style={styles.firstText}>
+                    {t("department", this.state.locale)}
+                  </Text>
+                  <Text style={styles.secondText}>{this.state.department}</Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text style={styles.firstText}>
+                    {t("ministry_name", this.state.locale)}
+                  </Text>
+                  <Text style={styles.secondText}>
+                    {this.state.ministry_input}
+                  </Text>
+                </View>
+              </View>
+            ) : null}
+
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
@@ -344,6 +403,26 @@ export default class ToleGateCard extends React.Component {
               style={{ width: 150, height: 150, marginTop: 5 }}
             />
           </View>
+          {/* <View
+            style={{
+              alignItems: "flex-end",
+              justifyContent: "flex-end",
+              marginRight: 15,
+            }}
+          >
+            {this.state.check_by ? (
+              <View style={{ flexDirection: "row" }}>
+                <Text>Check_by:</Text>
+            <Text style={{paddingLeft:10}}>{this.state.check_by}</Text>
+              </View>
+            ) : null}
+            {this.state.approve_by ? (
+              <View style={{ flexDirection: "row", marginTop: 5 }}>
+                <Text >Approve_by:</Text>
+                <Text style={{paddingLeft:10}}>{this.state.approve_by}</Text>
+              </View>
+            ) : null}
+          </View> */}
           {/* </View> */}
         </ScrollView>
       </View>

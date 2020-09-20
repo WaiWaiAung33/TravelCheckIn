@@ -87,7 +87,10 @@ export default class Create extends React.Component {
   async componentDidMount() {
     const { navigation } = this.props;
     this.focusListener = navigation.addListener("didFocus", async () => {
-      await this.setState({ showcheckbox: false });
+      await this.setState({
+        showcheckbox: false,
+        townshipministrayid: this.state.townshipministrayid,
+      });
     });
     const res = await getLang();
     this.setState({ locale: res });
@@ -213,6 +216,7 @@ export default class Create extends React.Component {
 
   _handleSave() {
     const self = this;
+    // alert(self.state.endtownship.value);
     const headers = {
       Accept: "application/json",
       Authorization: "Bearer " + self.state.access_token,
@@ -307,6 +311,8 @@ export default class Create extends React.Component {
         headers,
       })
       .then(function (response) {
+        // console.log("Edit",response.data);
+        // alert("Hello");
         if (response.data.status == 1) {
           self.setState({
             isOpenSuccessModel: true,
@@ -314,7 +320,7 @@ export default class Create extends React.Component {
         }
       })
       .catch(function (err) {
-        console.log(err);
+        console.log("Edit Error", err);
       });
   }
 
@@ -325,7 +331,7 @@ export default class Create extends React.Component {
       Authorization: "Bearer " + self.state.access_token,
     };
 
-    // console.log(GetTownshipApi);
+    console.log(headers);
     axios
       .get(GetCityApi, {
         headers,

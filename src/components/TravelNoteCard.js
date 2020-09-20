@@ -1,5 +1,14 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  AsyncStorage,
+} from "react-native";
+
+//import services
+import { t, getLang } from "@services/Localization";
 
 export default class ToleGateCard extends React.Component {
   constructor(props) {
@@ -9,10 +18,14 @@ export default class ToleGateCard extends React.Component {
       backcolor: "",
       text: "",
       namecolor: "",
+      locale: null,
     };
   }
-  componentDidMount() {
+  async componentDidMount() {
+    const res = await getLang();
+    this.setState({ locale: res });
     this._showTextStatus();
+   
   }
   _OnPress() {
     if (this.props.OnPress) {
@@ -41,47 +54,47 @@ export default class ToleGateCard extends React.Component {
       return this.setState({
         color: "#ffffff",
         backcolor: "#FF0000",
-        text: "စောင့်ကြည့်ခံရမည်",
+        text: t("quartine", this.state.locale),
         namecolor: "#ffffff",
       });
     } else if (this.props.statusname == 3 && this.props.q_statusColor == 0) {
       return this.setState({
         color: "#00FF00",
         backcolor: "#ffffff",
-        text: "လက်ခံသည်",
+        text: t("approve", this.state.locale),
         namecolor: "#000",
       });
     } else if (this.props.statusname == 1 && this.props.q_statusColor == 1) {
       return this.setState({
         color: "#FF0000",
         backcolor: "#ffffff",
-        text: "လာရောက်ခွင့်ပြုသည်Qဝင်ရမည်",
+        text: t("allowq", this.state.locale),
         namecolor: "#000",
       });
     } else if (this.props.statusname == 1 && this.props.q_statusColor == 0) {
       return this.setState({
         color: "#0000FF",
         backcolor: "#ffffff",
-        text: "လာရောက်ခွင့်ပြုသည်",
+        text: t("allow", this.state.locale),
         namecolor: "#000",
       });
     } else if (this.props.statusname == 4) {
       return this.setState({
         color: "#000",
         backcolor: "#ffffff",
-        text: "လျှောက်လွှာပယ်ဖျက်မည်",
+        text: t("cancelregister", this.state.locale),
         namecolor: "#000",
       });
     } else if (this.props.statusname == 0) {
       return this.setState({
-        text: "လျှောက်လွှာတင်ထားသည်",
+        text: t("register_user", this.state.locale),
         color: "#000",
         backcolor: "#ffffff",
         namecolor: "#000",
       });
     } else if (this.props.statusname == 2) {
       return this.setState({
-        text: "ပြင်ဆင်ရန်",
+        text: t("tofix", this.state.locale),
         color: "#FFA500",
         backcolor: "#ffffff",
         namecolor: "#000",

@@ -18,9 +18,11 @@ import DropDown from "@components/DropDown";
 import Header from "@components/Header";
 import ImgUploadBtn from "@components/ImgUploadBtn";
 import SuccessModal from "@components/SuccessModal";
+import CreateSuccessModal from "@components/SuccessModal";
 import ErrorText from "@components/ErrorText";
 import { t, getLang } from "@services/Localization";
 import LoadingModal from "@components/LoadingModal";
+import Radio from "@components/Radio";
 
 //import api
 const axios = require("axios");
@@ -39,6 +41,8 @@ import {
 //   { value: 3, label: "တပ်မတော်" },
 //   { value: 4, label: "နိုင်ငံခြားသား" },
 // ];
+
+const GENDER = "GENDER";
 
 export default class Create extends React.Component {
   constructor(props) {
@@ -106,14 +110,22 @@ export default class Create extends React.Component {
       ISERRRORENDTOWNSHIP: false,
       ISERRORNRCFRONT: false,
       ISERRORNRCBACK: false,
-      ISERRORSUPPORT: false,
+      // ISERRORSUPPORT: false,
       ISERRORMO: false,
       locale: null,
       modalVisible: false,
+      isOpenCreateSuccessModel: false,
+      designation: "",
+      department: "",
+      ministry_input: "",
+      ISERRORDESIGNATION: false,
+      ISERRORDEPARTMENT: false,
+      ISERRORMINISTRYINPUT: false,
+      selectedData:"0",
+      
     };
     this.BackHandler = null;
-  };
-
+  }
 
   async componentDidMount() {
     const { navigation } = this.props;
@@ -128,7 +140,7 @@ export default class Create extends React.Component {
       access_token: access_token,
       loginID: loginID,
       user_id: userid,
-      usertype:{value:0,label:t("people",this.state.locale)}
+      usertype: { value: 0, label: t("people", this.state.locale) },
     });
     this.getCityAll();
     this.getEndtownshipAll();
@@ -167,7 +179,7 @@ export default class Create extends React.Component {
         let city = response.data.city;
         let arr = [];
         city.map((data, index) => {
-          var obj = { value: data.id, label: data.city };
+          var obj = { value: data.id.toString(), label: data.city };
           arr.push(obj);
         });
         self.setState({ CITY: arr, City: response.data.city });
@@ -196,7 +208,7 @@ export default class Create extends React.Component {
         let arr = [];
         city.map((data, index) => {
           // console.log(response.data);
-          var obj = { value: data.id, label: data.township };
+          var obj = { value: data.id.toString(), label: data.township };
           arr.push(obj);
         });
         self.setState({ TOWNSHIP: arr, Township: response.data.townships });
@@ -223,7 +235,7 @@ export default class Create extends React.Component {
         let endtownship = response.data.Township;
         let arr = [];
         endtownship.map((data, index) => {
-          var obj = { value: data.id, label: data.township };
+          var obj = { value: data.id.toString(), label: data.township };
           arr.push(obj);
         });
         self.setState({ ENDTOWNSHIP: arr });
@@ -250,7 +262,7 @@ export default class Create extends React.Component {
         let education = response.data.Ministry;
         let arr = [];
         education.map((data, index) => {
-          var obj = { value: data.id, label: data.ministry };
+          var obj = { value: data.id.toString(), label: data.ministry };
           arr.push(obj);
         });
         self.setState({ EDUCATION: arr, MINISTRAY: response.data.Ministry });
@@ -277,7 +289,7 @@ export default class Create extends React.Component {
         let nrccode = response.data.NrcCode;
         let arr = [];
         nrccode.map((data, index) => {
-          var obj = { value: data.id, label: data.nrc_code };
+          var obj = { value: data.id.toString(), label: data.nrc_code };
           arr.push(obj);
         });
         self.setState({ NRCCODE: arr });
@@ -304,7 +316,7 @@ export default class Create extends React.Component {
         let nrcstatus = response.data.NrcType;
         let arr = [];
         nrcstatus.map((data, index) => {
-          var obj = { value: data.id, label: data.nrc_type };
+          var obj = { value: data.id.toString(), label: data.nrc_type };
           arr.push(obj);
         });
         self.setState({ NRCSTATUS: arr });
@@ -334,7 +346,7 @@ export default class Create extends React.Component {
         let nrcstate = response.data.townships;
         let arr = [];
         nrcstate.map((data, index) => {
-          var obj = { value: data.id, label: data.nrc_state };
+          var obj = { value: data.id.toString(), label: data.nrc_state };
           arr.push(obj);
         });
         self.setState({ NRCSTATE: arr });
@@ -492,11 +504,17 @@ export default class Create extends React.Component {
   }
   _handleOnClose() {
     this.setState({ isOpenSuccessModel: false });
-    this.props.navigation.navigate("Home")
+    this.props.navigation.navigate("Home");
     // if(this.state.isserrorclaer == true){
     //   this._gotoStep(1);
     // }
-   
+  }
+  _CreatehandleOnClose() {
+    this.setState({ isOpenCreateSuccessModel: false });
+    this.props.navigation.navigate("CreateNew");
+    // if(this.state.isserrorclaer == true){
+    //   this._gotoStep(1);
+    // }
   }
 
   _handleSave() {
@@ -545,11 +563,11 @@ export default class Create extends React.Component {
       isError = true;
     }
 
-    if (this.state.imagePathSupport == null) {
-      // alert("Helo");
-      this.setState({ ISERRORSUPPORT: true });
-      isError = true;
-    }
+    // if (this.state.imagePathSupport == null) {
+    //   // alert("Helo");
+    //   this.setState({ ISERRORSUPPORT: true });
+    //   isError = true;
+    // }
     if (this.state.usertype.value == 1) {
       if (this.state.imagePathMo == null) {
         // alert("Helo");
@@ -585,6 +603,9 @@ export default class Create extends React.Component {
       formData.append("startcity_id", this.state.city.value);
       formData.append("starttownship_id", this.state.township.value);
       formData.append("start_place", this.state.startplaces);
+      formData.append("designation", this.state.designation);
+      formData.append("department", this.state.department);
+      formData.append("ministry_input", this.state.ministry_input);
       formData.append("ministry_status", this.state.showcheckbox ? 1 : 0);
       formData.append(
         "endPlace_id",
@@ -653,12 +674,15 @@ export default class Create extends React.Component {
         "ministry_id",
         this.state.education.value ? this.state.education.value : null
       );
-      // console.log(formData);
+      formData.append("gender",this.state.selectedData);
+      console.log(formData);
       axios
         .post(CreateApi, formData, {
           headers,
         })
         .then(function (response) {
+          console.log("Response",response.data);
+
           if (response.data.status == 1) {
             // alert(response.data.message);
             // setTimeout(function() {
@@ -688,7 +712,10 @@ export default class Create extends React.Component {
               passport: "",
               imagePathSupport: null,
               isOpenSuccessModel: true,
-              modalVisible: false 
+              modalVisible: false,
+              designation: "",
+              department: "",
+              ministry_input: "",
             });
           } else {
             alert(response.data.message);
@@ -701,9 +728,228 @@ export default class Create extends React.Component {
     }
   }
 
+  _handleSaveCreate() {
+    // alert("helo")
+    // alert(this.state.nrccode.value);
+    let isError = false;
+    if (this.state.startplaces == "") {
+      // alert("Helo");
+      this.setState({ ISERRORSTARTPLACE: true });
+      isError = true;
+    }
+    if (this.state.showcheckbox == false) {
+      if (this.state.addressText == "") {
+        this.setState({ ISERRORENDPLACE: true });
+        isError = true;
+      }
+    }
+ 
+
+    if (this.state.township.value == null) {
+      // alert("Helo");
+      this.setState({ ISERRORSTARTTOWNSHIP: true });
+      isError = true;
+    }
+    if (this.state.showcheckbox == false) {
+      if (this.state.endtownship.value == null) {
+        // alert("Helo");
+        this.setState({ ISERRRORENDTOWNSHIP: true });
+        isError = true;
+      }
+    }
+
+    if (this.state.city.value == null) {
+      // alert("Helo");
+      this.setState({ ISERRORSTARTCITY: true });
+      isError = true;
+    }
+
+    // if (this.state.usertype.value == 1) {
+    //   // alert("Helo");
+    //   this.setState({ ISERRORSTARTCITY: true });
+    //   isError = true;
+    // }
+
+
+    if (this.state.imagePath == null) {
+      // alert("Helo");
+      this.setState({ ISERRORNRCFRONT: true });
+      isError = true;
+    }
+
+    if (this.state.imagePathNrcBack == null) {
+      // alert("Helo");
+      this.setState({ ISERRORNRCBACK: true });
+      isError = true;
+    }
+
+    // if (this.state.imagePathSupport == null) {
+    //   // alert("Helo");
+    //   this.setState({ ISERRORSUPPORT: true });
+    //   isError = true;
+    // }
+    if (this.state.usertype.value == 1) {
+      if (this.state.imagePathMo == null) {
+        // alert("Helo");
+        this.setState({ ISERRORMO: true });
+        isError = true;
+      }
+    }
+
+    if (!isError) {
+      // alert("Hello");
+      const self = this;
+      self.setState({ modalVisible: true });
+      const headers = {
+        Accept: "application/json",
+        Authorization: "Bearer " + self.state.access_token,
+        "Content-Type": "multipart/form-data",
+      };
+      const formData = new FormData();
+      const { imagePathNrcBack } = this.state;
+      const { imagePath } = this.state;
+      const { imagePathSupport } = this.state;
+      const { imagePathMo } = this.state;
+
+      formData.append("citizen_status", this.state.usertype.value);
+      formData.append("userId", this.state.user_id);
+      formData.append("name", this.state.name);
+      formData.append("nrc_code_id", this.state.nrccode.value);
+      formData.append("nrc_state_id", this.state.nrcstate.value);
+      formData.append("nrc_type_id", this.state.nrcstatus.value);
+      formData.append("nrc_no", this.state.nrcnumber);
+      formData.append("phone_no", this.state.loginID);
+      formData.append("vehicle_no", this.state.vehicle);
+      formData.append("startcity_id", this.state.city.value);
+      formData.append("starttownship_id", this.state.township.value);
+      formData.append("start_place", this.state.startplaces);
+      formData.append("designation", this.state.designation);
+      formData.append("department", this.state.department);
+      formData.append("ministry_input", this.state.ministry_input);
+      formData.append("ministry_status", this.state.showcheckbox ? 1 : 0);
+      formData.append("gender",this.state.selectedData);
+      formData.append(
+        "endPlace_id",
+        this.state.endtownship.value
+          ? this.state.endtownship.value
+          : this.state.townshipministrayid
+      );
+      formData.append(
+        "end_place",
+        this.state.addressText ? this.state.addressText : this.state.address
+      );
+      if (imagePathNrcBack) {
+        const uriPart = imagePathNrcBack.split(".");
+        const fileExtension = uriPart[uriPart.length - 1];
+        const fileName = imagePathNrcBack.substr(
+          imagePathNrcBack.lastIndexOf("/") + 1
+        );
+
+        formData.append("nrc_back", {
+          uri: imagePathNrcBack,
+          name: fileName,
+          type: `image/${fileExtension}`,
+        });
+      }
+      if (imagePath) {
+        const uriPart = imagePath.split(".");
+        const fileExtension = uriPart[uriPart.length - 1];
+        const fileName = imagePath.substr(imagePath.lastIndexOf("/") + 1);
+
+        formData.append("nrc_front", {
+          uri: imagePath,
+          name: fileName,
+          type: `image/${fileExtension}`,
+        });
+      }
+      if (imagePathSupport) {
+        const uriPart = imagePathSupport.split(".");
+        const fileExtension = uriPart[uriPart.length - 1];
+        const fileName = imagePathSupport.substr(
+          imagePathSupport.lastIndexOf("/") + 1
+        );
+
+        formData.append("approved_photo", {
+          uri: imagePathSupport,
+          name: fileName,
+          type: `image/${fileExtension}`,
+        });
+      }
+      if (imagePathMo) {
+        const uriPart = imagePathMo.split(".");
+        const fileExtension = uriPart[uriPart.length - 1];
+        const fileName = imagePathMo.substr(imagePathMo.lastIndexOf("/") + 1);
+
+        formData.append("mo_photo", {
+          uri: imagePathMo,
+          name: fileName,
+          type: `image/${fileExtension}`,
+        });
+      }
+      formData.append("passport", this.state.pass);
+      formData.append(
+        "q_status",
+        this.state.qstatus ? this.state.qstatus : this.state.qtownstatus
+      );
+      formData.append(
+        "ministry_id",
+        this.state.education.value ? this.state.education.value : null
+      );
+      console.log(formData);
+      axios
+        .post(CreateApi, formData, {
+          headers,
+        })
+        .then(function (response) {
+          console.log("Response",response.data);
+          if (response.data.status == 1) {
+            // alert(response.data.message);
+            // setTimeout(function() {
+            //   self.setState({ isOpenSuccessModal: true });
+            // },10);
+            self.setState({
+              name: "",
+              nrccode: { value: null, label: null },
+              nrcstatus: { value: null, label: null },
+              nrcstate: { value: null, label: null },
+              city: { value: null, label: null },
+              township: { value: null, label: null },
+              endtownship: { value: null, label: null },
+              townshipministrayid: null,
+              showcheckbox: false,
+              qstatusboolean: false,
+              qtownstatusboolean: false,
+              education: { value: null, label: null },
+              nrcnumber: "",
+              vehicle: "",
+              startplaces: "",
+              address: "",
+              addressText: "",
+              imagePath: null,
+              imagePathMo: null,
+              imagePathNrcBack: null,
+              passport: "",
+              imagePathSupport: null,
+              isOpenCreateSuccessModel: true,
+              modalVisible: false,
+              designation: "",
+              department: "",
+              ministry_input: "",
+            });
+          } else {
+            alert(response.data.message);
+          }
+        })
+        .catch(function (err) {
+          console.log("Error", err);
+          self.setState({ modalVisible: false });
+        });
+    }
+  }
+
   _gotoStep(step) {
     let isError = false;
-    if (this.state.name == "" ) {
+    if (this.state.name == "") {
       // alert("Helo");
       this.setState({ ISERRORNAME: true });
       isError = true;
@@ -747,12 +993,37 @@ export default class Create extends React.Component {
         isError = true;
       }
     }
-
-    if (this.state.vehicle == "") {
+    if (this.state.usertype.value == 1 || this.state.usertype.value ==3) {
+      if(this.state.designation == ""){
+        this.setState({ ISERRORDESIGNATION: true });
+        isError = true;
+      }
       // alert("Helo");
-      this.setState({ ISERRORVERICHAL: true });
-      isError = true;
+    
     }
+    if (this.state.usertype.value == 1 || this.state.usertype.value ==3) {
+      if(this.state.department == ""){
+        this.setState({ ISERRORDEPARTMENT: true });
+        isError = true;
+      }
+      // alert("Helo");
+     
+    }
+    if (this.state.usertype.value == 1 || this.state.usertype.value ==3) {
+      if(this.state.ministry_input == ""){
+        this.setState({ ISERRORMINISTRYINPUT: true });
+        isError = true;
+      }
+      // alert("Helo");
+     
+    }
+ 
+  
+    // if (this.state.vehicle == "") {
+    //   // alert("Helo");
+    //   this.setState({ ISERRORVERICHAL: true });
+    //   isError = true;
+    // }
 
     if (this.state.usertype.value == 0) {
       if (this.state.nrccode.value == null) {
@@ -837,10 +1108,19 @@ export default class Create extends React.Component {
     this.setState({ imagePathNrcBack: image.uri, ISERRORNRCBACK: false });
   }
   _handleOnChooseImageSupport(image) {
-    this.setState({ imagePathSupport: image.uri, ISERRORSUPPORT: false });
+    this.setState({ imagePathSupport: image.uri });
   }
   _handleOnChooseImageMo(image) {
     this.setState({ imagePathMo: image.uri, ISERRORMO: false });
+  }
+
+  handleOnChangeRadioValue(key,value){
+    // alert(value);
+    switch (key) {
+      case GENDER:
+        this.setState({ selectedData: value });
+        break;
+    }
   }
 
   _changeImage() {
@@ -862,7 +1142,7 @@ export default class Create extends React.Component {
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
               <ErrorText
-                errMessage="နိုင်ငံကူးလက်မှတ်ပုံထည့်ပေးပါရန်"
+                errMessage={t("errorforigenphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCFRONT}
               />
             </View>
@@ -873,7 +1153,7 @@ export default class Create extends React.Component {
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
               <ErrorText
-                errMessage="ဗီဇာပုံထည့်ပေးပါရန်"
+                errMessage={t("errorforigenvisaphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCBACK}
               />
             </View>
@@ -884,10 +1164,10 @@ export default class Create extends React.Component {
               imagePath={this.state.imagePathSupport}
               onChooseImage={this._handleOnChooseImageSupport.bind(this)}
             />
-            <ErrorText
-              errMessage="ထောက်ခံစာပုံထည့်ပေးပါရန်"
+            {/* <ErrorText
+              errMessage={t("errorapprovephoto", this.state.locale)}
               isShow={this.state.ISERRORSUPPORT}
-            />
+            /> */}
           </View>
         </View>
       );
@@ -909,7 +1189,7 @@ export default class Create extends React.Component {
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
               <ErrorText
-                errMessage="မှတ်ပုံတင်အရှေ့ဘက်ပုံထည့်ပေးပါရန်"
+                errMessage={t("errornrcfrontphot", this.state.locale)}
                 isShow={this.state.ISERRORNRCFRONT}
               />
             </View>
@@ -920,7 +1200,7 @@ export default class Create extends React.Component {
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
               <ErrorText
-                errMessage="မှတ်ပုံတင်အနောက်ဘက်ပုံထည့်ပေးပါရန်"
+                errMessage={t("errornrcbackphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCBACK}
               />
             </View>
@@ -932,7 +1212,7 @@ export default class Create extends React.Component {
               onChooseImage={this._handleOnChooseImageMo.bind(this)}
             />
             <ErrorText
-              errMessage="ခရီးသွားလာခွင့်အမိန့်MOပုံထည့်ပေးပါရန်"
+              errMessage={t("errormohpoto", this.state.locale)}
               isShow={this.state.ISERRORMO}
             />
           </View>
@@ -942,10 +1222,10 @@ export default class Create extends React.Component {
               imagePath={this.state.imagePathSupport}
               onChooseImage={this._handleOnChooseImageSupport.bind(this)}
             />
-            <ErrorText
-              errMessage="ထောက်ခံစာပုံထည့်ပေးပါရန်"
+            {/* <ErrorText
+              errMessage={t("errorapprovephoto", this.state.locale)}
               isShow={this.state.ISERRORSUPPORT}
-            />
+            /> */}
           </View>
         </View>
       );
@@ -967,7 +1247,7 @@ export default class Create extends React.Component {
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
               <ErrorText
-                errMessage="သာသနာဝင်စိစစ်ရေးကဒ်ပြားအရှေ့ဘက်ပုံထည့်ပေးပါရန်"
+                errMessage={t("errorbhikkhufrontphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCFRONT}
               />
             </View>
@@ -978,7 +1258,7 @@ export default class Create extends React.Component {
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
               <ErrorText
-                errMessage="သာသနာဝင်စိစစ်ရေးကဒ်ပြားအနောက်ဘက်ပုံထည့်ပေးပါရန်"
+                errMessage={t("errorbhikkhubackphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCBACK}
               />
             </View>
@@ -989,10 +1269,10 @@ export default class Create extends React.Component {
               imagePath={this.state.imagePathSupport}
               onChooseImage={this._handleOnChooseImageSupport.bind(this)}
             />
-            <ErrorText
-              errMessage="ထောက်ခံစာပုံထည့်ပေးပါရန်"
+            {/* <ErrorText
+              errMessage={t("errorapprovephoto", this.state.locale)}
               isShow={this.state.ISERRORSUPPORT}
-            />
+            /> */}
           </View>
         </View>
       );
@@ -1014,7 +1294,7 @@ export default class Create extends React.Component {
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
               <ErrorText
-                errMessage="မှတ်ပုံတင်အရှေ့ဘက်ပုံထည့်ပေးပါရန်"
+                errMessage={t("errornrcfrontphot", this.state.locale)}
                 isShow={this.state.ISERRORNRCFRONT}
               />
             </View>
@@ -1025,7 +1305,7 @@ export default class Create extends React.Component {
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
               <ErrorText
-                errMessage="မှတ်ပုံတင်အနောက်ဘက်ပုံထည့်ပေးပါရန်"
+                errMessage={t("errornrcbackphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCBACK}
               />
             </View>
@@ -1036,10 +1316,10 @@ export default class Create extends React.Component {
               imagePath={this.state.imagePathSupport}
               onChooseImage={this._handleOnChooseImageSupport.bind(this)}
             />
-            <ErrorText
-              errMessage="ထောက်ခံစာပုံထည့်ပေးပါရန်"
+            {/* <ErrorText
+              errMessage={t("errorapprovephoto", this.state.locale)}
               isShow={this.state.ISERRORSUPPORT}
-            />
+            /> */}
           </View>
         </View>
       );
@@ -1061,7 +1341,7 @@ export default class Create extends React.Component {
                 onChooseImage={this._handleOnChooseImage.bind(this)}
               />
               <ErrorText
-                errMessage="မှတ်ပုံတင်အနောက်ဘက်ပုံထည့်ပေးပါရန်"
+                errMessage={t("errornrcfrontphot", this.state.locale)}
                 isShow={this.state.ISERRORNRCFRONT}
               />
             </View>
@@ -1072,7 +1352,7 @@ export default class Create extends React.Component {
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
               />
               <ErrorText
-                errMessage="မှတ်ပုံတင်အနောက်ဘက်ပုံထည့်ပေးပါရန်"
+                errMessage={t("errornrcbackphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCBACK}
               />
             </View>
@@ -1083,24 +1363,25 @@ export default class Create extends React.Component {
               imagePath={this.state.imagePathSupport}
               onChooseImage={this._handleOnChooseImageSupport.bind(this)}
             />
-            <ErrorText
-              errMessage="ထောက်ခံစာပုံထည့်ပေးပါရန်"
+            {/* <ErrorText
+              errMessage={t("errorapprovephoto", this.state.locale)}
               isShow={this.state.ISERRORSUPPORT}
-            />
+            /> */}
           </View>
         </View>
       );
     }
   }
   render() {
+    const gender = "";
     // console.log("Create", this.state.imagePath);
     // console.log("Ministray Township Name", this.state.townshipministrayname);
     const USERTYPE = [
-      { value: 0, label: t("people",this.state.locale) },
-      { value: 1, label: t("goverment",this.state.locale) },
-      { value: 2, label: t("bhikkhu",this.state.locale) },
-      { value: 3, label: t("army",this.state.locale) },
-      { value: 4, label: t("forigner",this.state.locale)},
+      { value: 0, label: t("people", this.state.locale) },
+      { value: 1, label: t("goverment", this.state.locale) },
+      { value: 2, label: t("bhikkhu", this.state.locale) },
+      { value: 3, label: t("army", this.state.locale) },
+      { value: 4, label: t("forigner", this.state.locale) },
     ];
     return (
       <View style={{ flex: 1 }}>
@@ -1120,7 +1401,6 @@ export default class Create extends React.Component {
                 style={{ flex: 1 }}
               >
                 <ScrollView showsVerticalScrollIndicator={false}>
-              
                   <View style={{ flex: 1 }}>
                     <Text style={styles.text}>
                       {t("usertype", this.state.locale)}
@@ -1140,7 +1420,7 @@ export default class Create extends React.Component {
                   <View style={styles.secondContainer}>
                     {this.state.usertype.value == 2 ? (
                       <Text style={styles.text}>
-                        {t("Bhikkhu", this.state.locale)}
+                        {t("Bhikkhuname", this.state.locale)}
                       </Text>
                     ) : (
                       <Text style={styles.text}>
@@ -1151,16 +1431,47 @@ export default class Create extends React.Component {
                     <TextInput
                       value={this.state.name}
                       style={styles.textInput}
-                      placeholder="လှလှ"
+                      placeholder={t("placeholdername", this.state.locale)}
                       onChangeText={(value) =>
                         this.setState({ name: value, ISERRORNAME: false })
                       }
                     />
                     <ErrorText
-                      errMessage="အမည်ထည့်ပေးပါရန်"
+                      errMessage={t("errorname", this.state.locale)}
                       isShow={this.state.ISERRORNAME}
                     />
                   </View>
+
+                  <View style={styles.secondContainer}>
+                     
+                    <View style={{flexDirection:"row"}}>
+                      <View style={{paddingRight:15}}>
+                      <Text style={styles.text}>
+                        ကျား/မ
+                      </Text>
+                      </View>
+                      <View>
+                        <Radio
+                         label="ကျား"
+                         active={this.state.selectedData == "0" ? true : false}
+                         onPress={() =>
+                           this.handleOnChangeRadioValue(GENDER, "0")
+                         }
+
+                        />
+                      </View>
+                      <View>
+                        <Radio
+                         label="မ"
+                         active={this.state.selectedData == "1" ? true : false}
+                         onPress={() =>
+                           this.handleOnChangeRadioValue(GENDER, "1")
+                         }
+                        />
+                      </View>
+                    </View>
+                    </View>
+
                   {this.state.usertype.value == 4 ? (
                     <View style={styles.secondContainer}>
                       <Text style={styles.text}>
@@ -1174,7 +1485,7 @@ export default class Create extends React.Component {
                         }
                       />
                       <ErrorText
-                        errMessage="နိုင်ငံကူးနံပါတ်ထည့်ပေးပါရန်"
+                        errMessage={t("errorforigenno", this.state.locale)}
                         isShow={this.state.ISERRORPASSPORT}
                       />
                     </View>
@@ -1192,7 +1503,10 @@ export default class Create extends React.Component {
                       >
                         <View style={{ width: "20%" }}>
                           <DropDown
-                            placeholder="1"
+                            placeholder={t(
+                              "placeholdernrccode",
+                              this.state.locale
+                            )}
                             value={this.state.nrccode}
                             optionsContainerWidth="33%"
                             options={this.state.NRCCODE}
@@ -1201,13 +1515,13 @@ export default class Create extends React.Component {
                             }
                           />
                           <ErrorText
-                            errMessage="NRC_CODE ရွေးပေးပါရန်"
+                            errMessage={t("errornrccode", this.state.locale)}
                             isShow={this.state.ISERRORNRCCODE}
                           />
                         </View>
                         <View style={{ width: "50%" }}>
                           <DropDown
-                            placeholder="Select NRC"
+                            placeholder="NRC State"
                             optionsContainerWidth="65%"
                             value={this.state.nrcstate}
                             options={this.state.NRCSTATE}
@@ -1216,7 +1530,7 @@ export default class Create extends React.Component {
                             }
                           />
                           <ErrorText
-                            errMessage="NRC_STATE ရွေးပေးပါရန်"
+                            errMessage={t("errornrcstate", this.state.locale)}
                             isShow={this.state.ISERRRORNRCSTATE}
                           />
                         </View>
@@ -1242,7 +1556,10 @@ export default class Create extends React.Component {
                             style={[styles.textInput]}
                             value={this.state.nrcnumber}
                             keyboardType="number-pad"
-                            placeholder="111111"
+                            placeholder={t(
+                              "placeholdernrcnumber",
+                              this.state.locale
+                            )}
                             onChangeText={(value) =>
                               this.setState({
                                 nrcnumber: value,
@@ -1251,13 +1568,78 @@ export default class Create extends React.Component {
                             }
                           />
                           <ErrorText
-                            errMessage="မှတ်ပုံတင်နံပါတ်ထည့်ပေးပါရန်"
+                            errMessage={t("errornrcnumber", this.state.locale)}
                             isShow={this.state.ISERRORNRCNUMBER}
                           />
                         </View>
                       </View>
                     </View>
                   )}
+
+                  {this.state.usertype.value == 1 || this.state.usertype.value ==3 ? (
+                    <View>
+                      <View style={styles.secondContainer}>
+                        <Text style={styles.text}>
+                          {t("designation", this.state.locale)}
+                        </Text>
+                        <TextInput
+                          style={styles.textInput}
+                          value={this.state.designation}
+                          onChangeText={(value) =>
+                            this.setState({
+                              designation: value,
+                              ISERRORDESIGNATION: false,
+                            })
+                          }
+                        />
+                        <ErrorText
+                          errMessage={t("errordesignation", this.state.locale)}
+                          isShow={this.state.ISERRORDESIGNATION}
+                        />
+                      </View>
+                      <View style={styles.secondContainer}>
+                        <Text style={styles.text}>
+                          {t("department", this.state.locale)}
+                        </Text>
+                        <TextInput
+                          style={styles.textInput}
+                          value={this.state.department}
+                          onChangeText={(value) =>
+                            this.setState({
+                              department: value,
+                              ISERRORDEPARTMENT: false,
+                            })
+                          }
+                        />
+                        <ErrorText
+                          errMessage={t("errordepartment", this.state.locale)}
+                          isShow={this.state.ISERRORDEPARTMENT}
+                        />
+                      </View>
+                      <View style={styles.secondContainer}>
+                        <Text style={styles.text}>
+                          {t("ministry_name", this.state.locale)}
+                        </Text>
+                        <TextInput
+                          style={styles.textInput}
+                          value={this.state.ministry_input}
+                          onChangeText={(value) =>
+                            this.setState({
+                              ministry_input: value,
+                              ISERRORMINISTRYINPUT: false,
+                            })
+                          }
+                        />
+                        <ErrorText
+                          errMessage={t(
+                            "errorministryinput",
+                            this.state.locale
+                          )}
+                          isShow={this.state.ISERRORMINISTRYINPUT}
+                        />
+                      </View>
+                    </View>
+                  ) : null}
 
                   <View style={styles.secondContainer}>
                     <Text style={styles.text}>
@@ -1280,14 +1662,14 @@ export default class Create extends React.Component {
                       onChangeText={(value) =>
                         this.setState({
                           vehicle: value,
-                          ISERRORVERICHAL: false,
+                          // ISERRORVERICHAL: false,
                         })
                       }
                     />
-                    <ErrorText
+                    {/* <ErrorText
                       errMessage="ယာဉ်နံပါတ်ထည့်ပေးပါရန်"
                       isShow={this.state.ISERRORVERICHAL}
-                    />
+                    /> */}
                   </View>
                   <TouchableOpacity
                     style={styles.touchBtn}
@@ -1319,7 +1701,7 @@ export default class Create extends React.Component {
               Onpress={() => this._gotoStep(1)}
             />
             <View style={styles.constiner}>
-            <KeyboardAvoidingView
+              <KeyboardAvoidingView
                 // behavior="padding"
                 behavior={Platform.OS == "ios" ? "padding" : null}
                 enabled
@@ -1350,7 +1732,7 @@ export default class Create extends React.Component {
                             }
                           />
                           <ErrorText
-                            errMessage="မြို့ရွေးချယ်ပေးရန်"
+                            errMessage={t("errorcity", this.state.locale)}
                             isShow={this.state.ISERRORSTARTCITY}
                           />
                         </View>
@@ -1365,14 +1747,14 @@ export default class Create extends React.Component {
                             }
                           />
                           <ErrorText
-                            errMessage="မြို့နယ်ရွေးချယ်ပေးရန်"
+                            errMessage={t("errortownship", this.state.locale)}
                             isShow={this.state.ISERRORSTARTTOWNSHIP}
                           />
                         </View>
                       </View>
                       <TextInput
                         style={[styles.textInput]}
-                        placeholder="လိပ်စာ"
+                        placeholder={t("placeholderaddress", this.state.locale)}
                         value={this.state.startplaces}
                         onChangeText={(value) =>
                           this.setState({
@@ -1382,7 +1764,7 @@ export default class Create extends React.Component {
                         }
                       />
                       <ErrorText
-                        errMessage="လိပ်စာထည့်ပေးပါရန်"
+                        errMessage={t("erroraddress", this.state.locale)}
                         isShow={this.state.ISERRORSTARTPLACE}
                       />
                     </View>
@@ -1489,7 +1871,7 @@ export default class Create extends React.Component {
                             }
                           />
                           <ErrorText
-                            errMessage="မြို့နယ်ရွေးချယ်ပေးရန်"
+                            errMessage={t("errortownship", this.state.locale)}
                             isShow={this.state.ISERRRORENDTOWNSHIP}
                           />
                         </View>
@@ -1499,7 +1881,10 @@ export default class Create extends React.Component {
                         <TextInput
                           style={[styles.textInput]}
                           value={this.state.address}
-                          placeholder="လိပ်စာ"
+                          placeholder={t(
+                            "placeholderaddress",
+                            this.state.locale
+                          )}
                           // onChangeText={(value) =>
                           //   this.setState({ endplace: value })
                           // }
@@ -1509,7 +1894,10 @@ export default class Create extends React.Component {
                           <TextInput
                             style={[styles.textInput]}
                             value={this.state.addressText}
-                            placeholder="လိပ်စာ"
+                            placeholder={t(
+                              "placeholderaddress",
+                              this.state.locale
+                            )}
                             onChangeText={(value) =>
                               this.setState({
                                 addressText: value,
@@ -1518,7 +1906,7 @@ export default class Create extends React.Component {
                             }
                           />
                           <ErrorText
-                            errMessage="လိပ်စာထည့်ပေးပါရန်"
+                            errMessage={t("erroraddress", this.state.locale)}
                             isShow={this.state.ISERRORENDPLACE}
                           />
                         </View>
@@ -1536,7 +1924,7 @@ export default class Create extends React.Component {
                   >
                     <TouchableOpacity
                       style={[styles.touchBtn, { width: "45%" }]}
-                      onPress={() =>this.props.navigation.navigate("CreateNew")}
+                      onPress={() => this._handleSaveCreate()}
                     >
                       <Text style={{ color: "white", fontWeight: "bold" }}>
                         {t("createnew", this.state.locale)}
@@ -1560,12 +1948,17 @@ export default class Create extends React.Component {
                 </ScrollView>
               </KeyboardAvoidingView>
               <View>
-              <LoadingModal isOpenModal={this.state.modalVisible} />
-            </View>
+                <LoadingModal isOpenModal={this.state.modalVisible} />
+              </View>
               <SuccessModal
                 isOpen={this.state.isOpenSuccessModel}
-                text={t("createsuccesss",this.state.locale)}
+                text={t("createsuccesss", this.state.locale)}
                 onClose={() => this._handleOnClose()}
+              />
+              <CreateSuccessModal
+                isOpen={this.state.isOpenCreateSuccessModel}
+                text={t("createsuccesss", this.state.locale)}
+                onClose={() => this._CreatehandleOnClose()}
               />
             </View>
           </View>

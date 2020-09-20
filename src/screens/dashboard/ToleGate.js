@@ -86,16 +86,6 @@ export default class ToleGate extends React.Component {
   render() {
     // console.log(this.props.navigation.getParam("datas").id);
     let data = this.props.navigation.getParam("datas");
-    // console.log(data.id.toString());
-    // console.log(data);
-    // const nrcNo =
-    //   data.nrc_code +
-    //   "/" +
-    //   data.nrc_state +
-    //   "(" +
-    //   data.nrc_type +
-    //   ")" +
-    //   data.nrc_no;
 
     return (
       <View style={styles.container}>
@@ -159,7 +149,7 @@ export default class ToleGate extends React.Component {
             }
             passportNo={data.passport ? data.passport : null}
             phoneNo={data.ph_no}
-            OnPressCard={() => this.props.navigation.navigate("Detail")}
+            OnPressCard={() => this.props.navigation.navigate("TravelNoteDetail",{userid:data.id,backRoute:"ToleGate"})}
             cityzien={data.citizen_status}
           />
         </ScrollView>

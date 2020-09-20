@@ -369,7 +369,7 @@ export default class TravelNote extends React.Component {
     } else if (arrIndex == 1 && item.status == 1) {
       this.props.navigation.navigate("TravelQr", { data: item });
     } else if (arrIndex == 1) {
-      this.props.navigation.navigate("TravelNoteDetail", { userid: item.id });
+      this.props.navigation.navigate("TravelNoteDetail", { userid: item.id,backRoute:"TravelNote" });
     }
   }
 

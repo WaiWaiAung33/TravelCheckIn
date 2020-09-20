@@ -104,7 +104,7 @@ export default class LanguageModal extends React.Component {
                 style={styles.closeBtn}
               >
                 <Image
-                  source={require("@images/cross.png")}
+                  source={require("@images/iosclose.png")}
                   style={styles.closeIcon}
                 />
               </TouchableOpacity>
@@ -129,6 +129,7 @@ export default class LanguageModal extends React.Component {
                   backgroundColor: this.state.enCheck 
                     ? "#E5DEDE"
                     : "#ffffff",
+                    marginBottom:30
                 }}
               >
                 <View style={styles.englishCheck}>
@@ -188,9 +189,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     right: 0,
+    marginTop:5
   },
   closeIcon: {
-    width: 20,
-    height: 20,
+    width: 18,
+    height: 18,
   },
 });

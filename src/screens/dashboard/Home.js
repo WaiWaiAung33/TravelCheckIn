@@ -12,8 +12,9 @@ import {
   BackHandler,
   AsyncStorage,
   Linking,
+  Platform
 } from "react-native";
-import { Updates } from "expo";
+import { Updates} from "expo";
 import appjson from "@appjson";
 import Loading from "@components/Loading";
 //import LanguageModal
@@ -45,6 +46,7 @@ export default class Home extends React.Component {
       version: null,
       link: "",
       isOpenAppModal: false,
+      expoPushToken:null
     };
     this.BackHandler = null;
   }
@@ -60,6 +62,8 @@ export default class Home extends React.Component {
     this.setState({ locale: res });
     this.getfilterVersion();
   }
+
+
   async setBackHandler() {
     BackHandler.addEventListener(
       "hardwareBackPress",
@@ -92,12 +96,11 @@ export default class Home extends React.Component {
       isOpenLangModal: false,
       mylang: locale,
     });
-
-    Updates.reload();
+   Updates.reload();
   }
   getfilterVersion() {
     const self = this;
-    self.setState({ isLoading: true });
+    // self.setState({ isLoading: true });
     const headers = {
       Accept: "application/json",
       Authorization: "Bearer " + self.state.access_token,
@@ -111,11 +114,11 @@ export default class Home extends React.Component {
         headers,
       })
       .then(function (response) {
-        console.log(response.data);
+        // console.log(response.data);
         self.setState({isLoading:false});
         if (self.state.version == response.data.forceVersion.version_name) {
           self.setState({
-            isLoading: false,
+            // isLoading: false,
             isOpenAppModal:false
             // isOpenAppModal: true,
             // link: response.data.forceVersion.appstore_url,
@@ -139,9 +142,9 @@ export default class Home extends React.Component {
 
   render() {
     // console.log(this.state.version);
-    if (this.state.isLoading) {
-      return <Loading />;
-    }
+    // if (this.state.isLoading) {
+    //   return <Loading />;
+    // }
     // console.log(this.state.access_token);
     return (
       <View style={styles.container}>
@@ -310,7 +313,7 @@ export default class Home extends React.Component {
           isOpen={this.state.isOpenAppModal}
           onClose={() => this.setState({ isOpenAppModal: false })}
           link={this.state.link}
-          OnPress={()=>this.props.navigation.navigate("Login")}
+          OnPress={()=>this._handleLogout()}
           // OnPress={this.props.navigation.navigate(exitApp())}
         />
       </View>
