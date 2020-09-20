@@ -45,6 +45,7 @@ export default class ToleGateCard extends React.Component {
       ministry_input: "",
       check_by: "",
       approve_by: "",
+      gender:""
     };
     this.BackHandler = null;
   }
@@ -108,6 +109,7 @@ export default class ToleGateCard extends React.Component {
           ministry_input: data.historyDetail.ministry_input,
           check_by: data.historyDetail.checked_by,
           approve_by: data.historyDetail.approved_by,
+          gender:data.historyDetail.sex
           // citizenstatus: data.historyDetail.ministry_status,
         });
         // self.setState({ isOpenSuccessModel: true });
@@ -171,6 +173,17 @@ export default class ToleGateCard extends React.Component {
               </Text>
               <Text style={styles.secondText}>{this.state.name}</Text>
             </View>
+
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Text style={styles.firstText}>
+                {t("gender",this.state.locale)}
+              </Text>
+              <Text style={styles.secondText}>{this.state.gender == "0" ? t("male",this.state.locale) : t("female",this.state.locale)}</Text>
+            </View>
+
+            
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
@@ -180,7 +193,7 @@ export default class ToleGateCard extends React.Component {
                 {/* {this.state.passport !=null ? this.state.passport : this.state.nrc} */}
               </Text>
             </View>
-            {this.state.citizenstatus == 1 ? (
+            {this.state.citizenstatus == 1 || this.state.citizenstatus ==3 ? (
               <View>
                 <View
                   style={{

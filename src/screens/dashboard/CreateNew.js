@@ -41,6 +41,7 @@ import {
 //   { value: 3, label: "တပ်မတော်" },
 //   { value: 4, label: "နိုင်ငံခြားသား" },
 // ];
+const GENDER = "GENDER";
 
 export default class Create extends React.Component {
   constructor(props) {
@@ -1432,12 +1433,12 @@ export default class Create extends React.Component {
                      <View style={{flexDirection:"row"}}>
                        <View style={{paddingRight:15}}>
                        <Text style={styles.text}>
-                         ကျား/မ
+                         {t("gender",this.state.locale)}
                        </Text>
                        </View>
                        <View>
                          <Radio
-                          label="ကျား"
+                          label={t("male",this.state.locale)}
                           active={this.state.selectedData == "0" ? true : false}
                           onPress={() =>
                             this.handleOnChangeRadioValue(GENDER, "0")
@@ -1447,7 +1448,7 @@ export default class Create extends React.Component {
                        </View>
                        <View>
                          <Radio
-                          label="မ"
+                          label={t("female",this.state.locale)}
                           active={this.state.selectedData == "1" ? true : false}
                           onPress={() =>
                             this.handleOnChangeRadioValue(GENDER, "1")

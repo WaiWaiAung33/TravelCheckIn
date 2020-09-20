@@ -84,7 +84,10 @@ const EN = {
   ministry_name:"Ministry Name",
   errordesignation:"Enter Designation",
   errordepartment:"Enter Department",
-  errorministryinput:"Enter ministry name"
+  errorministryinput:"Enter ministry name",
+  gender:"Male/Female",
+  male:"Male",
+  female:"Female"
 };
 
 //Myanmar Language
@@ -165,7 +168,10 @@ const MM = {
   ministry_name:"ဝန်ကြီးဌာန",
   errordesignation:"ရာထူး‌ထည့်ပေးပါရန်",
   errordepartment:"ဌာနထည့်ပေးပါရန်",
-  errorministryinput:"ဝန်ကြီးဌာနထည့်ပေးပါရန်"
+  errorministryinput:"ဝန်ကြီးဌာနထည့်ပေးပါရန်",
+  gender:"ကျား/မ",
+  male:"ကျား",
+  female:"မ"
 };
 
 i18n.fallbacks = true;

@@ -29,9 +29,12 @@ import Header from "@components/Header";
 import ImgUploadBtn from "@components/ImgUploadBtn";
 import SuccessModal from "@components/SuccessModal";
 import Loading from "@components/Loading";
+import Radio from "@components/Radio";
 
 //import services
 import { t, getLang } from "@services/Localization";
+
+const GENDER = "GENDER";
 
 export default class Create extends React.Component {
   constructor(props) {
@@ -82,6 +85,10 @@ export default class Create extends React.Component {
       address: "",
       addressText: "",
       townshipministrayid: null,
+      selectedData: "",
+      designation: "",
+      department: "",
+      ministry_input: "",
     };
   }
   async componentDidMount() {
@@ -162,6 +169,10 @@ export default class Create extends React.Component {
         }
         self.setState({
           name: datas.name,
+          designation: datas.designation,
+          department: datas.department,
+          ministry_input: datas.ministry_input,
+          selectedData: datas.sex,
           nrccode: { value: datas.nrc_code_id, label: datas.nrc_code },
           nrcstate: { value: datas.nrc_status_id, label: datas.nrc_state },
           nrcstatus: { value: datas.nrc_type_id, label: datas.nrc_type },
@@ -241,8 +252,21 @@ export default class Create extends React.Component {
     formData.append("start_place", self.state.startplace);
     formData.append("ministry_status", this.state.showcheckbox ? 1 : 0);
     formData.append(
+      "designation",
+      self.state.designation ? self.state.designation : ""
+    );
+    formData.append(
+      "department",
+      self.state.department ? self.state.department : null
+    );
+    formData.append(
+      "ministry_input",
+      this.state.ministry_input ? this.state.ministry_input : ""
+    );
+    formData.append("gender", this.state.selectedData);
+    formData.append(
       "endPlace_id",
-      self.state.showcheckbox
+      !self.state.showcheckbox
         ? this.state.townshipministrayid
         : this.state.endtownship.value
     );
@@ -317,6 +341,8 @@ export default class Create extends React.Component {
           self.setState({
             isOpenSuccessModel: true,
           });
+        } else {
+          alert(response.data.messange);
         }
       })
       .catch(function (err) {
@@ -899,6 +925,15 @@ export default class Create extends React.Component {
   _handleOnClose() {
     this.setState({ isOpenSuccessModel: false });
   }
+  handleOnChangeRadioValue(key, value) {
+    // alert(value);
+    switch (key) {
+      case GENDER:
+        this.setState({ selectedData: value });
+        break;
+    }
+  }
+
   render() {
     if (this.state.isLoading) {
       return <Loading />;
@@ -956,6 +991,37 @@ export default class Create extends React.Component {
                       onChangeText={(value) => this.setState({ name: value })}
                     />
                   </View>
+
+                  <View style={styles.secondContainer}>
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <View style={{ paddingRight: 15 }}>
+                        <Text style={styles.text}>
+                          {t("gender", this.state.locale)}
+                        </Text>
+                      </View>
+                      <View style={{ alignItems: "center" }}>
+                        <Radio
+                          label={t("male", this.state.locale)}
+                          active={this.state.selectedData == "0" ? true : false}
+                          onPress={() =>
+                            this.handleOnChangeRadioValue(GENDER, "0")
+                          }
+                        />
+                      </View>
+                      <View style={{ alignItems: "center" }}>
+                        <Radio
+                          label={t("female", this.state.locale)}
+                          active={this.state.selectedData == "1" ? true : false}
+                          onPress={() =>
+                            this.handleOnChangeRadioValue(GENDER, "1")
+                          }
+                        />
+                      </View>
+                    </View>
+                  </View>
+
                   {this.state.usertype.value == 4 ? (
                     <View style={styles.secondContainer}>
                       <Text style={styles.text}>
@@ -1036,6 +1102,54 @@ export default class Create extends React.Component {
                       </View>
                     </View>
                   )}
+
+                  {this.state.usertype.value == 1 ||
+                  this.state.usertype.value == 3 ? (
+                    <View>
+                      <View style={styles.secondContainer}>
+                        <Text style={styles.text}>
+                          {t("designation", this.state.locale)}
+                        </Text>
+                        <TextInput
+                          style={styles.textInput}
+                          value={this.state.designation}
+                          onChangeText={(value) =>
+                            this.setState({
+                              designation: value,
+                            })
+                          }
+                        />
+                      </View>
+                      <View style={styles.secondContainer}>
+                        <Text style={styles.text}>
+                          {t("department", this.state.locale)}
+                        </Text>
+                        <TextInput
+                          style={styles.textInput}
+                          value={this.state.department}
+                          onChangeText={(value) =>
+                            this.setState({
+                              department: value,
+                            })
+                          }
+                        />
+                      </View>
+                      <View style={styles.secondContainer}>
+                        <Text style={styles.text}>
+                          {t("ministry_name", this.state.locale)}
+                        </Text>
+                        <TextInput
+                          style={styles.textInput}
+                          value={this.state.ministry_input}
+                          onChangeText={(value) =>
+                            this.setState({
+                              ministry_input: value,
+                            })
+                          }
+                        />
+                      </View>
+                    </View>
+                  ) : null}
 
                   <View style={styles.secondContainer}>
                     <Text style={styles.text}>
