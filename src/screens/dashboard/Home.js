@@ -272,7 +272,7 @@ export default class Home extends React.Component {
         </ImageBackground> */}
         <ScrollView>
         <View style={{ marginTop: 15 }}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
             activeOpacity={0.8}
             style={[styles.touchBtn, { backgroundColor: "#EBB318" }]}
             onPress={() => this.props.navigation.navigate("ToleGateList")}
@@ -280,7 +280,7 @@ export default class Home extends React.Component {
             <Text style={styles.text}>
               {t("tolegatelist", this.state.locale)}
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             style={styles.touchBtn}
