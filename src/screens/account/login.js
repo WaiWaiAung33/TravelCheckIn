@@ -15,7 +15,7 @@ import { Updates } from "expo";
 //import Api
 import NetInfo from "@react-native-community/netinfo";
 const axios = require("axios");
-import { loginApi } from "@api/Url";
+import { LoginApi } from "@api/Url";
 
 //import LanguageModal
 import LanguageModal from "@components/LanguageModal";
@@ -33,7 +33,6 @@ export default class Login extends React.Component {
     this.state = {
       isOnline: false,
       userId: null,
-      password:null,
       editable: true,
       mylang: "MM",
       isOpenErrorModal: false,
@@ -59,8 +58,8 @@ export default class Login extends React.Component {
     this.focusListener = navigation.addListener("didFocus", async () => {
       await this.setState({ editable: true, userId: null });
     });
-    const user = await AsyncStorage.getItem('user_id');
-    const routeName =user !=null ? "Home" : "Login";
+    const userid = await AsyncStorage.getItem("loginID");
+    const routeName = userid != null ? "Home" : "Login";
     this.props.navigation.navigate(routeName);
     const res = await getLang();
     this.setState({ locale: res });
@@ -70,63 +69,41 @@ export default class Login extends React.Component {
     self.setState({
       editable: false,
     });
-    if (this.state.userId == null || this.state.password == null) {
-      alert("Email or Password is required!");
-    } else {
-      const self = this;
-      if (self.state.isOnline) {
+    if (this.state.isOnline) {
+      if (this.state.userId == null) {
+        alert("Phone Number is required!");
+        self.setState({ editable: true });
+      } else {
         let appuser = {
-          email: self.state.userId,
-          password: self.state.password,
+          mobile: this.state.userId,
         };
+
         axios
-          .post(loginApi, appuser, {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              "Access-Control-Allow-Origin": "*",
-            },
-          })
+          .post(LoginApi, appuser)
           .then(function (response) {
-            // console.log("Authorization is ",  response.data);
-            if (response.data.status == "1") {
-              // alert(response.data.user.role_id);
-           
-              AsyncStorage.multiSet(
-                [
-                  ["access_token", response.data.access_token],
-                  ["user_id",response.data.user.email],
-                ],
-                (err) => {
-                  if (err) {
-                    alert("Asynstorage Error");
-                    // console.log(err);
-                  } else {
-                    self.props.navigation.navigate("Home");
-                  }
-                }
-              );
-              self.setState({
-                access_token: response.data.access_token,
-                userId: response.data.user.email,
-                // password: response.data.user.password,
-                editable:true
+            console.log(response.data);
+            if (response.data.error == 0) {
+              // console.log(response.data);
+              // alert(response.data.message);
+
+              self.props.navigation.navigate("OTPCode", {
+                userId: self.state.userId,
+                editable: true,
               });
-              self.props.navigation.navigate("Home");
             } else {
-             self.setState({editable:true})
-              alert(
-                "Invalid Username or Password"
-              );
+              alert(response.data.message);
+              self.setState({ editable: true });
             }
           })
-          .catch(function (err) {
-            self.setState({editable:true})
-          alert(
-              "Email or password is invalid"
-            );
+          .catch(function (error) {
+            // console.log("Error:", error);
+            alert("Something went wrong!");
+            self.setState({ editable: true });
           });
       }
+    } else {
+      self.setState({ editable: true });
+      alert("Please check your internet connection!");
     }
   };
 
@@ -232,40 +209,22 @@ export default class Login extends React.Component {
             }}
           >
             <View style={styles.textinputImg}>
-              <Image source={require("@images/email.png")} style={{width:25,height:20}} />
+              <Image source={require("@images/phone.png")} />
             </View>
 
             <TextInput
               style={styles.textInput}
               value={this.state.userId}
-              placeholder={t("email",this.state.locale)}
-              keyboardType="email-address"
+              placeholder="09 XXX XXX XXX"
+              keyboardType="number-pad"
               onChangeText={(value) => this.setState({ userId: value })}
-            />
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginTop: 10,
-            }}
-          >
-            <View style={styles.textinputImg}>
-              <Image source={require("@images/pass.png")} />
-            </View>
-
-            <TextInput
-              style={styles.textInput}
-              value={this.state.password}
-              placeholder={t("password",this.state.locale)}
-              onChangeText={(value) => this.setState({ password: value })}
             />
           </View>
           <TouchableOpacity
             style={styles.touchBtn}
             onPress={() => (this.state.editable ? this._handleLogin() : null)}
           >
-            <Text style={styles.text}>{t("loginadmin", this.state.locale)}</Text>
+            <Text style={styles.text}>{t("login", this.state.locale)}</Text>
           </TouchableOpacity>
         </View>
 
