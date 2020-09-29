@@ -34,13 +34,20 @@ import {
   CreateApi,
 } from "@api/Url";
 
-// const USERTYPE = [
-//   { value: 0, label: "ပြည်သူ" },
-//   { value: 1, label: "နိုင်ငံဝန်ထမ်း" },
-//   { value: 2, label: "ရဟန်းရှင်" },
-//   { value: 3, label: "တပ်မတော်" },
-//   { value: 4, label: "နိုင်ငံခြားသား" },
-// ];
+const USERTYPE = [
+  { value: 0, label: "ပြည်သူ" },
+  { value: 1, label: "နိုင်ငံဝန်ထမ်း" },
+  { value: 2, label: "ရဟန်းရှင်" },
+  { value: 3, label: "တပ်မတော်" },
+  { value: 4, label: "နိုင်ငံခြားသား" },
+];
+const USERTYPEENG = [
+  { value: 0, label: "People" },
+  { value: 1, label: "Goverment Employee" },
+  { value: 2, label: "Bhikkhu" },
+  { value: 3, label: "Army" },
+  { value: 4, label: "Foreigner" },
+];
 
 const GENDER = "GENDER";
 
@@ -121,8 +128,7 @@ export default class Create extends React.Component {
       ISERRORDESIGNATION: false,
       ISERRORDEPARTMENT: false,
       ISERRORMINISTRYINPUT: false,
-      selectedData:"0",
-      
+      selectedData: "0",
     };
     this.BackHandler = null;
   }
@@ -518,8 +524,6 @@ export default class Create extends React.Component {
   }
 
   _handleSave() {
-    // alert("helo")
-    // alert(this.state.nrccode.value);
     let isError = false;
     if (this.state.startplaces == "") {
       // alert("Helo");
@@ -531,11 +535,6 @@ export default class Create extends React.Component {
         this.setState({ ISERRORENDPLACE: true });
         isError = true;
       }
-    }
-    if (this.state.city.value == null) {
-      // alert("Helo");
-      this.setState({ ISERRORSTARTCITY: true });
-      isError = true;
     }
 
     if (this.state.township.value == null) {
@@ -550,6 +549,18 @@ export default class Create extends React.Component {
         isError = true;
       }
     }
+
+    if (this.state.city.value == null) {
+      // alert("Helo");
+      this.setState({ ISERRORSTARTCITY: true });
+      isError = true;
+    }
+
+    // if (this.state.usertype.value == 1) {
+    //   // alert("Helo");
+    //   this.setState({ ISERRORSTARTCITY: true });
+    //   isError = true;
+    // }
 
     if (this.state.imagePath == null) {
       // alert("Helo");
@@ -607,6 +618,7 @@ export default class Create extends React.Component {
       formData.append("department", this.state.department);
       formData.append("ministry_input", this.state.ministry_input);
       formData.append("ministry_status", this.state.showcheckbox ? 1 : 0);
+      formData.append("gender", this.state.selectedData);
       formData.append(
         "endPlace_id",
         this.state.endtownship.value
@@ -674,15 +686,13 @@ export default class Create extends React.Component {
         "ministry_id",
         this.state.education.value ? this.state.education.value : null
       );
-      formData.append("gender",this.state.selectedData);
       console.log(formData);
       axios
         .post(CreateApi, formData, {
           headers,
         })
         .then(function (response) {
-          console.log("Response",response.data);
-
+          console.log("Response", response.data);
           if (response.data.status == 1) {
             // alert(response.data.message);
             // setTimeout(function() {
@@ -723,7 +733,7 @@ export default class Create extends React.Component {
         })
         .catch(function (err) {
           console.log("Error", err);
-          this.setState({ modalVisible: false });
+          self.setState({ modalVisible: false });
         });
     }
   }
@@ -743,7 +753,6 @@ export default class Create extends React.Component {
         isError = true;
       }
     }
- 
 
     if (this.state.township.value == null) {
       // alert("Helo");
@@ -769,7 +778,6 @@ export default class Create extends React.Component {
     //   this.setState({ ISERRORSTARTCITY: true });
     //   isError = true;
     // }
-
 
     if (this.state.imagePath == null) {
       // alert("Helo");
@@ -827,7 +835,7 @@ export default class Create extends React.Component {
       formData.append("department", this.state.department);
       formData.append("ministry_input", this.state.ministry_input);
       formData.append("ministry_status", this.state.showcheckbox ? 1 : 0);
-      formData.append("gender",this.state.selectedData);
+      formData.append("gender", this.state.selectedData);
       formData.append(
         "endPlace_id",
         this.state.endtownship.value
@@ -901,7 +909,7 @@ export default class Create extends React.Component {
           headers,
         })
         .then(function (response) {
-          console.log("Response",response.data);
+          console.log("Response", response.data);
           if (response.data.status == 1) {
             // alert(response.data.message);
             // setTimeout(function() {
@@ -993,37 +1001,33 @@ export default class Create extends React.Component {
         isError = true;
       }
     }
-    if (this.state.usertype.value == 1 || this.state.usertype.value ==3) {
-      if(this.state.designation == ""){
+    if (this.state.usertype.value == 1 || this.state.usertype.value == 3) {
+      if (this.state.designation == "") {
         this.setState({ ISERRORDESIGNATION: true });
         isError = true;
       }
       // alert("Helo");
-    
     }
-    if (this.state.usertype.value == 1 || this.state.usertype.value ==3) {
-      if(this.state.department == ""){
+    if (this.state.usertype.value == 1 || this.state.usertype.value == 3) {
+      if (this.state.department == "") {
         this.setState({ ISERRORDEPARTMENT: true });
         isError = true;
       }
       // alert("Helo");
-     
     }
-    if (this.state.usertype.value == 1 || this.state.usertype.value ==3) {
-      if(this.state.ministry_input == ""){
+    if (this.state.usertype.value == 1 || this.state.usertype.value == 3) {
+      if (this.state.ministry_input == "") {
         this.setState({ ISERRORMINISTRYINPUT: true });
         isError = true;
       }
       // alert("Helo");
-     
     }
- 
-  
-    // if (this.state.vehicle == "") {
-    //   // alert("Helo");
-    //   this.setState({ ISERRORVERICHAL: true });
-    //   isError = true;
-    // }
+
+    if (this.state.vehicle == "") {
+      // alert("Helo");
+      this.setState({ ISERRORVERICHAL: true });
+      isError = true;
+    }
 
     if (this.state.usertype.value == 0) {
       if (this.state.nrccode.value == null) {
@@ -1114,7 +1118,7 @@ export default class Create extends React.Component {
     this.setState({ imagePathMo: image.uri, ISERRORMO: false });
   }
 
-  handleOnChangeRadioValue(key,value){
+  handleOnChangeRadioValue(key, value) {
     // alert(value);
     switch (key) {
       case GENDER:
@@ -1136,7 +1140,10 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>{t("forising", this.state.locale)}</Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text>{t("forising", this.state.locale)}</Text>
+                <Text style={{ color: "red" }}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
@@ -1147,7 +1154,10 @@ export default class Create extends React.Component {
               />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>{t("visa", this.state.locale)}</Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text>{t("visa", this.state.locale)}</Text>
+                <Text style={{ color: "red" }}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
@@ -1183,7 +1193,10 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>{t("nrcfront", this.state.locale)}</Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text>{t("nrcfront", this.state.locale)}</Text>
+                <Text style={{ color: "red" }}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
@@ -1194,7 +1207,10 @@ export default class Create extends React.Component {
               />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>{t("nrcback", this.state.locale)}</Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text>{t("nrcback", this.state.locale)}</Text>
+                <Text style={{ color: "red" }}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
@@ -1206,7 +1222,10 @@ export default class Create extends React.Component {
             </View>
           </View>
           <View style={{ width: "45%", marginTop: 10 }}>
-            <Text>{t("mo", this.state.locale)}</Text>
+            <View style={{ flexDirection: "row" }}>
+              <Text>{t("mo", this.state.locale)}</Text>
+              <Text style={{ color: "red" }}>*</Text>
+            </View>
             <ImgUploadBtn
               imagePath={this.state.imagePathMo}
               onChooseImage={this._handleOnChooseImageMo.bind(this)}
@@ -1241,7 +1260,10 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>{t("religion", this.state.locale)}</Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text>{t("religion", this.state.locale)}</Text>
+                <Text style={{ color: "red" }}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
@@ -1252,7 +1274,10 @@ export default class Create extends React.Component {
               />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>{t("retligionback", this.state.locale)}</Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text>{t("retligionback", this.state.locale)}</Text>
+                <Text style={{ color: "red" }}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
@@ -1288,7 +1313,10 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>{t("nrcfront", this.state.locale)}</Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text>{t("nrcfront", this.state.locale)}</Text>
+                <Text style={{ color: "red" }}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
@@ -1299,7 +1327,10 @@ export default class Create extends React.Component {
               />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>{t("nrcback", this.state.locale)}</Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text>{t("nrcback", this.state.locale)}</Text>
+                <Text style={{ color: "red" }}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
@@ -1335,7 +1366,10 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
-              <Text>{t("nrcfront", this.state.locale)}</Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text>{t("nrcfront", this.state.locale)}</Text>
+                <Text style={{ color: "red" }}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
@@ -1346,7 +1380,10 @@ export default class Create extends React.Component {
               />
             </View>
             <View style={{ width: "45%" }}>
-              <Text>{t("nrcback", this.state.locale)}</Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text>{t("nrcback", this.state.locale)}</Text>
+                <Text style={{ color: "red" }}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
@@ -1376,13 +1413,13 @@ export default class Create extends React.Component {
     const gender = "";
     // console.log("Create", this.state.imagePath);
     // console.log("Ministray Township Name", this.state.townshipministrayname);
-    const USERTYPE = [
-      { value: 0, label: t("people", this.state.locale) },
-      { value: 1, label: t("goverment", this.state.locale) },
-      { value: 2, label: t("bhikkhu", this.state.locale) },
-      { value: 3, label: t("army", this.state.locale) },
-      { value: 4, label: t("forigner", this.state.locale) },
-    ];
+    // const USERTYPE = [
+    //   { value: 0, label: t("people", this.state.locale) },
+    //   { value: 1, label: t("goverment", this.state.locale) },
+    //   { value: 2, label: t("bhikkhu", this.state.locale) },
+    //   { value: 3, label: t("army", this.state.locale) },
+    //   { value: 4, label: t("forigner", this.state.locale) },
+    // ];
     return (
       <View style={{ flex: 1 }}>
         {this.state.showStepOne ? (
@@ -1402,15 +1439,21 @@ export default class Create extends React.Component {
               >
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.text}>
-                      {t("usertype", this.state.locale)}
-                    </Text>
+                    <View style={{ flexDirection: "row" }}>
+                      <Text style={styles.text}>
+                        {t("usertype", this.state.locale)}
+                      </Text>
+                      <Text style={{ color: "red" }}>*</Text>
+                    </View>
+
                     <View style={{ marginTop: 10 }}>
                       <DropDown
                         // placeholder="ပြည်သူ"
                         optionsContainerWidth="95%"
                         value={this.state.usertype}
-                        options={USERTYPE}
+                        options={
+                          this.state.locale == "MM" ? USERTYPE : USERTYPEENG
+                        }
                         onSelect={(value, label) =>
                           this._handleOnSelectUserType(value, label)
                         }
@@ -1419,13 +1462,19 @@ export default class Create extends React.Component {
                   </View>
                   <View style={styles.secondContainer}>
                     {this.state.usertype.value == 2 ? (
-                      <Text style={styles.text}>
-                        {t("Bhikkhuname", this.state.locale)}
-                      </Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.text}>
+                          {t("Bhikkhuname", this.state.locale)}
+                        </Text>
+                        <Text style={{ color: "red" }}>*</Text>
+                      </View>
                     ) : (
-                      <Text style={styles.text}>
-                        {t("name", this.state.locale)}
-                      </Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.text}>
+                          {t("name", this.state.locale)}
+                        </Text>
+                        <Text style={{ color: "red" }}>*</Text>
+                      </View>
                     )}
 
                     <TextInput
@@ -1443,40 +1492,42 @@ export default class Create extends React.Component {
                   </View>
 
                   <View style={styles.secondContainer}>
-                     
-                    <View style={{flexDirection:"row"}}>
-                      <View style={{paddingRight:15}}>
-                      <Text style={styles.text}>
-                       {t("gender",this.state.locale)}
-                      </Text>
+                    <View style={{ flexDirection: "row" }}>
+                      <View style={{ paddingRight: 15 }}>
+                        <Text style={styles.text}>
+                          {t("gender", this.state.locale)}
+                        </Text>
                       </View>
                       <View>
                         <Radio
-                         label={t("male",this.state.locale)}
-                         active={this.state.selectedData == "0" ? true : false}
-                         onPress={() =>
-                           this.handleOnChangeRadioValue(GENDER, "0")
-                         }
-
+                          label={t("male", this.state.locale)}
+                          active={this.state.selectedData == "0" ? true : false}
+                          onPress={() =>
+                            this.handleOnChangeRadioValue(GENDER, "0")
+                          }
                         />
                       </View>
                       <View>
                         <Radio
-                         label={t("female",this.state.locale)}
-                         active={this.state.selectedData == "1" ? true : false}
-                         onPress={() =>
-                           this.handleOnChangeRadioValue(GENDER, "1")
-                         }
+                          label={t("female", this.state.locale)}
+                          active={this.state.selectedData == "1" ? true : false}
+                          onPress={() =>
+                            this.handleOnChangeRadioValue(GENDER, "1")
+                          }
                         />
                       </View>
                     </View>
-                    </View>
+                  </View>
 
                   {this.state.usertype.value == 4 ? (
                     <View style={styles.secondContainer}>
-                      <Text style={styles.text}>
-                        {t("forino", this.state.locale)}
-                      </Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.text}>
+                          {t("forino", this.state.locale)}
+                        </Text>
+                        <Text style={{ color: "red" }}>*</Text>
+                      </View>
+
                       <TextInput
                         style={styles.textInput}
                         value={this.state.pass}
@@ -1491,9 +1542,12 @@ export default class Create extends React.Component {
                     </View>
                   ) : (
                     <View style={styles.secondContainer}>
-                      <Text style={styles.text}>
-                        {t("nrcno", this.state.locale)}
-                      </Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.text}>
+                          {t("nrcno", this.state.locale)}
+                        </Text>
+                        <Text style={{ color: "red" }}>*</Text>
+                      </View>
                       <View
                         style={{
                           flexDirection: "row",
@@ -1576,12 +1630,16 @@ export default class Create extends React.Component {
                     </View>
                   )}
 
-                  {this.state.usertype.value == 1 || this.state.usertype.value ==3 ? (
+                  {this.state.usertype.value == 1 ||
+                  this.state.usertype.value == 3 ? (
                     <View>
                       <View style={styles.secondContainer}>
-                        <Text style={styles.text}>
-                          {t("designation", this.state.locale)}
-                        </Text>
+                        <View style={{ flexDirection: "row" }}>
+                          <Text style={styles.text}>
+                            {t("designation", this.state.locale)}
+                          </Text>
+                          <Text style={{ color: "red" }}>*</Text>
+                        </View>
                         <TextInput
                           style={styles.textInput}
                           value={this.state.designation}
@@ -1598,9 +1656,12 @@ export default class Create extends React.Component {
                         />
                       </View>
                       <View style={styles.secondContainer}>
-                        <Text style={styles.text}>
-                          {t("department", this.state.locale)}
-                        </Text>
+                        <View style={{ flexDirection: "row" }}>
+                          <Text style={styles.text}>
+                            {t("department", this.state.locale)}
+                          </Text>
+                          <Text style={{ color: "red" }}>*</Text>
+                        </View>
                         <TextInput
                           style={styles.textInput}
                           value={this.state.department}
@@ -1617,9 +1678,12 @@ export default class Create extends React.Component {
                         />
                       </View>
                       <View style={styles.secondContainer}>
-                        <Text style={styles.text}>
-                          {t("ministry_name", this.state.locale)}
-                        </Text>
+                        <View style={{ flexDirection: "row" }}>
+                          <Text style={styles.text}>
+                            {t("ministry_name", this.state.locale)}
+                          </Text>
+                          <Text style={{ color: "red" }}>*</Text>
+                        </View>
                         <TextInput
                           style={styles.textInput}
                           value={this.state.ministry_input}
@@ -1642,9 +1706,12 @@ export default class Create extends React.Component {
                   ) : null}
 
                   <View style={styles.secondContainer}>
-                    <Text style={styles.text}>
-                      {t("phone", this.state.locale)}
-                    </Text>
+                    <View style={{ flexDirection: "row" }}>
+                      <Text style={styles.text}>
+                        {t("phone", this.state.locale)}
+                      </Text>
+                      <Text style={{ color: "red" }}>*</Text>
+                    </View>
                     <TextInput
                       style={styles.textInput}
                       value={this.state.loginID}
@@ -1652,9 +1719,12 @@ export default class Create extends React.Component {
                     />
                   </View>
                   <View style={styles.secondContainer}>
-                    <Text style={styles.text}>
-                      {t("vehical", this.state.locale)}
-                    </Text>
+                    <View style={{ flexDirection: "row" }}>
+                      <Text style={styles.text}>
+                        {t("vehical", this.state.locale)}
+                      </Text>
+                      <Text style={{ color: "red" }}>*</Text>
+                    </View>
                     <TextInput
                       value={this.state.vehicle}
                       style={styles.textInput}
@@ -1662,14 +1732,14 @@ export default class Create extends React.Component {
                       onChangeText={(value) =>
                         this.setState({
                           vehicle: value,
-                          // ISERRORVERICHAL: false,
+                          ISERRORVERICHAL: false,
                         })
                       }
                     />
-                    {/* <ErrorText
+                    <ErrorText
                       errMessage="ယာဉ်နံပါတ်ထည့်ပေးပါရန်"
                       isShow={this.state.ISERRORVERICHAL}
-                    /> */}
+                    />
                   </View>
                   <TouchableOpacity
                     style={styles.touchBtn}
@@ -1711,9 +1781,12 @@ export default class Create extends React.Component {
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <View>
                     <View tyle={styles.secondContainer}>
-                      <Text style={styles.text}>
-                        {t("startcity", this.state.locale)}
-                      </Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.text}>
+                          {t("startcity", this.state.locale)}
+                        </Text>
+                        <Text style={{ color: "red" }}>*</Text>
+                      </View>
                       <View
                         style={{
                           flexDirection: "row",
@@ -1769,9 +1842,12 @@ export default class Create extends React.Component {
                       />
                     </View>
                     <View tyle={styles.secondContainer}>
-                      <Text style={styles.text}>
-                        {t("endplace", this.state.locale)}
-                      </Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.text}>
+                          {t("endplace", this.state.locale)}
+                        </Text>
+                        <Text style={{ color: "red" }}>*</Text>
+                      </View>
                       <View
                         style={{
                           flexDirection: "row",

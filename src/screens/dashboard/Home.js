@@ -13,9 +13,9 @@ import {
   AsyncStorage,
   Linking,
   Platform,
-  ScrollView
+  ScrollView,
 } from "react-native";
-import { Updates} from "expo";
+import { Updates } from "expo";
 import appjson from "@appjson";
 import Loading from "@components/Loading";
 //import LanguageModal
@@ -47,7 +47,7 @@ export default class Home extends React.Component {
       version: null,
       link: "",
       isOpenAppModal: false,
-      expoPushToken:null
+      expoPushToken: null,
     };
     this.BackHandler = null;
   }
@@ -61,9 +61,8 @@ export default class Home extends React.Component {
     await this.setBackHandler();
     const res = await getLang();
     this.setState({ locale: res });
-    this.getfilterVersion();
+    await this.getfilterVersion();
   }
-
 
   async setBackHandler() {
     BackHandler.addEventListener(
@@ -97,9 +96,9 @@ export default class Home extends React.Component {
       isOpenLangModal: false,
       mylang: locale,
     });
-   Updates.reload();
+    Updates.reload();
   }
-  getfilterVersion() {
+  async getfilterVersion() {
     const self = this;
     // self.setState({ isLoading: true });
     const headers = {
@@ -116,19 +115,21 @@ export default class Home extends React.Component {
       })
       .then(function (response) {
         // console.log(response.data);
-        self.setState({isLoading:false});
+        self.setState({ isLoading: false });
         if (self.state.version == response.data.forceVersion.version_name) {
           self.setState({
             // isLoading: false,
-            isOpenAppModal:false
+            isOpenAppModal: false,
             // isOpenAppModal: true,
             // link: response.data.forceVersion.appstore_url,
           });
           // self.setState({isOpenAppModal:true,link:response.data.forceVersion.appstore_url});
           // Linking.openURL(response.data.forceVersion.appstore_url)
-        }
-        else {
-          self.setState({isOpenAppModal:true,link:response.data.forceVersion.appstore_url});
+        } else {
+          self.setState({
+            isOpenAppModal: true,
+            link: response.data.forceVersion.appstore_url,
+          });
           // Linking.openURL(response.data.forceVersion.appstore_url);
         }
       })
@@ -221,14 +222,20 @@ export default class Home extends React.Component {
               onPress={() => this._handleLogout()}
               style={{ width: 50, alignItems: "flex-end", marginTop: 10 }}
             >
-              <ImageBackground source={require("@images/elisp.png")} 
-              style={{width:30,height:30,justifyContent:"center",alignItems:"center"}}>
-              <Image
-                source={require("@images/logout1.png")}
-                style={styles.touchImg}
-              />
+              <ImageBackground
+                source={require("@images/elisp.png")}
+                style={{
+                  width: 30,
+                  height: 30,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Image
+                  source={require("@images/logout1.png")}
+                  style={styles.touchImg}
+                />
               </ImageBackground>
-            
             </TouchableOpacity>
           </View>
 
@@ -271,8 +278,8 @@ export default class Home extends React.Component {
           <Image source={require("@images/logo.png")} />
         </ImageBackground> */}
         <ScrollView>
-        <View style={{ marginTop: 15 }}>
-        {/* <TouchableOpacity
+          <View style={{ marginTop: 15 }}>
+            {/* <TouchableOpacity
             activeOpacity={0.8}
             style={[styles.touchBtn, { backgroundColor: "#EBB318" }]}
             onPress={() => this.props.navigation.navigate("ToleGateList")}
@@ -282,34 +289,49 @@ export default class Home extends React.Component {
             </Text>
           </TouchableOpacity> */}
 
-          <TouchableOpacity
-            style={styles.touchBtn}
-            activeOpacity={0.8}
-            onPress={() => this.props.navigation.navigate("Create")}
-          >
-            <Text style={styles.text}>
-              {t("createform", this.state.locale)}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={[styles.touchBtn, { backgroundColor: "#E99944" }]}
-            onPress={() => this.props.navigation.navigate("ToleGateList")}
-          >
-            <Text style={styles.text}>
-              {t("tolegatelist", this.state.locale)}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={[styles.touchBtn, { backgroundColor: "#C716F1" }]}
-            onPress={() => this.props.navigation.navigate("TravelNote")}
-          >
-            <Text style={styles.text}>
-              {t("travelnote", this.state.locale)}
-            </Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              style={[
+                styles.touchBtn,
+                { padding: this.state.locale == "MM" ? 25 : 35 },
+              ]}
+              activeOpacity={0.8}
+              onPress={() => this.props.navigation.navigate("Create")}
+            >
+              <Text style={styles.text}>
+                {t("createform", this.state.locale)}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={[
+                styles.touchBtn,
+                {
+                  backgroundColor: "#E99944",
+                  padding: this.state.locale == "MM" ? 25 : 35,
+                },
+              ]}
+              onPress={() => this.props.navigation.navigate("ToleGateList")}
+            >
+              <Text style={styles.text}>
+                {t("tolegatelist", this.state.locale)}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={[
+                styles.touchBtn,
+                {
+                  backgroundColor: "#C716F1",
+                  padding: this.state.locale == "MM" ? 25 : 35,
+                },
+              ]}
+              onPress={() => this.props.navigation.navigate("TravelNote")}
+            >
+              <Text style={styles.text}>
+                {t("travelnote", this.state.locale)}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
         <View
           style={{
@@ -330,7 +352,7 @@ export default class Home extends React.Component {
           isOpen={this.state.isOpenAppModal}
           onClose={() => this.setState({ isOpenAppModal: false })}
           link={this.state.link}
-          OnPress={()=>this._handleLogout()}
+          OnPress={() => this._handleLogout()}
           // OnPress={this.props.navigation.navigate(exitApp())}
         />
       </View>
@@ -359,7 +381,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginTop: 10,
-    padding: 25,
+    // padding: 25,
     backgroundColor: "#308DCC",
     borderRadius: 5,
     justifyContent: "center",

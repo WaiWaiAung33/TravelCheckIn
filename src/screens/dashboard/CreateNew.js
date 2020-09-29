@@ -34,13 +34,20 @@ import {
   CreateApi,
 } from "@api/Url";
 
-// const USERTYPE = [
-//   { value: 0, label: "ပြည်သူ" },
-//   { value: 1, label: "နိုင်ငံဝန်ထမ်း" },
-//   { value: 2, label: "ရဟန်းရှင်" },
-//   { value: 3, label: "တပ်မတော်" },
-//   { value: 4, label: "နိုင်ငံခြားသား" },
-// ];
+const USERTYPE = [
+  { value: 0, label: "ပြည်သူ" },
+  { value: 1, label: "နိုင်ငံဝန်ထမ်း" },
+  { value: 2, label: "ရဟန်းရှင်" },
+  { value: 3, label: "တပ်မတော်" },
+  { value: 4, label: "နိုင်ငံခြားသား" },
+];
+const USERTYPEENG = [
+  { value: 0, label:"People" },
+  { value: 1, label:"Goverment Employee"},
+  { value: 2, label:"Bhikkhu"},
+  { value: 3, label:"Army"},
+  { value: 4, label:"Foreigner"},
+];
 const GENDER = "GENDER";
 
 export default class Create extends React.Component {
@@ -1123,7 +1130,10 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
+              <View style={{flexDirection:"row"}}>
               <Text>{t("forising", this.state.locale)}</Text>
+              <Text style={{color:"red"}}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
@@ -1134,7 +1144,10 @@ export default class Create extends React.Component {
               />
             </View>
             <View style={{ width: "45%" }}>
+              <View style={{flexDirection:"row"}}>
               <Text>{t("visa", this.state.locale)}</Text>
+              <Text style={{color:"red"}}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
@@ -1170,7 +1183,10 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
+              <View style={{flexDirection:"row"}}>
               <Text>{t("nrcfront", this.state.locale)}</Text>
+              <Text style={{color:"red"}}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
@@ -1181,7 +1197,10 @@ export default class Create extends React.Component {
               />
             </View>
             <View style={{ width: "45%" }}>
+              <View style={{flexDirection:"row"}}>
               <Text>{t("nrcback", this.state.locale)}</Text>
+              <Text style={{color:"red"}}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
@@ -1193,7 +1212,10 @@ export default class Create extends React.Component {
             </View>
           </View>
           <View style={{ width: "45%", marginTop: 10 }}>
+            <View style={{flexDirection:"row"}}>
             <Text>{t("mo", this.state.locale)}</Text>
+            <Text style={{color:"red"}}>*</Text>
+            </View>
             <ImgUploadBtn
               imagePath={this.state.imagePathMo}
               onChooseImage={this._handleOnChooseImageMo.bind(this)}
@@ -1228,7 +1250,10 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
+              <View style={{flexDirection:"row"}}>
               <Text>{t("religion", this.state.locale)}</Text>
+              <Text style={{color:"red"}}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
@@ -1239,7 +1264,10 @@ export default class Create extends React.Component {
               />
             </View>
             <View style={{ width: "45%" }}>
+              <View style={{flexDirection:"row"}}>
               <Text>{t("retligionback", this.state.locale)}</Text>
+              <Text style={{color:"red"}}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
@@ -1275,7 +1303,10 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
+              <View style={{flexDirection:"row"}}>
               <Text>{t("nrcfront", this.state.locale)}</Text>
+              <Text style={{color:"red"}}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
@@ -1286,7 +1317,10 @@ export default class Create extends React.Component {
               />
             </View>
             <View style={{ width: "45%" }}>
+              <View style={{flexDirection:"row"}}>
               <Text>{t("nrcback", this.state.locale)}</Text>
+              <Text style={{color:"red"}}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
@@ -1322,7 +1356,10 @@ export default class Create extends React.Component {
             }}
           >
             <View style={{ width: "45%" }}>
+              <View style={{flexDirection:"row"}}>
               <Text>{t("nrcfront", this.state.locale)}</Text>
+              <Text style={{color:"red"}}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePath}
                 onChooseImage={this._handleOnChooseImage.bind(this)}
@@ -1333,7 +1370,10 @@ export default class Create extends React.Component {
               />
             </View>
             <View style={{ width: "45%" }}>
+              <View style={{flexDirection:"row"}}>
               <Text>{t("nrcback", this.state.locale)}</Text>
+              <Text style={{color:"red"}}>*</Text>
+              </View>
               <ImgUploadBtn
                 imagePath={this.state.imagePathNrcBack}
                 onChooseImage={this._handleOnChooseImageNrcBack.bind(this)}
@@ -1362,13 +1402,13 @@ export default class Create extends React.Component {
   render() {
     // console.log("Create", this.state.imagePath);
     // console.log("Ministray Township Name", this.state.townshipministrayname);
-    const USERTYPE = [
-      { value: 0, label: t("people", this.state.locale) },
-      { value: 1, label: t("goverment", this.state.locale) },
-      { value: 2, label: t("bhikkhu", this.state.locale) },
-      { value: 3, label: t("army", this.state.locale) },
-      { value: 4, label: t("forigner", this.state.locale) },
-    ];
+    // const USERTYPE = [
+    //   { value: 0, label: t("people", this.state.locale) },
+    //   { value: 1, label: t("goverment", this.state.locale) },
+    //   { value: 2, label: t("bhikkhu", this.state.locale) },
+    //   { value: 3, label: t("army", this.state.locale) },
+    //   { value: 4, label: t("forigner", this.state.locale) },
+    // ];
     return (
       <View style={{ flex: 1 }}>
         {this.state.showStepOne ? (
@@ -1388,15 +1428,18 @@ export default class Create extends React.Component {
               >
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <View style={{ flex: 1 }}>
+                    <View style={{flexDirection:"row"}}>
                     <Text style={styles.text}>
                       {t("usertype", this.state.locale)}
                     </Text>
+                    <Text style={{color:"red"}}>*</Text>
+                    </View>
                     <View style={{ marginTop: 10 }}>
                       <DropDown
                         // placeholder="ပြည်သူ"
                         optionsContainerWidth="95%"
                         value={this.state.usertype}
-                        options={USERTYPE}
+                        options={this.state.locale == "MM" ? USERTYPE : USERTYPEENG}
                         onSelect={(value, label) =>
                           this._handleOnSelectUserType(value, label)
                         }
@@ -1405,13 +1448,19 @@ export default class Create extends React.Component {
                   </View>
                   <View style={styles.secondContainer}>
                     {this.state.usertype.value == 2 ? (
+                      <View style={{flexDirection:"row"}}>
                       <Text style={styles.text}>
                         {t("Bhikkhuname", this.state.locale)}
                       </Text>
+                      <Text style={{color:"red"}}>*</Text>
+                      </View>
                     ) : (
+                      <View style={{flexDirection:"row"}}>
                       <Text style={styles.text}>
                         {t("name", this.state.locale)}
                       </Text>
+                      <Text style={{color:"red"}}>*</Text>
+                      </View>
                     )}
 
                     <TextInput
@@ -1460,9 +1509,12 @@ export default class Create extends React.Component {
 
                   {this.state.usertype.value == 4 ? (
                     <View style={styles.secondContainer}>
+                      <View style={{flexDirection:"row"}}>
                       <Text style={styles.text}>
                         {t("forino", this.state.locale)}
                       </Text>
+                      <Text style={{color:"red"}}>*</Text>
+                      </View>
                       <TextInput
                         style={styles.textInput}
                         value={this.state.pass}
@@ -1477,9 +1529,12 @@ export default class Create extends React.Component {
                     </View>
                   ) : (
                     <View style={styles.secondContainer}>
+                      <View style={{flexDirection:"row"}}>
                       <Text style={styles.text}>
                         {t("nrcno", this.state.locale)}
                       </Text>
+                      <Text style={{color:"red"}}>*</Text>
+                      </View>
                       <View
                         style={{
                           flexDirection: "row",
@@ -1565,9 +1620,12 @@ export default class Create extends React.Component {
                   {this.state.usertype.value == 1 || this.state.usertype.value == 3 ? (
                     <View>
                       <View style={styles.secondContainer}>
+                        <View style={{flexDirection:"row"}}>
                         <Text style={styles.text}>
                           {t("designation", this.state.locale)}
                         </Text>
+                        <Text style={{color:"red"}}>*</Text>
+                        </View>
                         <TextInput
                           style={styles.textInput}
                           value={this.state.designation}
@@ -1584,9 +1642,12 @@ export default class Create extends React.Component {
                         />
                       </View>
                       <View style={styles.secondContainer}>
+                        <View style={{flexDirection:"row"}}>
                         <Text style={styles.text}>
                           {t("department", this.state.locale)}
                         </Text>
+                        <Text style={{color:"red"}}>*</Text>
+                        </View>
                         <TextInput
                           style={styles.textInput}
                           value={this.state.department}
@@ -1603,9 +1664,12 @@ export default class Create extends React.Component {
                         />
                       </View>
                       <View style={styles.secondContainer}>
+                        <View style={{flexDirection:"row"}}>
                         <Text style={styles.text}>
                           {t("ministry_name", this.state.locale)}
                         </Text>
+                        <Text style={{color:"red"}}>*</Text>
+                        </View>
                         <TextInput
                           style={styles.textInput}
                           value={this.state.ministry_input}
@@ -1628,9 +1692,12 @@ export default class Create extends React.Component {
                   ) : null}
 
                   <View style={styles.secondContainer}>
+                    <View style={{flexDirection:"row"}}>
                     <Text style={styles.text}>
                       {t("phone", this.state.locale)}
                     </Text>
+                    <Text style={{color:"red"}}>*</Text>
+                    </View>
                     <TextInput
                       style={styles.textInput}
                       value={this.state.loginID}
@@ -1638,9 +1705,12 @@ export default class Create extends React.Component {
                     />
                   </View>
                   <View style={styles.secondContainer}>
+                    <View style={{flexDirection:"row"}}>
                     <Text style={styles.text}>
                       {t("vehical", this.state.locale)}
                     </Text>
+                    <Text style={{color:"red"}}>*</Text>
+                    </View>
                     <TextInput
                       value={this.state.vehicle}
                       style={styles.textInput}
@@ -1697,9 +1767,12 @@ export default class Create extends React.Component {
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <View>
                     <View tyle={styles.secondContainer}>
+                      <View style={{flexDirection:"row"}}>
                       <Text style={styles.text}>
                         {t("startcity", this.state.locale)}
                       </Text>
+                      <Text style={{color:"red"}}>*</Text>
+                      </View>
                       <View
                         style={{
                           flexDirection: "row",
@@ -1755,9 +1828,12 @@ export default class Create extends React.Component {
                       />
                     </View>
                     <View tyle={styles.secondContainer}>
+                      <View style={{flexDirection:"row"}}>
                       <Text style={styles.text}>
                         {t("endplace", this.state.locale)}
                       </Text>
+                      <Text style={{color:"red"}}>*</Text>
+                      </View>
                       <View
                         style={{
                           flexDirection: "row",

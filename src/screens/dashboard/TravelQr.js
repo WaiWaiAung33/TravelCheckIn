@@ -52,7 +52,8 @@ export default class ToleGate extends React.Component {
     return true;
   };
   UNSAFE_componentWillUnmount() {
-    this.focusListener.remove();
+    this.BackHandler.remove();
+    // this.focusListener.remove();
   }
   _handleCancel() {
     const self = this;

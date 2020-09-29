@@ -71,7 +71,7 @@ export default class ToleGate extends React.Component {
       })
       .then(function (response) {
         const list = response.data.list[0];
-        console.log("Qr List", response.data.list[0].nrc_type);
+        // console.log("Qr List", response.data.list[0].nrc_type);
         self.setState({
           data: response.data.list,
           nrccode: list.nrc_code,

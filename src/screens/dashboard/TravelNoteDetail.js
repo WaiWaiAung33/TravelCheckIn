@@ -75,7 +75,7 @@ export default class ToleGateCard extends React.Component {
         headers,
       })
       .then(function (response) {
-        console.log("Register Detail", response.data);
+        // console.log("Register Detail", response.data);
         let data = response.data;
         self.setState({
           name: data.historyDetail.name,
