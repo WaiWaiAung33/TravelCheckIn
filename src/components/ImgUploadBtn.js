@@ -1,10 +1,11 @@
 import React from "react";
-import { View, TouchableOpacity, Text, StyleSheet, Image } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet, Image,Dimensions } from "react-native";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 
 //import Components
 import CustomModalPhoto from "@components/CustomModalPhoto";
+const {width,height} = Dimensions.get("window");
 
 export default class ImgUploadBtn extends React.Component {
   constructor(props) {
@@ -45,7 +46,9 @@ export default class ImgUploadBtn extends React.Component {
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1
+      quality: 1,
+      maxWidth: width,
+      maxHeight: height,
     });
     this.setState({ isOpenPhotoModal: false });
     if (pickerResult.cancelled == false) {
@@ -60,7 +63,9 @@ export default class ImgUploadBtn extends React.Component {
     let imagResult = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0.5
+      quality: 1,
+      maxWidth: width,
+      maxHeight: height,
     });
     this.setState({ isOpenPhotoModal: false });
     if (imagResult.cancelled == false) {

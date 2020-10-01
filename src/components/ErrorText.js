@@ -7,7 +7,8 @@ export default class ErrorText extends React.Component {
       // <View style={styles.container}>
       // <Image source={require("@images/error.png")} style={{width:20,height:20}}/>
       // </View>
-      <Text style={styles.errText}>{this.props.errMessage}</Text>
+      // <Text style={styles.errText}>{this.props.errMessage}</Text>
+      <Text style={styles.errText}>{this.props.errText}</Text>
     ) : null;
   }
 }

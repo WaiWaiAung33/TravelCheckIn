@@ -924,6 +924,7 @@ export default class Create extends React.Component {
   }
   _handleOnClose() {
     this.setState({ isOpenSuccessModel: false });
+    this.props.navigation.navigate("TravelNote")
   }
   handleOnChangeRadioValue(key, value) {
     // alert(value);

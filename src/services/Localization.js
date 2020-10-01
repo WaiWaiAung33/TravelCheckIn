@@ -90,7 +90,9 @@ const EN = {
   female:"Female",
   email:"Email",
   password:"Password",
-  loginadmin:"Login"
+  loginadmin:"Login",
+  startdate:"Start Date",
+  enddate:"End Date"
 };
 
 //Myanmar Language
@@ -177,7 +179,9 @@ const MM = {
   female:"မ",
   email:"အီးမေးလ်",
   password:"လျှို့ဝှက်နံပါတ်",
-  loginadmin:"ဝင်မည်"
+  loginadmin:"ဝင်မည်",
+  startdate:"စရက်",
+  enddate:"ဆုံးရက်"
 };
 
 i18n.fallbacks = true;

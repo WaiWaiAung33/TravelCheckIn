@@ -1023,11 +1023,11 @@ export default class Create extends React.Component {
       // alert("Helo");
     }
 
-    if (this.state.vehicle == "") {
-      // alert("Helo");
-      this.setState({ ISERRORVERICHAL: true });
-      isError = true;
-    }
+    // if (this.state.vehicle == "") {
+    //   // alert("Helo");
+    //   this.setState({ ISERRORVERICHAL: true });
+    //   isError = true;
+    // }
 
     if (this.state.usertype.value == 0) {
       if (this.state.nrccode.value == null) {
@@ -1151,6 +1151,7 @@ export default class Create extends React.Component {
               <ErrorText
                 errMessage={t("errorforigenphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCFRONT}
+                errText="required"
               />
             </View>
             <View style={{ width: "45%" }}>
@@ -1165,6 +1166,7 @@ export default class Create extends React.Component {
               <ErrorText
                 errMessage={t("errorforigenvisaphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCBACK}
+                errText="required"
               />
             </View>
           </View>
@@ -1204,6 +1206,7 @@ export default class Create extends React.Component {
               <ErrorText
                 errMessage={t("errornrcfrontphot", this.state.locale)}
                 isShow={this.state.ISERRORNRCFRONT}
+                errText="required"
               />
             </View>
             <View style={{ width: "45%" }}>
@@ -1218,6 +1221,7 @@ export default class Create extends React.Component {
               <ErrorText
                 errMessage={t("errornrcbackphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCBACK}
+                errText="required"
               />
             </View>
           </View>
@@ -1233,6 +1237,7 @@ export default class Create extends React.Component {
             <ErrorText
               errMessage={t("errormohpoto", this.state.locale)}
               isShow={this.state.ISERRORMO}
+              errText="required"
             />
           </View>
           <View style={{ width: "45%", marginTop: 10 }}>
@@ -1271,6 +1276,7 @@ export default class Create extends React.Component {
               <ErrorText
                 errMessage={t("errorbhikkhufrontphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCFRONT}
+                errText="required"
               />
             </View>
             <View style={{ width: "45%" }}>
@@ -1285,6 +1291,7 @@ export default class Create extends React.Component {
               <ErrorText
                 errMessage={t("errorbhikkhubackphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCBACK}
+                errText="required"
               />
             </View>
           </View>
@@ -1324,6 +1331,7 @@ export default class Create extends React.Component {
               <ErrorText
                 errMessage={t("errornrcfrontphot", this.state.locale)}
                 isShow={this.state.ISERRORNRCFRONT}
+                errText="required"
               />
             </View>
             <View style={{ width: "45%" }}>
@@ -1338,6 +1346,7 @@ export default class Create extends React.Component {
               <ErrorText
                 errMessage={t("errornrcbackphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCBACK}
+                errText="required"
               />
             </View>
           </View>
@@ -1377,6 +1386,7 @@ export default class Create extends React.Component {
               <ErrorText
                 errMessage={t("errornrcfrontphot", this.state.locale)}
                 isShow={this.state.ISERRORNRCFRONT}
+                errText="required"
               />
             </View>
             <View style={{ width: "45%" }}>
@@ -1391,6 +1401,7 @@ export default class Create extends React.Component {
               <ErrorText
                 errMessage={t("errornrcbackphoto", this.state.locale)}
                 isShow={this.state.ISERRORNRCBACK}
+                errText="required"
               />
             </View>
           </View>
@@ -1488,6 +1499,7 @@ export default class Create extends React.Component {
                     <ErrorText
                       errMessage={t("errorname", this.state.locale)}
                       isShow={this.state.ISERRORNAME}
+                      errText="required"
                     />
                   </View>
 
@@ -1538,6 +1550,7 @@ export default class Create extends React.Component {
                       <ErrorText
                         errMessage={t("errorforigenno", this.state.locale)}
                         isShow={this.state.ISERRORPASSPORT}
+                        errText="required"
                       />
                     </View>
                   ) : (
@@ -1571,6 +1584,7 @@ export default class Create extends React.Component {
                           <ErrorText
                             errMessage={t("errornrccode", this.state.locale)}
                             isShow={this.state.ISERRORNRCCODE}
+                            errText="required"
                           />
                         </View>
                         <View style={{ width: "50%" }}>
@@ -1586,9 +1600,10 @@ export default class Create extends React.Component {
                           <ErrorText
                             errMessage={t("errornrcstate", this.state.locale)}
                             isShow={this.state.ISERRRORNRCSTATE}
+                            errText="required"
                           />
                         </View>
-                        <View style={{ width: "20%" }}>
+                        <View style={{ width: "25%" }}>
                           <DropDown
                             placeholder="N"
                             optionsContainerWidth="33%"
@@ -1624,6 +1639,7 @@ export default class Create extends React.Component {
                           <ErrorText
                             errMessage={t("errornrcnumber", this.state.locale)}
                             isShow={this.state.ISERRORNRCNUMBER}
+                            errText="required"
                           />
                         </View>
                       </View>
@@ -1653,6 +1669,7 @@ export default class Create extends React.Component {
                         <ErrorText
                           errMessage={t("errordesignation", this.state.locale)}
                           isShow={this.state.ISERRORDESIGNATION}
+                          errText="required"
                         />
                       </View>
                       <View style={styles.secondContainer}>
@@ -1675,6 +1692,7 @@ export default class Create extends React.Component {
                         <ErrorText
                           errMessage={t("errordepartment", this.state.locale)}
                           isShow={this.state.ISERRORDEPARTMENT}
+                          errText="required"
                         />
                       </View>
                       <View style={styles.secondContainer}>
@@ -1700,6 +1718,7 @@ export default class Create extends React.Component {
                             this.state.locale
                           )}
                           isShow={this.state.ISERRORMINISTRYINPUT}
+                          errText="required"
                         />
                       </View>
                     </View>
@@ -1719,12 +1738,12 @@ export default class Create extends React.Component {
                     />
                   </View>
                   <View style={styles.secondContainer}>
-                    <View style={{ flexDirection: "row" }}>
+                    {/* <View style={{ flexDirection: "row" }}> */}
                       <Text style={styles.text}>
                         {t("vehical", this.state.locale)}
                       </Text>
-                      <Text style={{ color: "red" }}>*</Text>
-                    </View>
+                      {/* <Text style={{ color: "red" }}>*</Text>
+                    </View> */}
                     <TextInput
                       value={this.state.vehicle}
                       style={styles.textInput}
@@ -1732,14 +1751,14 @@ export default class Create extends React.Component {
                       onChangeText={(value) =>
                         this.setState({
                           vehicle: value,
-                          ISERRORVERICHAL: false,
+                          // ISERRORVERICHAL: false,
                         })
                       }
                     />
-                    <ErrorText
+                    {/* <ErrorText
                       errMessage="ယာဉ်နံပါတ်ထည့်ပေးပါရန်"
                       isShow={this.state.ISERRORVERICHAL}
-                    />
+                    /> */}
                   </View>
                   <TouchableOpacity
                     style={styles.touchBtn}
@@ -1807,6 +1826,7 @@ export default class Create extends React.Component {
                           <ErrorText
                             errMessage={t("errorcity", this.state.locale)}
                             isShow={this.state.ISERRORSTARTCITY}
+                            errText="required"
                           />
                         </View>
                         <View style={{ width: "48%" }}>
@@ -1822,6 +1842,7 @@ export default class Create extends React.Component {
                           <ErrorText
                             errMessage={t("errortownship", this.state.locale)}
                             isShow={this.state.ISERRORSTARTTOWNSHIP}
+                            errText="required"
                           />
                         </View>
                       </View>
@@ -1839,6 +1860,7 @@ export default class Create extends React.Component {
                       <ErrorText
                         errMessage={t("erroraddress", this.state.locale)}
                         isShow={this.state.ISERRORSTARTPLACE}
+                        errText="required"
                       />
                     </View>
                     <View tyle={styles.secondContainer}>
@@ -1949,6 +1971,7 @@ export default class Create extends React.Component {
                           <ErrorText
                             errMessage={t("errortownship", this.state.locale)}
                             isShow={this.state.ISERRRORENDTOWNSHIP}
+                            errText="required"
                           />
                         </View>
                       )}

@@ -117,10 +117,6 @@ export default class Login extends React.Component {
     Updates.reload();
   }
 
-  _handleSetLocaleAsyncStorage = async () => {
-    this.setState({ confirmLocaleModalOpen: false });
-  };
-
   render() {
     // alert(this.state.locale);
     return (

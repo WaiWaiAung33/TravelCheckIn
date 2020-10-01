@@ -98,8 +98,14 @@ const styles = StyleSheet.create({
   triggerText: {
     flex: 1,
     fontSize: 14,
-    margin: 10,
-    color:"#7A7171"
+    // margin: 10,
+    color:"#7A7171",
+    // backgroundColor:"red",
+    alignSelf:"center",
+    marginLeft:5
+    // textAlignVertical:"center"
+    // paddingTop:7,
+    // marginLeft:5,
   },
   activeText: {
     color: "black",
@@ -118,7 +124,10 @@ const triggerStyles = {
     borderWidth: 1,
     borderRadius: 5,
     flexDirection: "row",
-    minHeight: 40,
+    height: 40,
+    // backgroundColor:"green"
+    // justifyContent:"center"
+   
   },
 };
 

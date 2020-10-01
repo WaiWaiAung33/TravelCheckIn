@@ -31,6 +31,8 @@ import TravelNoteApi from "@api/TravelNoteApi";
 //import services
 import { t, getLang } from "@services/Localization";
 
+var user_status="all";
+var qstatus=0;
 export default class TravelNote extends React.Component {
   constructor(props) {
     super(props);
@@ -74,6 +76,7 @@ export default class TravelNote extends React.Component {
     this.setBackHandler();
     await this._getNewDate();
     await this.getAllTravelNote(this.page);
+    // await this._hadleChangeUserType();
     // this.setState({isLoading:true})
   }
   setBackHandler() {
@@ -127,6 +130,7 @@ export default class TravelNote extends React.Component {
       page: page,
       userId: user_id,
       status: "all",
+      q_status: self.state.qStatus,
     };
     axios
       .post(RegisterHistoryApi, bodyParam, {
@@ -171,7 +175,7 @@ export default class TravelNote extends React.Component {
       page: page,
       q_status: statusid,
     };
-    // console.log("bodyParam",bodyParam);
+    // console.log("bodyParam", RegisterHistoryApi);
     axios
       .post(RegisterHistoryApi, bodyParam, {
         headers: {
@@ -199,71 +203,176 @@ export default class TravelNote extends React.Component {
   _hadleChangeUserType(status) {
     // alert(status);
     if (status == 0) {
-      this.setState({
-        usertype: "all",
-        qStatus: 0,
-      });
+      user_status = "all";
+      qstatus=0;
+      // alert(status);
+      // this.setState({
+      //   usertype:status,
+      //   qStatus: 0,
+      // });
+      this._handleSearch(
+        this.page,
+        "all",
+         0,
+        this.state.changestartDate,
+        this.state.changeendDate
+      );
+      // alert(this.state.usertype);
+      //  this.getAllTravelNote(this.page)
     } else if (status == 1) {
-      this.setState({
-        usertype: "1",
-        qStatus: 0,
-      });
+      // this.setState({
+      //   usertype: "1",
+      //   qStatus: 0,
+      // });
+      user_status = 1;
+      qstatus=0;
+      this._handleSearch(
+        this.page,
+        1,
+        0,
+        this.state.changestartDate,
+        this.state.changeendDate
+      );
+      //  this.getAllTravelNote(this.page)
     } else if (status == 2) {
-      this.setState({
-        usertype: "2",
-        qStatus: 0,
-      });
+      // this.setState({
+      //   usertype: "2",
+      //   qStatus: 0,
+      // });
+      user_status = 2;
+      qstatus=0;
+      this._handleSearch(
+        this.page,
+        2,
+        0,
+        this.state.changestartDate,
+        this.state.changeendDate
+      );
+      //  this.getAllTravelNote(this.page)
     } else if (status == 3) {
-      this.setState({
-        usertype: "3",
-        qStatus: 0,
-      });
+      // this.setState({
+      //   usertype: "3",
+      //   qStatus: 0,
+      // });
+      user_status = 3;
+      qstatus=0;
+      this._handleSearch(
+        this.page,
+        3,
+        0,
+        this.state.changestartDate,
+        this.state.changeendDate
+      );
+      //  this.getAllTravelNote(this.page)
     } else if (status == 4) {
-      this.setState({
-        usertype: "3",
-        qStatus: 1,
-      });
-    } else {
-      this.setState({
-        usertype: "4",
-        qStatus: 0,
-      });
+      // this.setState({
+      //   usertype: "3",
+      //   qStatus: 1,
+      // });
+      user_status = 3;
+      qstatus=1;
+      this._handleSearch(
+        this.page,
+        3,
+        1,
+        this.state.changestartDate,
+        this.state.changeendDate
+      );
+      //  this.getAllTravelNote(this.page)
+    } else if (status == 5) {
+      // this.setState({
+      //   usertype: "4",
+      //   qStatus: 0,
+      // });
+      user_status = 4;
+      qstatus=0;
+      this._handleSearch(
+        this.page,
+        4,
+        0,
+        this.state.changestartDate,
+        this.state.changeendDate
+      );
+      //  this.getAllTravelNote(this.page)
     }
     // alert("Status"+status+"qStatus"+this.state.qStatus)
   }
 
   _handleOnSelect(value, label) {
+    // alert(value);
     this.setState({
       status: { value: value, label: label },
     });
-
     this._hadleChangeUserType(value);
   }
   onRefresh = () => {
+    var today=new Date();
+    var dd = today.getDate();
+
+    var mm = today.getMonth() + 1;
+    var yyyy = today.getFullYear();
+    if (dd < 10) {
+      dd = "0" + dd;
+    }
+
+    if (mm < 10) {
+      mm = "0" + mm;
+    }
+    today = dd + "-" + mm + "-" + yyyy;
     this.setState({
       data: [],
-      refreshing: false, // start top loading
+      refreshing: true,
+      status: { value: "0", label:t("all",this.state.locale) },
+      changestartDate:today,
+      changeendDate:today
     });
     this.page = 1;
     this.getAllTravelNote(this.page);
   };
   _hadleChangeDate(date) {
+    this._handleSearch(
+      this.page,
+      user_status,
+      qstatus,
+      date,
+      this.state.changeendDate
+    );
     this.setState({ changestartDate: date });
+
+    //  this.getAllTravelNote(this.page)
+
     // alert(this.state.changestartDate)
+  }
+  _handleChangeEndDate(date) {
+    this._handleSearch(
+      this.page,
+      user_status,
+      qstatus,
+      this.state.changestartDate,
+      date
+    );
+    this.setState({ changeendDate: date });
   }
 
   renderFilter() {
+
     const STATUS = [
-      { value: 0, label: t("all", this.state.locale) },
-      { value: 1, label: t("allow", this.state.locale) },
-      { value: 2, label: t("tofix", this.state.locale) },
-      { value: 3, label: t("approve", this.state.locale) },
-      { value: 4, label: t("quartine", this.state.locale) },
-      { value: 5, label: t("cancelregister", this.state.locale) },
+      { value: 0, label:t("all",this.state.locale)  },
+      { value: 1, label:t("allow",this.state.locale) },
+      { value: 2, label:t("tofix",this.state.locale)  },
+      { value: 3, label:t("approve",this.state.locale) },
+      { value: 4, label:t("quartine",this.state.locale) },
+      { value: 5, label: t("cancelregister",this.state.locale) },
     ];
+    
     return (
       <View>
+         <View style={{flexDirection:"row",marginTop:10,marginLeft:10,marginRight:10}}>
+            <Text style={{flex:1}}>{t("startdate",this.state.locale)}</Text>
+            <Text style={{flex:1,paddingLeft:15}}>{t("enddate",this.state.locale)}</Text>
+          </View>
         <View style={styles.secondContainer}>
+         
           <DatePicker
             date={this.state.changestartDate}
             mode="date"
@@ -294,7 +403,7 @@ export default class TravelNote extends React.Component {
               dateInput: Style.datePickerDateInput,
               dateText: Style.datePickerDateText,
             }}
-            onDateChange={(date) => this.setState({ changeendDate: date })}
+            onDateChange={(date) => this._handleChangeEndDate(date)}
           />
         </View>
         <View
@@ -305,15 +414,15 @@ export default class TravelNote extends React.Component {
             justifyContent: "space-between",
           }}
         >
-          <View style={{ width: "65%" }}>
+          <View style={{ width: "100%" }}>
             <DropDown
               value={this.state.status}
               options={STATUS}
-              optionsContainerWidth="60%"
+              optionsContainerWidth="95%"
               onSelect={(value, label) => this._handleOnSelect(value, label)}
             />
           </View>
-          <View style={{ width: "30%" }}>
+          {/* <View style={{ width: "30%" }}>
             <TouchableOpacity
               style={styles.touchBtn}
               onPress={() =>
@@ -329,7 +438,7 @@ export default class TravelNote extends React.Component {
               <Image source={require("@images/search.png")} />
               <Text style={styles.text}>{t("search", this.state.locale)}</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </View>
     );
@@ -369,7 +478,10 @@ export default class TravelNote extends React.Component {
     } else if (arrIndex == 1 && item.status == 1) {
       this.props.navigation.navigate("TravelQr", { data: item });
     } else if (arrIndex == 1) {
-      this.props.navigation.navigate("TravelNoteDetail", { userid: item.id,backRoute:"TravelNote" });
+      this.props.navigation.navigate("TravelNoteDetail", {
+        userid: item.id,
+        backRoute: "TravelNote",
+      });
     }
   }
 
