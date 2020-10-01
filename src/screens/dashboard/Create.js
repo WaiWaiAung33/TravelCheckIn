@@ -1506,9 +1506,12 @@ export default class Create extends React.Component {
                   <View style={styles.secondContainer}>
                     <View style={{ flexDirection: "row" }}>
                       <View style={{ paddingRight: 15 }}>
+                        <View style={{flexDirection:"row"}}>
                         <Text style={styles.text}>
                           {t("gender", this.state.locale)}
                         </Text>
+                        <Text style={{color:"red"}}>*</Text>
+                        </View>
                       </View>
                       <View>
                         <Radio
