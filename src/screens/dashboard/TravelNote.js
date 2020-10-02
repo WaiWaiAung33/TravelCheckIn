@@ -472,6 +472,7 @@ export default class TravelNote extends React.Component {
     );
   };
   _handleTravelNoteDetail(arrIndex, item) {
+    // alert(item.status);
     // console.log(item);
     if (arrIndex == 1 && item.status == 2) {
       this.props.navigation.navigate("Edit", { userid: item.id });

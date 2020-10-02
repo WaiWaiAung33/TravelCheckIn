@@ -11,7 +11,8 @@ export const GetTownshipApi = BaseUrl + "township";
 //get nrc state
 export const GetNrcStateApi = BaseUrl + "getNRCstate";
 
-
+//image url
+export const ImguploadApi ="http://128.199.79.79/Covid/public/";
 //create api
 export const CreateApi = BaseUrl + "regrister";
 

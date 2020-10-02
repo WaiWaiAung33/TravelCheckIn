@@ -63,7 +63,7 @@ export default class Create extends React.Component {
       NRCCODE: [],
       nrcstate: { value: null, label: null },
       NRCSTATE: [],
-      nrcstatus: { value: 1, label: "N" },
+      nrcstatus: { value: 1, label: "နိုင်" },
       NRCSTATUS: [],
       usertype: { value: 0, label: "ပြည်သူ" },
       endtownship: { value: null, label: null },
@@ -217,7 +217,14 @@ export default class Create extends React.Component {
           var obj = { value: data.id.toString(), label: data.township };
           arr.push(obj);
         });
-        self.setState({ TOWNSHIP: arr, Township: response.data.townships });
+        self.setState({
+          TOWNSHIP: arr,
+          Township: response.data.townships,
+          township: {
+            value: response.data.townships[0].id,
+            label: response.data.townships[0].township,
+          },
+        });
       })
       .catch(function (err) {
         console.log(err);
@@ -355,7 +362,13 @@ export default class Create extends React.Component {
           var obj = { value: data.id.toString(), label: data.nrc_state };
           arr.push(obj);
         });
-        self.setState({ NRCSTATE: arr });
+        self.setState({
+          NRCSTATE: arr,
+          nrcstate: {
+            value: response.data.townships[0].id,
+            label: response.data.townships[0].nrc_state,
+          },
+        });
       })
       .catch(function (err) {
         console.log(err);
@@ -1506,11 +1519,11 @@ export default class Create extends React.Component {
                   <View style={styles.secondContainer}>
                     <View style={{ flexDirection: "row" }}>
                       <View style={{ paddingRight: 15 }}>
-                        <View style={{flexDirection:"row"}}>
-                        <Text style={styles.text}>
-                          {t("gender", this.state.locale)}
-                        </Text>
-                        <Text style={{color:"red"}}>*</Text>
+                        <View style={{ flexDirection: "row" }}>
+                          <Text style={styles.text}>
+                            {t("gender", this.state.locale)}
+                          </Text>
+                          <Text style={{ color: "red" }}>*</Text>
                         </View>
                       </View>
                       <View>
@@ -1608,7 +1621,7 @@ export default class Create extends React.Component {
                         </View>
                         <View style={{ width: "25%" }}>
                           <DropDown
-                            placeholder="N"
+                            placeholder="နိုင်"
                             optionsContainerWidth="33%"
                             value={this.state.nrcstatus}
                             options={this.state.NRCSTATUS}
@@ -1742,10 +1755,10 @@ export default class Create extends React.Component {
                   </View>
                   <View style={styles.secondContainer}>
                     {/* <View style={{ flexDirection: "row" }}> */}
-                      <Text style={styles.text}>
-                        {t("vehical", this.state.locale)}
-                      </Text>
-                      {/* <Text style={{ color: "red" }}>*</Text>
+                    <Text style={styles.text}>
+                      {t("vehical", this.state.locale)}
+                    </Text>
+                    {/* <Text style={{ color: "red" }}>*</Text>
                     </View> */}
                     <TextInput
                       value={this.state.vehicle}

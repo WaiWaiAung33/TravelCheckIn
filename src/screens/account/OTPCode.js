@@ -175,7 +175,8 @@ export default class OTPCode extends React.Component {
           </View>
           <View style={{ marginTop: 25 }}>
             <Text style={styles.headerText}>
-              09123456789 သို့ပို့ဆောင်လိုက်သောနံပါတ်
+              {this.props.navigation.getParam("userId")}{" "}
+              သို့ပို့ဆောင်လိုက်သောနံပါတ်
             </Text>
             <Text style={styles.headerText}>၆လုံးကို ရိုက်ထည့်ပါ</Text>
           </View>

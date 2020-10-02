@@ -427,7 +427,7 @@ export default class Create extends React.Component {
           var obj = { value: data.id, label: data.nrc_state };
           arr.push(obj);
         });
-        self.setState({ NRCSTATE: arr });
+        self.setState({ NRCSTATE: arr,nrcstate:{value:response.data.townships[0].id,label:response.data.townships[0].nrc_state} });
       })
       .catch(function (err) {
         console.log(err);
@@ -1040,68 +1040,83 @@ export default class Create extends React.Component {
                     </View>
                   ) : (
                     <View style={styles.secondContainer}>
+                    <View style={{ flexDirection: "row" }}>
                       <Text style={styles.text}>
                         {t("nrcno", this.state.locale)}
                       </Text>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          marginTop: 10,
-                        }}
-                      >
-                        <View style={{ width: "35%" }}>
-                          <DropDown
-                            placeholder="1"
-                            optionsContainerWidth="33%"
-                            value={this.state.nrccode}
-                            options={this.state.NRCCODE}
-                            onSelect={(value, label) =>
-                              this._handleOnSelectNRCCode(value, label)
-                            }
-                          />
-                        </View>
-                        <View style={{ width: "60%" }}>
-                          <DropDown
-                            optionsContainerWidth="55%"
-                            value={this.state.nrcstate}
-                            options={this.state.NRCSTATE}
-                            onSelect={(value, label) =>
-                              this._handleOnSelectNRCState(value, label)
-                            }
-                          />
-                        </View>
+                      <Text style={{ color: "red" }}>*</Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        marginTop: 10,
+                      }}
+                    >
+                      <View style={{ width: "20%" }}>
+                        <DropDown
+                          placeholder={t(
+                            "placeholdernrccode",
+                            this.state.locale
+                          )}
+                          value={this.state.nrccode}
+                          optionsContainerWidth="33%"
+                          options={this.state.NRCCODE}
+                          onSelect={(value, label) =>
+                            this._handleOnSelectNRCCode(value, label)
+                          }
+                        />
+                      
                       </View>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          marginTop: 10,
-                        }}
-                      >
-                        <View style={{ width: "35%" }}>
-                          <DropDown
-                            placeholder="N"
-                            optionsContainerWidth="32%"
-                            value={this.state.nrcstatus}
-                            options={this.state.NRCSTATUS}
-                            onSelect={(value, label) =>
-                              this._handleOnSelectNRCStatus(value, label)
-                            }
-                          />
-                        </View>
-                        <View style={{ width: "60%" }}>
-                          <TextInput
-                            keyboardType="number-pad"
-                            style={[styles.textInput]}
-                            value={this.state.nrcnumber}
-                            onChangeText={(value) =>
-                              this.setState({ nrcnumber: value })
-                            }
-                          />
-                        </View>
+                      <View style={{ width: "50%" }}>
+                        <DropDown
+                          placeholder="NRC State"
+                          optionsContainerWidth="65%"
+                          value={this.state.nrcstate}
+                          options={this.state.NRCSTATE}
+                          onSelect={(value, label) =>
+                            this._handleOnSelectNRCState(value, label)
+                          }
+                        />
+                     
+                      </View>
+                      <View style={{ width: "25%" }}>
+                        <DropDown
+                          placeholder="နိုင်"
+                          optionsContainerWidth="33%"
+                          value={this.state.nrcstatus}
+                          options={this.state.NRCSTATUS}
+                          onSelect={(value, label) =>
+                            this._handleOnSelectNRCStatus(value, label)
+                          }
+                        />
                       </View>
                     </View>
+                    <View
+                      style={{
+                        marginTop: 10,
+                      }}
+                    >
+                      <View>
+                        <TextInput
+                          style={[styles.textInput]}
+                          value={this.state.nrcnumber}
+                          keyboardType="number-pad"
+                          placeholder={t(
+                            "placeholdernrcnumber",
+                            this.state.locale
+                          )}
+                          onChangeText={(value) =>
+                            this.setState({
+                              nrcnumber: value,
+                             
+                            })
+                          }
+                        />
+                      
+                      </View>
+                    </View>
+                  </View>
                   )}
 
                   {this.state.usertype.value == 1 ||

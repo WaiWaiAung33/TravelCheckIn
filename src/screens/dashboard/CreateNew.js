@@ -216,7 +216,14 @@ export default class Create extends React.Component {
           var obj = { value: data.id.toString(), label: data.township };
           arr.push(obj);
         });
-        self.setState({ TOWNSHIP: arr, Township: response.data.townships });
+        self.setState({ 
+          TOWNSHIP: arr,
+           Township: response.data.townships ,
+           township: {
+            value: response.data.townships[0].id,
+            label: response.data.townships[0].township,
+          },
+          });
       })
       .catch(function (err) {
         console.log(err);
@@ -354,7 +361,12 @@ export default class Create extends React.Component {
           var obj = { value: data.id.toString(), label: data.nrc_state };
           arr.push(obj);
         });
-        self.setState({ NRCSTATE: arr });
+        self.setState({ NRCSTATE: arr,
+          nrcstate: {
+            value: response.data.townships[0].id,
+            label: response.data.townships[0].nrc_state,
+          },
+        });
       })
       .catch(function (err) {
         console.log(err);

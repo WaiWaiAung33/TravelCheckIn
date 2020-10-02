@@ -8,6 +8,7 @@ import {
   ScrollView,
   BackHandler,
   AsyncStorage,
+  TouchableOpacity,
 } from "react-native";
 
 //import components
@@ -17,8 +18,12 @@ import Header from "@components/Header";
 import { t, getLang } from "@services/Localization";
 
 const axios = require("axios");
-import { RegisterHistoryDetailApi } from "@api/Url";
-import { TouchableHighlight, BaseUrl } from "react-native-gesture-handler";
+import { RegisterHistoryDetailApi, ImguploadApi } from "@api/Url";
+//import components
+import PhotoModalNrcFront from "@components/PhotoModal";
+import PhotoModalNrcBack from "@components/PhotoModal";
+import PhotoModalSupport from "@components/PhotoModal";
+import PhotoModalMO from "@components/PhotoModal";
 
 export default class ToleGateCard extends React.Component {
   constructor(props) {
@@ -45,7 +50,11 @@ export default class ToleGateCard extends React.Component {
       ministry_input: "",
       check_by: "",
       approve_by: "",
-      gender:""
+      gender: "",
+      isOpenPhotoModal: false,
+      isOpenNrcBackModal: false,
+      isOpenSupportModal: false,
+      isOpenMOModal: false,
     };
     this.BackHandler = null;
   }
@@ -109,7 +118,7 @@ export default class ToleGateCard extends React.Component {
           ministry_input: data.historyDetail.ministry_input,
           check_by: data.historyDetail.checked_by,
           approve_by: data.historyDetail.approved_by,
-          gender:data.historyDetail.sex
+          gender: data.historyDetail.sex,
           // citizenstatus: data.historyDetail.ministry_status,
         });
         // self.setState({ isOpenSuccessModel: true });
@@ -149,14 +158,56 @@ export default class ToleGateCard extends React.Component {
       return this.state.nrc;
     }
   }
+  _onPress() {
+    this.setState({ isOpenPhotoModal: true });
+  }
+  _onPressNrcBack() {
+    this.setState({ isOpenNrcBackModal: true });
+  }
+
+  _onPressSupport() {
+    this.setState({ isOpenSupportModal: true });
+  }
+  _onPressMo() {
+    this.setState({ isOpenMOModal: true });
+  }
+
   render() {
-    // console.log(this.props.navigation.getParam("userid"));
     const data = this.props.navigation.getParam("backRoute");
     return (
       <View>
         <Header
           name={t("detail", this.state.locale)}
           Onpress={() => this.props.navigation.navigate(data)}
+        />
+        <PhotoModalNrcFront
+          isOpen={this.state.isOpenPhotoModal}
+          photo={
+            ImguploadApi + this.state.imagePath + "/" + this.state.nrcfrontName
+          }
+          onClose={() => this.setState({ isOpenPhotoModal: false })}
+        />
+        <PhotoModalNrcBack
+          isOpen={this.state.isOpenNrcBackModal}
+          photo={
+            ImguploadApi + this.state.imagePath + "/" + this.state.nrcbackName
+          }
+          onClose={() => this.setState({ isOpenNrcBackModal: false })}
+        />
+        <PhotoModalNrcBack
+          isOpen={this.state.isOpenSupportModal}
+          photo={
+            ImguploadApi +
+            this.state.imagePath +
+            "/" +
+            this.state.approvephotoName
+          }
+          onClose={() => this.setState({ isOpenSupportModal: false })}
+        />
+        <PhotoModalMO
+          isOpen={this.state.isOpenMOModal}
+          photo={ImguploadApi + this.state.imagePath + "/" + this.state.moName}
+          onClose={() => this.setState({ isOpenMOModal: false })}
         />
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -178,12 +229,15 @@ export default class ToleGateCard extends React.Component {
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
               <Text style={styles.firstText}>
-                {t("gender",this.state.locale)}
+                {t("gender", this.state.locale)}
               </Text>
-              <Text style={styles.secondText}>{this.state.gender == "0" ? t("male",this.state.locale) : t("female",this.state.locale)}</Text>
+              <Text style={styles.secondText}>
+                {this.state.gender == "0"
+                  ? t("male", this.state.locale)
+                  : t("female", this.state.locale)}
+              </Text>
             </View>
 
-            
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
@@ -193,7 +247,7 @@ export default class ToleGateCard extends React.Component {
                 {/* {this.state.passport !=null ? this.state.passport : this.state.nrc} */}
               </Text>
             </View>
-            {this.state.citizenstatus == 1 || this.state.citizenstatus ==3 ? (
+            {this.state.citizenstatus == 1 || this.state.citizenstatus == 3 ? (
               <View>
                 <View
                   style={{
@@ -314,16 +368,18 @@ export default class ToleGateCard extends React.Component {
                   marginTop: 5,
                 }}
               > */}
-              <Image
-                source={{
-                  uri:
-                    "http://128.199.79.79/Covid/public/" +
-                    this.state.imagePath +
-                    "/" +
-                    this.state.nrcfrontName,
-                }}
-                style={{ width: 150, height: 150, marginTop: 5 }}
-              />
+              <TouchableOpacity onPress={() => this._onPress()}>
+                <Image
+                  source={{
+                    uri:
+                      ImguploadApi +
+                      this.state.imagePath +
+                      "/" +
+                      this.state.nrcfrontName,
+                  }}
+                  style={{ width: 150, height: 150, marginTop: 5 }}
+                />
+              </TouchableOpacity>
               {/* </View> */}
             </View>
             <View style={{ width: "45%" }}>
@@ -343,16 +399,18 @@ export default class ToleGateCard extends React.Component {
                   marginTop: 5,
                 }}
               > */}
-              <Image
-                source={{
-                  uri:
-                    "http://128.199.79.79/Covid/public/" +
-                    this.state.imagePath +
-                    "/" +
-                    this.state.nrcbackName,
-                }}
-                style={{ width: 150, height: 150, marginTop: 5 }}
-              />
+              <TouchableOpacity onPress={() => this._onPressNrcBack()}>
+                <Image
+                  source={{
+                    uri:
+                      ImguploadApi +
+                      this.state.imagePath +
+                      "/" +
+                      this.state.nrcbackName,
+                  }}
+                  style={{ width: 150, height: 150, marginTop: 5 }}
+                />
+              </TouchableOpacity>
               {/* </View> */}
             </View>
           </View>
@@ -374,16 +432,18 @@ export default class ToleGateCard extends React.Component {
                 marginTop: 5,
               }}
             > */}
-              <Image
-                source={{
-                  uri:
-                    "http://128.199.79.79/Covid/public/" +
-                    this.state.imagePath +
-                    "/" +
-                    this.state.moName,
-                }}
-                style={{ width: 150, height: 150, marginTop: 5 }}
-              />
+              <TouchableOpacity onPress={() => this._onPressMo()}>
+                <Image
+                  source={{
+                    uri:
+                      ImguploadApi +
+                      this.state.imagePath +
+                      "/" +
+                      this.state.moName,
+                  }}
+                  style={{ width: 150, height: 150, marginTop: 5 }}
+                />
+              </TouchableOpacity>
               {/* </View> */}
             </View>
           ) : null}
@@ -405,16 +465,18 @@ export default class ToleGateCard extends React.Component {
                 marginTop: 5,
               }}
             > */}
-            <Image
-              source={{
-                uri:
-                  "http://128.199.79.79/Covid/public/" +
-                  this.state.imagePath +
-                  "/" +
-                  this.state.approvephotoName,
-              }}
-              style={{ width: 150, height: 150, marginTop: 5 }}
-            />
+            <TouchableOpacity onPress={() => this._onPressSupport()}>
+              <Image
+                source={{
+                  uri:
+                    ImguploadApi +
+                    this.state.imagePath +
+                    "/" +
+                    this.state.approvephotoName,
+                }}
+                style={{ width: 150, height: 150, marginTop: 5 }}
+              />
+            </TouchableOpacity>
           </View>
           {/* <View
             style={{
