@@ -12,11 +12,11 @@ export default class Checkbox extends React.Component{
 
     handleCheckClicked(){
         this.setState({
-            isCheck:true
+            isCheck:!this.state.isCheck
         })
         // // Call function type prop with return values.
         if(this.props.onCheck){
-            this.props.onCheck(this.state.isCheck);
+            this.props.onCheck(!this.state.isCheck);
         }
     }
     render(){
@@ -35,7 +35,9 @@ export default class Checkbox extends React.Component{
                             }
                         </View>
                     </View>
+                    <View style={{justifyContent:"center"}}>
                     <Text style={styles.showText}>{this.props.langText}</Text>
+                    </View>
                 </View>
             </TouchableOpacity>
         );
@@ -43,7 +45,7 @@ export default class Checkbox extends React.Component{
 }
 const styles = StyleSheet.create({
     checkboxContainer:{
-        flexDirection:'row'
+        flexDirection:'row',
     },
     checkbox:{
         height: 20,
@@ -62,6 +64,6 @@ const styles = StyleSheet.create({
         width: 15,
     },
     showText:{
-        textAlign:"center"
+        textAlign:"center",
     }
 });

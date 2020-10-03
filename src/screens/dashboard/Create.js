@@ -18,11 +18,12 @@ import DropDown from "@components/DropDown";
 import Header from "@components/Header";
 import ImgUploadBtn from "@components/ImgUploadBtn";
 import SuccessModal from "@components/SuccessModal";
-import CreateSuccessModal from "@components/SuccessModal";
+import CreateSuccessModal from "@components/CreateSuccessModal";
 import ErrorText from "@components/ErrorText";
 import { t, getLang } from "@services/Localization";
 import LoadingModal from "@components/LoadingModal";
 import Radio from "@components/Radio";
+import CreateCheckbox from "@components/CreateCheckbox";
 
 //import api
 const axios = require("axios");
@@ -34,6 +35,7 @@ import {
   CreateApi,
 } from "@api/Url";
 
+//import const
 const USERTYPE = [
   { value: 0, label: "ပြည်သူ" },
   { value: 1, label: "နိုင်ငံဝန်ထမ်း" },
@@ -74,34 +76,34 @@ export default class Create extends React.Component {
       showStepTwo: false,
       showcheckbox: false,
       access_token: null,
-      address: "",
-      addressText: "",
-      loginID: "",
+      address: null,
+      addressText: null,
+      loginID: null,
       imagePath: null,
       imagePathNrcBack: null,
       imagePathSupport: null,
       imagePathMo: null,
       user_id: null,
-      name: "",
-      nrcnumber: "",
-      vehicle: "",
-      startplace: "",
+      name: null,
+      nrcnumber: null,
+      vehicle: null,
+      startplace: null,
       City: [],
       tempData: [],
-      qstatus: "",
+      qstatus: null,
       qstatusboolean: false,
       tempTownship: [],
       Township: [],
       MINISTRAY: [],
       tempMinistray: [],
-      qtownstatus: "",
+      qtownstatus: null,
       qtownstatusboolean: false,
-      pass: "",
-      startplaces: "",
-      ministrayTownship: "",
+      pass: null,
+      startplaces: null,
+      ministrayTownship: null,
       // TOWNSHIPMINISTRAY:[],
       townshipministrayid: null,
-      townshipministrayname: "",
+      townshipministrayname: null,
       isOpenSuccessModel: false,
 
       ISERRORNAME: false,
@@ -122,13 +124,17 @@ export default class Create extends React.Component {
       locale: null,
       modalVisible: false,
       isOpenCreateSuccessModel: false,
-      designation: "",
-      department: "",
-      ministry_input: "",
+      designation: null,
+      department: null,
+      ministry_input: null,
       ISERRORDESIGNATION: false,
       ISERRORDEPARTMENT: false,
       ISERRORMINISTRYINPUT: false,
       selectedData: "0",
+      isOpenCheckbox: false,
+      to: 0,
+      from: 0,
+      isOpenCloseSuccessModel:false
     };
     this.BackHandler = null;
   }
@@ -169,6 +175,7 @@ export default class Create extends React.Component {
     this.focusListener.remove();
   }
 
+  //get city api
   getCityAll() {
     const self = this;
     const headers = {
@@ -194,6 +201,8 @@ export default class Create extends React.Component {
         console.log(err);
       });
   }
+
+  //get township api
   getTownshipAll(city_id) {
     const self = this;
     const headers = {
@@ -231,6 +240,7 @@ export default class Create extends React.Component {
       });
   }
 
+  //get end township api
   getEndtownshipAll() {
     const self = this;
     const headers = {
@@ -258,6 +268,7 @@ export default class Create extends React.Component {
       });
   }
 
+  //get ministray api
   getAllEducation() {
     const self = this;
     const headers = {
@@ -285,6 +296,7 @@ export default class Create extends React.Component {
       });
   }
 
+  //get nrc code api
   getAllNrcCode() {
     const self = this;
     const headers = {
@@ -312,6 +324,7 @@ export default class Create extends React.Component {
       });
   }
 
+  //get nrc status api
   getAllNrcStatus() {
     const self = this;
     const headers = {
@@ -339,6 +352,7 @@ export default class Create extends React.Component {
       });
   }
 
+  //get nrc state api
   getAllNrcState(nrccode) {
     const self = this;
     const headers = {
@@ -375,6 +389,7 @@ export default class Create extends React.Component {
       });
   }
 
+  //handle township
   _handleMinistoryTownship(value) {
     // alert(value);
     const self = this;
@@ -420,6 +435,7 @@ export default class Create extends React.Component {
     });
   }
 
+  //handle city
   _handleOnSelect(value, label) {
     if (value) {
       setTimeout(() => {
@@ -451,6 +467,7 @@ export default class Create extends React.Component {
     });
   }
 
+  //get handle end township api
   _handleOnSelectTownShip(value, label) {
     if (value) {
       setTimeout(() => {
@@ -469,6 +486,8 @@ export default class Create extends React.Component {
       ISERRORSTARTTOWNSHIP: false,
     });
   }
+
+  //handle nrc code
   _handleOnSelectNRCCode(value, label) {
     this.setState({
       nrccode: { value: value, label: label },
@@ -476,22 +495,30 @@ export default class Create extends React.Component {
     });
     this.getAllNrcState(value);
   }
+
+  //handle nrc state
   _handleOnSelectNRCState(value, label) {
     this.setState({
       nrcstate: { value: value, label: label },
       ISERRRORNRCSTATE: false,
     });
   }
+
+  //handle nrc status
   _handleOnSelectNRCStatus(value, label) {
     this.setState({
       nrcstatus: { value: value, label: label },
     });
   }
+
+  //handle usertype
   _handleOnSelectUserType(value, label) {
     this.setState({
       usertype: { value: value, label: label },
     });
   }
+
+  //handle end township
   _handleOnSelectEndTownship(value, label) {
     this.setState({
       endtownship: { value: value, label: label },
@@ -506,6 +533,8 @@ export default class Create extends React.Component {
       return ministrys.toLowerCase().includes(word.toString().toLowerCase());
     });
   }
+
+  //handle ministray
   _handleOnSelectEducation(value, label) {
     const self = this;
     if (value) {
@@ -521,30 +550,18 @@ export default class Create extends React.Component {
       address: label,
     });
   }
-  _handleOnClose() {
-    this.setState({ isOpenSuccessModel: false });
-    this.props.navigation.navigate("Home");
-    // if(this.state.isserrorclaer == true){
-    //   this._gotoStep(1);
-    // }
-  }
-  _CreatehandleOnClose() {
-    this.setState({ isOpenCreateSuccessModel: false });
-    this.props.navigation.navigate("CreateNew");
-    // if(this.state.isserrorclaer == true){
-    //   this._gotoStep(1);
-    // }
-  }
+
+  //Create Api
 
   _handleSave() {
     let isError = false;
-    if (this.state.startplaces == "") {
+    if (this.state.startplaces == null) {
       // alert("Helo");
       this.setState({ ISERRORSTARTPLACE: true });
       isError = true;
     }
     if (this.state.showcheckbox == false) {
-      if (this.state.addressText == "") {
+      if (this.state.addressText == null) {
         this.setState({ ISERRORENDPLACE: true });
         isError = true;
       }
@@ -569,11 +586,6 @@ export default class Create extends React.Component {
       isError = true;
     }
 
-    // if (this.state.usertype.value == 1) {
-    //   // alert("Helo");
-    //   this.setState({ ISERRORSTARTCITY: true });
-    //   isError = true;
-    // }
 
     if (this.state.imagePath == null) {
       // alert("Helo");
@@ -587,11 +599,6 @@ export default class Create extends React.Component {
       isError = true;
     }
 
-    // if (this.state.imagePathSupport == null) {
-    //   // alert("Helo");
-    //   this.setState({ ISERRORSUPPORT: true });
-    //   isError = true;
-    // }
     if (this.state.usertype.value == 1) {
       if (this.state.imagePathMo == null) {
         // alert("Helo");
@@ -707,38 +714,9 @@ export default class Create extends React.Component {
         .then(function (response) {
           console.log("Response", response.data);
           if (response.data.status == 1) {
-            // alert(response.data.message);
-            // setTimeout(function() {
-            //   self.setState({ isOpenSuccessModal: true });
-            // },10);
             self.setState({
-              name: "",
-              nrccode: { value: null, label: null },
-              nrcstatus: { value: null, label: null },
-              nrcstate: { value: null, label: null },
-              city: { value: null, label: null },
-              township: { value: null, label: null },
-              endtownship: { value: null, label: null },
-              townshipministrayid: null,
-              showcheckbox: false,
-              qstatusboolean: false,
-              qtownstatusboolean: false,
-              education: { value: null, label: null },
-              nrcnumber: "",
-              vehicle: "",
-              startplaces: "",
-              address: "",
-              addressText: "",
-              imagePath: null,
-              imagePathMo: null,
-              imagePathNrcBack: null,
-              passport: "",
-              imagePathSupport: null,
-              isOpenSuccessModel: true,
+              isOpenCheckbox: true,
               modalVisible: false,
-              designation: "",
-              department: "",
-              ministry_input: "",
             });
           } else {
             alert(response.data.message);
@@ -751,17 +729,15 @@ export default class Create extends React.Component {
     }
   }
 
-  _handleSaveCreate() {
-    // alert("helo")
-    // alert(this.state.nrccode.value);
+  _handleNo() {
     let isError = false;
-    if (this.state.startplaces == "") {
+    if (this.state.startplaces == null) {
       // alert("Helo");
       this.setState({ ISERRORSTARTPLACE: true });
       isError = true;
     }
     if (this.state.showcheckbox == false) {
-      if (this.state.addressText == "") {
+      if (this.state.addressText == null) {
         this.setState({ ISERRORENDPLACE: true });
         isError = true;
       }
@@ -786,12 +762,6 @@ export default class Create extends React.Component {
       isError = true;
     }
 
-    // if (this.state.usertype.value == 1) {
-    //   // alert("Helo");
-    //   this.setState({ ISERRORSTARTCITY: true });
-    //   isError = true;
-    // }
-
     if (this.state.imagePath == null) {
       // alert("Helo");
       this.setState({ ISERRORNRCFRONT: true });
@@ -804,11 +774,6 @@ export default class Create extends React.Component {
       isError = true;
     }
 
-    // if (this.state.imagePathSupport == null) {
-    //   // alert("Helo");
-    //   this.setState({ ISERRORSUPPORT: true });
-    //   isError = true;
-    // }
     if (this.state.usertype.value == 1) {
       if (this.state.imagePathMo == null) {
         // alert("Helo");
@@ -922,12 +887,8 @@ export default class Create extends React.Component {
           headers,
         })
         .then(function (response) {
-          console.log("Response", response.data);
+          // console.log("Response", response.data);
           if (response.data.status == 1) {
-            // alert(response.data.message);
-            // setTimeout(function() {
-            //   self.setState({ isOpenSuccessModal: true });
-            // },10);
             self.setState({
               name: "",
               nrccode: { value: null, label: null },
@@ -951,11 +912,12 @@ export default class Create extends React.Component {
               imagePathNrcBack: null,
               passport: "",
               imagePathSupport: null,
-              isOpenCreateSuccessModel: true,
+              isOpenCloseSuccessModel: true,
               modalVisible: false,
               designation: "",
               department: "",
               ministry_input: "",
+              // isOpenCheckbox:true
             });
           } else {
             alert(response.data.message);
@@ -970,77 +932,66 @@ export default class Create extends React.Component {
 
   _gotoStep(step) {
     let isError = false;
-    if (this.state.name == "") {
+    if (this.state.name == null) {
       // alert("Helo");
       this.setState({ ISERRORNAME: true });
       isError = true;
     }
-    // if (this.state.nrcnumber == "" && this.state.pass) {
-    //   // alert("Helo");
-    //   this.setState({ ISERRORNRCNUMBER: true,ISERRORPASSPORT:true});
-    //   isError = true;
-    // }
     if (this.state.usertype.value == 4) {
-      if (this.state.pass == "") {
+      if (this.state.pass == null) {
         this.setState({ ISERRORPASSPORT: true });
         isError = true;
       }
     }
     if (this.state.usertype.value == 0) {
-      if (this.state.nrcnumber == "") {
+      if (this.state.nrcnumber == null) {
         // alert("Helo");
         this.setState({ ISERRORNRCNUMBER: true });
         isError = true;
       }
     }
     if (this.state.usertype.value == 1) {
-      if (this.state.nrcnumber == "") {
+      if (this.state.nrcnumber == null) {
         // alert("Helo");
         this.setState({ ISERRORNRCNUMBER: true });
         isError = true;
       }
     }
     if (this.state.usertype.value == 2) {
-      if (this.state.nrcnumber == "") {
+      if (this.state.nrcnumber == null) {
         // alert("Helo");
         this.setState({ ISERRORNRCNUMBER: true });
         isError = true;
       }
     }
     if (this.state.usertype.value == 3) {
-      if (this.state.nrcnumber == "") {
+      if (this.state.nrcnumber == null) {
         // alert("Helo");
         this.setState({ ISERRORNRCNUMBER: true });
         isError = true;
       }
     }
     if (this.state.usertype.value == 1 || this.state.usertype.value == 3) {
-      if (this.state.designation == "") {
+      if (this.state.designation == null) {
         this.setState({ ISERRORDESIGNATION: true });
         isError = true;
       }
       // alert("Helo");
     }
     if (this.state.usertype.value == 1 || this.state.usertype.value == 3) {
-      if (this.state.department == "") {
+      if (this.state.department == null) {
         this.setState({ ISERRORDEPARTMENT: true });
         isError = true;
       }
       // alert("Helo");
     }
     if (this.state.usertype.value == 1 || this.state.usertype.value == 3) {
-      if (this.state.ministry_input == "") {
+      if (this.state.ministry_input == null) {
         this.setState({ ISERRORMINISTRYINPUT: true });
         isError = true;
       }
       // alert("Helo");
     }
-
-    // if (this.state.vehicle == "") {
-    //   // alert("Helo");
-    //   this.setState({ ISERRORVERICHAL: true });
-    //   isError = true;
-    // }
 
     if (this.state.usertype.value == 0) {
       if (this.state.nrccode.value == null) {
@@ -1117,7 +1068,143 @@ export default class Create extends React.Component {
       showcheckbox: !this.state.showcheckbox,
     });
   }
+  _handleCheck(samefrom, sameto) {
+    // console.log("Same to",sameto,"Same from",samefrom);
+    if (samefrom == 2 && sameto == null) {
+      this.setState({
+        name: null,
+        // nrccode: { value: null, label: null },
+        nrcstatus: { value: null, label: null },
+        nrcstate: { value: null, label: null },
+        // city: { value: null, label: null },
+        // township: { value: null, label: null },
+        endtownship: { value: null, label: null },
+        townshipministrayid: null,
+        showcheckbox: false,
+        qstatusboolean: false,
+        qtownstatusboolean: false,
+        education: { value: null, label: null },
+        nrcnumber: null,
+        vehicle: null,
+        // startplaces:null,
+        address: null,
+        addressText: null,
+        imagePath: null,
+        imagePathMo: null,
+        imagePathNrcBack: null,
+        passport: null,
+        imagePathSupport: null,
+        // isOpenSuccessModel: true,
+        designation: null,
+        department: null,
+        ministry_input: null,
+        isOpenCheckbox: false,
+      });
+      this._gotoStep(1);
+    } else if (sameto == 1 && samefrom == null) {
+      this.setState({
+        name: null,
+        // nrccode: { value: null, label: null },
+        nrcstatus: { value: null, label: null },
+        nrcstate: { value: null, label: null },
+        city: { value: null, label: null },
+        township: { value: null, label: null },
+        // endtownship: { value: null, label: null },
+        // townshipministrayid: null,
+        // showcheckbox: false,
+        qstatusboolean: false,
+        qtownstatusboolean: false,
+        // education: { value: null, label: null },
+        nrcnumber: null,
+        vehicle: null,
+        startplaces: null,
+        // address: null,
+        // addressText: null,
+        imagePath: null,
+        imagePathMo: null,
+        imagePathNrcBack: null,
+        passport: null,
+        imagePathSupport: null,
+        // isOpenSuccessModel: true,
+        designation: null,
+        department: null,
+        isOpenCheckbox: false,
+        // ministry_input: null,
+      });
+      this._gotoStep(1);
+    } else if (samefrom == 2 && sameto == 1) {
+      this.setState({
+        name: null,
+        // nrccode: { value: null, label: null },
+        nrcstatus: { value: null, label: null },
+        nrcstate: { value: null, label: null },
+        // city: { value: null, label: null },
+        // township: { value: null, label: null },
+        // endtownship: { value: null, label: null },
+        // townshipministrayid: null,
+        // showcheckbox: false,
+        qstatusboolean: false,
+        qtownstatusboolean: false,
+        // education: { value: null, label: null },
+        nrcnumber: null,
+        vehicle: null,
+        // startplaces:null,
+        // address: null,
+        // addressText: null,
+        imagePath: null,
+        imagePathMo: null,
+        imagePathNrcBack: null,
+        passport: null,
+        imagePathSupport: null,
+        // isOpenSuccessModel: true,
+        designation: null,
+        department: null,
+        isOpenCheckbox: false,
+        // ministry_input: null,
+      });
+      this._gotoStep(1);
+    } else {
+      this.setState({
+        name: null,
+        // nrccode: { value: null, label: null },
+        nrcstatus: { value: null, label: null },
+        nrcstate: { value: null, label: null },
+        city: { value: null, label: null },
+        township: { value: null, label: null },
+        endtownship: { value: null, label: null },
+        townshipministrayid: null,
+        showcheckbox: false,
+        qstatusboolean: false,
+        qtownstatusboolean: false,
+        education: { value: null, label: null },
+        nrcnumber: null,
+        vehicle: null,
+        startplaces: null,
+        address: null,
+        addressText: null,
+        imagePath: null,
+        imagePathMo: null,
+        imagePathNrcBack: null,
+        passport: null,
+        imagePathSupport: null,
+        // isOpenSuccessModel: true,
+        designation: null,
+        department: null,
+        isOpenCheckbox: false,
+        ministry_input: null,
+      });
+      this._gotoStep(1);
+    }
+    //  this.props.navigation.navigate("CreateNew");
+    // alert(samefrom);
+    // this.props.navigation.navigate("CreateNew");
+    // console.log("Sames to",this.state.to,"Same from",this.state.from);
+    // this._handleClearState(samefrom,sameto);
+    // alert(to);
+  }
+  // _handleClearState(samefrom,sameto){
 
+  // }
   _handleOnChooseImage(image) {
     this.setState({ imagePath: image.uri, ISERRORNRCFRONT: false });
   }
@@ -2032,21 +2119,21 @@ export default class Create extends React.Component {
 
                   <View
                     style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
+                      // flexDirection: "row",
+                      // justifyContent: "space-between",
                       marginTop: 10,
                     }}
                   >
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                       style={[styles.touchBtn, { width: "45%" }]}
                       onPress={() => this._handleSaveCreate()}
                     >
                       <Text style={{ color: "white", fontWeight: "bold" }}>
                         {t("createnew", this.state.locale)}
                       </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <TouchableOpacity
-                      style={[styles.touchBtn, { width: "45%" }]}
+                      style={[styles.touchBtn]}
                       onPress={() => this._handleSave()}
                     >
                       <Text style={{ color: "white", fontWeight: "bold" }}>
@@ -2065,15 +2152,23 @@ export default class Create extends React.Component {
               <View>
                 <LoadingModal isOpenModal={this.state.modalVisible} />
               </View>
-              <SuccessModal
-                isOpen={this.state.isOpenSuccessModel}
-                text={t("createsuccesss", this.state.locale)}
-                onClose={() => this._handleOnClose()}
-              />
               <CreateSuccessModal
-                isOpen={this.state.isOpenCreateSuccessModel}
+                isOpen={this.state.isOpenSuccessModel}
+                text="အသစ်ထပ်ထည့်လိုပါသလား ?"
+                OnPressNo={() => this._handleNo()}
+                OnPressYes={() => this._handleSave()}
+              />
+              {/* <SuccessModal
+                isOpen={this.state.isOpenCloseSuccessModel}
                 text={t("createsuccesss", this.state.locale)}
                 onClose={() => this._CreatehandleOnClose()}
+              /> */}
+              <CreateCheckbox
+                isOpen={this.state.isOpenCheckbox}
+                onClose={() => this.props.navigation.navigate("Home")}
+                handleCheck={(samefromcount, tocount) =>
+                  this._handleCheck(samefromcount, tocount)
+                }
               />
             </View>
           </View>
@@ -2112,6 +2207,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
+    flex: 1,
   },
   footer: {
     marginTop: 20,

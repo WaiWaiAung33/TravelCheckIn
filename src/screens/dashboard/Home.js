@@ -292,7 +292,10 @@ export default class Home extends React.Component {
             <TouchableOpacity
               style={[
                 styles.touchBtn,
-                { padding: this.state.locale == "MM" ? 25 : 35 },
+                {
+                  padding: this.state.locale == "MM" ? 25 : 35,
+                  backgroundColor: "#EE8013",
+                },
               ]}
               activeOpacity={0.8}
               onPress={() => this.props.navigation.navigate("Create")}
@@ -301,27 +304,43 @@ export default class Home extends React.Component {
                 {t("createform", this.state.locale)}
               </Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               activeOpacity={0.8}
               style={[
                 styles.touchBtn,
                 {
-                  backgroundColor: "#E99944",
+                  backgroundColor: "#57F117",
                   padding: this.state.locale == "MM" ? 25 : 35,
                 },
               ]}
-              onPress={() => this.props.navigation.navigate("ToleGateList")}
+              onPress={() => this.props.navigation.navigate("Permission")}
+            >
+              <Text style={styles.text}>ခွင့်ပြု/မပြုကြည့်ရှု့ရန်</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={[
+                styles.touchBtn,
+                {
+                  backgroundColor: "#D34CF3",
+                  padding: this.state.locale == "MM" ? 25 : 35,
+                },
+              ]}
+              onPress={() => this.props.navigation.navigate("TravelQr")}
             >
               <Text style={styles.text}>
                 {t("tolegatelist", this.state.locale)}
               </Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               activeOpacity={0.8}
               style={[
                 styles.touchBtn,
                 {
-                  backgroundColor: "#C716F1",
+                  backgroundColor: "#308DCC",
                   padding: this.state.locale == "MM" ? 25 : 35,
                 },
               ]}
@@ -382,7 +401,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginTop: 10,
     // padding: 25,
-    backgroundColor: "#308DCC",
+    // backgroundColor: "#308DCC",
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
