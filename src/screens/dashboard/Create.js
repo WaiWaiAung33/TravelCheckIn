@@ -17,7 +17,7 @@ import {
 import DropDown from "@components/DropDown";
 import Header from "@components/Header";
 import ImgUploadBtn from "@components/ImgUploadBtn";
-import SuccessModal from "@components/SuccessModal";
+import CreateFirstSuccessModal from "@components/CreateFirstSuccessModal";
 import CreateSuccessModal from "@components/CreateSuccessModal";
 import ErrorText from "@components/ErrorText";
 import { t, getLang } from "@services/Localization";
@@ -134,7 +134,8 @@ export default class Create extends React.Component {
       isOpenCheckbox: false,
       to: 0,
       from: 0,
-      isOpenCloseSuccessModel:false
+      isOpenCloseSuccessModel: false,
+      isOpenFirstSuccessModal: false,
     };
     this.BackHandler = null;
   }
@@ -147,6 +148,9 @@ export default class Create extends React.Component {
     const access_token = await AsyncStorage.getItem("access_token");
     const loginID = await AsyncStorage.getItem("loginID");
     const userid = await AsyncStorage.getItem("userid");
+    // this.focusListener = navigation.addListener("didFocus", async () => {
+    //   await this._handleFirstCreat();
+    // });
     // console.log(userid);
     this.setState({
       access_token: access_token,
@@ -586,7 +590,6 @@ export default class Create extends React.Component {
       isError = true;
     }
 
-
     if (this.state.imagePath == null) {
       // alert("Helo");
       this.setState({ ISERRORNRCFRONT: true });
@@ -715,8 +718,9 @@ export default class Create extends React.Component {
           console.log("Response", response.data);
           if (response.data.status == 1) {
             self.setState({
-              isOpenCheckbox: true,
+              // isOpenCheckbox: true,
               modalVisible: false,
+              isOpenFirstSuccessModal: true,
             });
           } else {
             alert(response.data.message);
@@ -729,206 +733,6 @@ export default class Create extends React.Component {
     }
   }
 
-  _handleNo() {
-    let isError = false;
-    if (this.state.startplaces == null) {
-      // alert("Helo");
-      this.setState({ ISERRORSTARTPLACE: true });
-      isError = true;
-    }
-    if (this.state.showcheckbox == false) {
-      if (this.state.addressText == null) {
-        this.setState({ ISERRORENDPLACE: true });
-        isError = true;
-      }
-    }
-
-    if (this.state.township.value == null) {
-      // alert("Helo");
-      this.setState({ ISERRORSTARTTOWNSHIP: true });
-      isError = true;
-    }
-    if (this.state.showcheckbox == false) {
-      if (this.state.endtownship.value == null) {
-        // alert("Helo");
-        this.setState({ ISERRRORENDTOWNSHIP: true });
-        isError = true;
-      }
-    }
-
-    if (this.state.city.value == null) {
-      // alert("Helo");
-      this.setState({ ISERRORSTARTCITY: true });
-      isError = true;
-    }
-
-    if (this.state.imagePath == null) {
-      // alert("Helo");
-      this.setState({ ISERRORNRCFRONT: true });
-      isError = true;
-    }
-
-    if (this.state.imagePathNrcBack == null) {
-      // alert("Helo");
-      this.setState({ ISERRORNRCBACK: true });
-      isError = true;
-    }
-
-    if (this.state.usertype.value == 1) {
-      if (this.state.imagePathMo == null) {
-        // alert("Helo");
-        this.setState({ ISERRORMO: true });
-        isError = true;
-      }
-    }
-
-    if (!isError) {
-      // alert("Hello");
-      const self = this;
-      self.setState({ modalVisible: true });
-      const headers = {
-        Accept: "application/json",
-        Authorization: "Bearer " + self.state.access_token,
-        "Content-Type": "multipart/form-data",
-      };
-      const formData = new FormData();
-      const { imagePathNrcBack } = this.state;
-      const { imagePath } = this.state;
-      const { imagePathSupport } = this.state;
-      const { imagePathMo } = this.state;
-
-      formData.append("citizen_status", this.state.usertype.value);
-      formData.append("userId", this.state.user_id);
-      formData.append("name", this.state.name);
-      formData.append("nrc_code_id", this.state.nrccode.value);
-      formData.append("nrc_state_id", this.state.nrcstate.value);
-      formData.append("nrc_type_id", this.state.nrcstatus.value);
-      formData.append("nrc_no", this.state.nrcnumber);
-      formData.append("phone_no", this.state.loginID);
-      formData.append("vehicle_no", this.state.vehicle);
-      formData.append("startcity_id", this.state.city.value);
-      formData.append("starttownship_id", this.state.township.value);
-      formData.append("start_place", this.state.startplaces);
-      formData.append("designation", this.state.designation);
-      formData.append("department", this.state.department);
-      formData.append("ministry_input", this.state.ministry_input);
-      formData.append("ministry_status", this.state.showcheckbox ? 1 : 0);
-      formData.append("gender", this.state.selectedData);
-      formData.append(
-        "endPlace_id",
-        this.state.endtownship.value
-          ? this.state.endtownship.value
-          : this.state.townshipministrayid
-      );
-      formData.append(
-        "end_place",
-        this.state.addressText ? this.state.addressText : this.state.address
-      );
-      if (imagePathNrcBack) {
-        const uriPart = imagePathNrcBack.split(".");
-        const fileExtension = uriPart[uriPart.length - 1];
-        const fileName = imagePathNrcBack.substr(
-          imagePathNrcBack.lastIndexOf("/") + 1
-        );
-
-        formData.append("nrc_back", {
-          uri: imagePathNrcBack,
-          name: fileName,
-          type: `image/${fileExtension}`,
-        });
-      }
-      if (imagePath) {
-        const uriPart = imagePath.split(".");
-        const fileExtension = uriPart[uriPart.length - 1];
-        const fileName = imagePath.substr(imagePath.lastIndexOf("/") + 1);
-
-        formData.append("nrc_front", {
-          uri: imagePath,
-          name: fileName,
-          type: `image/${fileExtension}`,
-        });
-      }
-      if (imagePathSupport) {
-        const uriPart = imagePathSupport.split(".");
-        const fileExtension = uriPart[uriPart.length - 1];
-        const fileName = imagePathSupport.substr(
-          imagePathSupport.lastIndexOf("/") + 1
-        );
-
-        formData.append("approved_photo", {
-          uri: imagePathSupport,
-          name: fileName,
-          type: `image/${fileExtension}`,
-        });
-      }
-      if (imagePathMo) {
-        const uriPart = imagePathMo.split(".");
-        const fileExtension = uriPart[uriPart.length - 1];
-        const fileName = imagePathMo.substr(imagePathMo.lastIndexOf("/") + 1);
-
-        formData.append("mo_photo", {
-          uri: imagePathMo,
-          name: fileName,
-          type: `image/${fileExtension}`,
-        });
-      }
-      formData.append("passport", this.state.pass);
-      formData.append(
-        "q_status",
-        this.state.qstatus ? this.state.qstatus : this.state.qtownstatus
-      );
-      formData.append(
-        "ministry_id",
-        this.state.education.value ? this.state.education.value : null
-      );
-      console.log(formData);
-      axios
-        .post(CreateApi, formData, {
-          headers,
-        })
-        .then(function (response) {
-          // console.log("Response", response.data);
-          if (response.data.status == 1) {
-            self.setState({
-              name: "",
-              nrccode: { value: null, label: null },
-              nrcstatus: { value: null, label: null },
-              nrcstate: { value: null, label: null },
-              city: { value: null, label: null },
-              township: { value: null, label: null },
-              endtownship: { value: null, label: null },
-              townshipministrayid: null,
-              showcheckbox: false,
-              qstatusboolean: false,
-              qtownstatusboolean: false,
-              education: { value: null, label: null },
-              nrcnumber: "",
-              vehicle: "",
-              startplaces: "",
-              address: "",
-              addressText: "",
-              imagePath: null,
-              imagePathMo: null,
-              imagePathNrcBack: null,
-              passport: "",
-              imagePathSupport: null,
-              isOpenCloseSuccessModel: true,
-              modalVisible: false,
-              designation: "",
-              department: "",
-              ministry_input: "",
-              // isOpenCheckbox:true
-            });
-          } else {
-            alert(response.data.message);
-          }
-        })
-        .catch(function (err) {
-          console.log("Error", err);
-          self.setState({ modalVisible: false });
-        });
-    }
-  }
 
   _gotoStep(step) {
     let isError = false;
@@ -1073,8 +877,8 @@ export default class Create extends React.Component {
     if (samefrom == 2 && sameto == null) {
       this.setState({
         name: null,
-        // nrccode: { value: null, label: null },
-        nrcstatus: { value: null, label: null },
+        nrccode: { value: null, label: null },
+        // nrcstatus: { value: null, label: null },
         nrcstate: { value: null, label: null },
         // city: { value: null, label: null },
         // township: { value: null, label: null },
@@ -1104,8 +908,8 @@ export default class Create extends React.Component {
     } else if (sameto == 1 && samefrom == null) {
       this.setState({
         name: null,
-        // nrccode: { value: null, label: null },
-        nrcstatus: { value: null, label: null },
+        nrccode: { value: null, label: null },
+        // nrcstatus: { value: null, label: null },
         nrcstate: { value: null, label: null },
         city: { value: null, label: null },
         township: { value: null, label: null },
@@ -1135,8 +939,8 @@ export default class Create extends React.Component {
     } else if (samefrom == 2 && sameto == 1) {
       this.setState({
         name: null,
-        // nrccode: { value: null, label: null },
-        nrcstatus: { value: null, label: null },
+        nrccode: { value: null, label: null },
+        // nrcstatus: { value: null, label: null },
         nrcstate: { value: null, label: null },
         // city: { value: null, label: null },
         // township: { value: null, label: null },
@@ -1166,8 +970,8 @@ export default class Create extends React.Component {
     } else {
       this.setState({
         name: null,
-        // nrccode: { value: null, label: null },
-        nrcstatus: { value: null, label: null },
+        nrccode: { value: null, label: null },
+        // nrcstatus: { value: null, label: null },
         nrcstate: { value: null, label: null },
         city: { value: null, label: null },
         township: { value: null, label: null },
@@ -1519,6 +1323,14 @@ export default class Create extends React.Component {
         </View>
       );
     }
+  }
+
+  _handleFirstCreat() {
+    this.setState({
+      isOpenCheckbox: true,
+      isOpenFirstSuccessModal: false,
+    });
+    // alert(this.state.isOpenCheckbox);
   }
   render() {
     const gender = "";
@@ -2124,14 +1936,7 @@ export default class Create extends React.Component {
                       marginTop: 10,
                     }}
                   >
-                    {/* <TouchableOpacity
-                      style={[styles.touchBtn, { width: "45%" }]}
-                      onPress={() => this._handleSaveCreate()}
-                    >
-                      <Text style={{ color: "white", fontWeight: "bold" }}>
-                        {t("createnew", this.state.locale)}
-                      </Text>
-                    </TouchableOpacity> */}
+          
                     <TouchableOpacity
                       style={[styles.touchBtn]}
                       onPress={() => this._handleSave()}
@@ -2152,17 +1957,18 @@ export default class Create extends React.Component {
               <View>
                 <LoadingModal isOpenModal={this.state.modalVisible} />
               </View>
-              <CreateSuccessModal
+              {/* <CreateSuccessModal
                 isOpen={this.state.isOpenSuccessModel}
                 text="အသစ်ထပ်ထည့်လိုပါသလား ?"
                 OnPressNo={() => this._handleNo()}
                 OnPressYes={() => this._handleSave()}
-              />
-              {/* <SuccessModal
-                isOpen={this.state.isOpenCloseSuccessModel}
-                text={t("createsuccesss", this.state.locale)}
-                onClose={() => this._CreatehandleOnClose()}
               /> */}
+              <CreateFirstSuccessModal
+                isOpen={this.state.isOpenFirstSuccessModal}
+                text="လူနာအသစ်ထည့်လိုပါသလား?"
+                handleEntry={() => this._handleFirstCreat()}
+                handleNoEntry={() => this.props.navigation.navigate("Home")}
+              />
               <CreateCheckbox
                 isOpen={this.state.isOpenCheckbox}
                 onClose={() => this.props.navigation.navigate("Home")}

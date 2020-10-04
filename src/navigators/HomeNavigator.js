@@ -10,6 +10,8 @@ import ToleGateList from "@screens/dashboard/ToleGateList";
 import Edit from "@screens/dashboard/Edit";
 import TravelQr from "@screens/dashboard/TravelQr";
 import CreateNew from "@screens/dashboard/CreateNew";
+import Permission from "@screens/dashboard/Permission";
+import Setting from "@screens/dashboard/Setting";
 export default createAppContainer(
   createStackNavigator(
     {
@@ -65,6 +67,18 @@ export default createAppContainer(
       },
       TravelQr: {
         screen: TravelQr,
+        navigationOptions: ({ navigation }) => ({
+          headerShown: false,
+        }),
+      },
+      Permission: {
+        screen: Permission,
+        navigationOptions: ({ navigation }) => ({
+          headerShown: false,
+        }),
+      },
+      Setting: {
+        screen: Setting,
         navigationOptions: ({ navigation }) => ({
           headerShown: false,
         }),

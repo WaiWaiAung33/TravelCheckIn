@@ -30,3 +30,7 @@ export const EditApi = BaseUrl + "editData";
 //get version
 export const GetVersionApi = BaseUrl + "forceVersion";
 
+//get QR Code Api
+export const QRCodeApi = BaseUrl + "qr";
+
+

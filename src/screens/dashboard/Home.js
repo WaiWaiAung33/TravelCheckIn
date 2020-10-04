@@ -84,11 +84,11 @@ export default class Home extends React.Component {
     // Remove the event listener before removing the screen from the stack
     // this.focusListener.remove();
   }
-  async _handleLogout() {
-    await AsyncStorage.clear();
-    this.props.navigation.navigate("Login");
-    return true;
-  }
+  // async _handleLogout() {
+  //   await AsyncStorage.clear();
+  //   this.props.navigation.navigate("Login");
+  //   return true;
+  // }
 
   async handleGetLocale(locale) {
     await setItem(LANGUAGE, locale);
@@ -205,7 +205,7 @@ export default class Home extends React.Component {
                     source={require("@images/english.png")}
                     style={{ width: 25, height: 25 }}
                   />
-                  <Text
+                  {/* <Text
                     style={{
                       color: "white",
                       fontWeight: "bold",
@@ -214,15 +214,16 @@ export default class Home extends React.Component {
                     }}
                   >
                     English
-                  </Text>
+                  </Text> */}
                 </TouchableOpacity>
               </View>
             )}
             <TouchableOpacity
-              onPress={() => this._handleLogout()}
-              style={{ width: 50, alignItems: "flex-end", marginTop: 10 }}
+              // onPress={() => this._handleLogout()}
+              onPress={()=>this.props.navigation.navigate("Setting")}
+              style={{ width: 50,alignItems:"center" ,marginTop: 10 }}
             >
-              <ImageBackground
+              {/* <ImageBackground
                 source={require("@images/elisp.png")}
                 style={{
                   width: 30,
@@ -230,12 +231,12 @@ export default class Home extends React.Component {
                   justifyContent: "center",
                   alignItems: "center",
                 }}
-              >
+              > */}
                 <Image
-                  source={require("@images/logout1.png")}
+                  source={require("@images/setting.png")}
                   style={styles.touchImg}
                 />
-              </ImageBackground>
+              {/* </ImageBackground> */}
             </TouchableOpacity>
           </View>
 
@@ -393,8 +394,8 @@ const styles = StyleSheet.create({
     // alignItems: "center"
   },
   touchImg: {
-    width: 15,
-    height: 15,
+    width: 20,
+    height: 20,
   },
   touchBtn: {
     marginLeft: 10,

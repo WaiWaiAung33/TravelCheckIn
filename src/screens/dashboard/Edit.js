@@ -924,7 +924,7 @@ export default class Create extends React.Component {
   }
   _handleOnClose() {
     this.setState({ isOpenSuccessModel: false });
-    this.props.navigation.navigate("TravelNote")
+    this.props.navigation.navigate("Permission")
   }
   handleOnChangeRadioValue(key, value) {
     // alert(value);
@@ -955,7 +955,7 @@ export default class Create extends React.Component {
             <Header
               name={t("edittitle", this.state.locale)}
               number="1"
-              Onpress={() => this.props.navigation.navigate("TravelNote")}
+              Onpress={() => this.props.navigation.navigate("Permission")}
             />
             <View style={styles.constiner}>
               <KeyboardAvoidingView

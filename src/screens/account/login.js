@@ -9,6 +9,7 @@ import {
   TextInput,
   TouchableOpacity,
   AsyncStorage,
+  Linking
 } from "react-native";
 import { Updates } from "expo";
 
@@ -231,9 +232,15 @@ export default class Login extends React.Component {
             marginTop: height / 1.1,
           }}
         >
+          <View style={{flexDirection:"row",justifyContent:"center"}}>
+            <TouchableOpacity onPress={()=>Linking.openURL("https://youtu.be/PMRsSt11eQQ")}>
           <Text style={{ textAlign: "center", color: "#308DCC" }}>
-            How to use (Video) and (PDF)
+            How to use (Video) 
           </Text>
+          </TouchableOpacity>
+          <Text> and </Text>
+          <Text style={{ textAlign: "center", color: "#308DCC" }}>(PDF)</Text>
+          </View>
           <Text
             style={{
               textAlign: "center",

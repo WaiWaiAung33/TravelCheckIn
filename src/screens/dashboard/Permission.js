@@ -123,24 +123,26 @@ export default class TravelNote extends React.Component {
     }
     var access_token = await AsyncStorage.getItem("access_token");
     var user_id = await AsyncStorage.getItem("userid");
+    // console.log(user_id);
     var self = this;
     let bodyParam = {
       start_date: self.state.changestartDate,
       end_date: self.state.changeendDate,
       page: page,
       userId: user_id,
-      status: "all",
-      q_status:0,
+      status:"allow_disallow",
+      q_status:0
+    //   q_status: self.state.qStatus,
     };
     axios
-      .post(RegisterHistoryApi, bodyParam, {
+      .post(RegisterHistoryApi,bodyParam, {
         headers: {
           Accept: "application/json",
           Authorization: "Bearer " + access_token,
         },
       })
       .then(function (response) {
-        // console.log(response.data.history.data);
+        console.log(response.data.history.data);
         self.setState({
           data: [...self.state.data, ...response.data.history.data],
           refreshing: false,
@@ -200,7 +202,111 @@ export default class TravelNote extends React.Component {
         // console.log("Customer Error", err);
       });
   }
+  _hadleChangeUserType(status) {
+    // alert(status);
+    if (status == 0) {
+      user_status = "allow_disallow";
+      qstatus=0;
+      // alert(status);
+      // this.setState({
+      //   usertype:status,
+      //   qStatus: 0,
+      // });
+      this._handleSearch(
+        this.page,
+        "allow_disallow",
+         0,
+        this.state.changestartDate,
+        this.state.changeendDate
+      );
+      // alert(this.state.usertype);
+      //  this.getAllTravelNote(this.page)
+    } else if (status == 2) {
+      // this.setState({
+      //   usertype: "1",
+      //   qStatus: 0,
+      // });
+      user_status = 1;
+      qstatus=0;
+      this._handleSearch(
+        this.page,
+        1,
+        0,
+        this.state.changestartDate,
+        this.state.changeendDate
+      );
+      //  this.getAllTravelNote(this.page)
+    } else if (status == 1) {
+      // this.setState({
+      //   usertype: "2",
+      //   qStatus: 0,
+      // });
+      user_status = 0;
+      qstatus=0;
+      this._handleSearch(
+        this.page,
+        0,
+        0,
+        this.state.changestartDate,
+        this.state.changeendDate
+      );
+      //  this.getAllTravelNote(this.page)
+    } else if (status == 3) {
+      // this.setState({
+      //   usertype: "3",
+      //   qStatus: 0,
+      // });
+      user_status = 2;
+      qstatus=0;
+      this._handleSearch(
+        this.page,
+        2,
+        0,
+        this.state.changestartDate,
+        this.state.changeendDate
+      );
+      //  this.getAllTravelNote(this.page)
+    } else if (status == 4) {
+      // this.setState({
+      //   usertype: "3",
+      //   qStatus: 1,
+      // });
+      user_status = 4;
+      qstatus=1;
+      this._handleSearch(
+        this.page,
+        4,
+        1,
+        this.state.changestartDate,
+        this.state.changeendDate
+      );
+      //  this.getAllTravelNote(this.page)
+    } else if (status == 5) {
+      // this.setState({
+      //   usertype: "4",
+      //   qStatus: 0,
+      // });
+      user_status = 5;
+      qstatus=0;
+      this._handleSearch(
+        this.page,
+        5,
+        0,
+        this.state.changestartDate,
+        this.state.changeendDate
+      );
+      //  this.getAllTravelNote(this.page)
+    }
+    // alert("Status"+status+"qStatus"+this.state.qStatus)
+  }
 
+  _handleOnSelect(value, label) {
+    // alert(value);
+    this.setState({
+      status: { value: value, label: label },
+    });
+    this._hadleChangeUserType(value);
+  }
   onRefresh = () => {
     var today=new Date();
     var dd = today.getDate();
@@ -218,6 +324,7 @@ export default class TravelNote extends React.Component {
     this.setState({
       data: [],
       refreshing: true,
+      status: { value: "0", label:t("all",this.state.locale) },
       changestartDate:today,
       changeendDate:today
     });
@@ -227,18 +334,22 @@ export default class TravelNote extends React.Component {
   _hadleChangeDate(date) {
     this._handleSearch(
       this.page,
-      "all",
-      0,
+      user_status,
+      qstatus,
       date,
       this.state.changeendDate
     );
     this.setState({ changestartDate: date });
+
+    //  this.getAllTravelNote(this.page)
+
+    // alert(this.state.changestartDate)
   }
   _handleChangeEndDate(date) {
     this._handleSearch(
       this.page,
-      "all",
-      0,
+      user_status,
+      qstatus,
       this.state.changestartDate,
       date
     );
@@ -248,12 +359,12 @@ export default class TravelNote extends React.Component {
   renderFilter() {
 
     const STATUS = [
-      { value: 0, label:t("all",this.state.locale)  },
-      { value: 1, label:t("allow",this.state.locale) },
-      { value: 2, label:t("tofix",this.state.locale)  },
-      { value: 3, label:t("approve",this.state.locale) },
-      { value: 4, label:t("quartine",this.state.locale) },
-      { value: 5, label: t("cancelregister",this.state.locale) },
+      { value: 0, label:"အားလုံး"  },
+      { value: 1, label:"လျှောက်လွှာတင်ထားသည်" },
+      { value: 2, label:"လာရောက်ခွင့်ပြုသည်"},
+      { value: 3, label:"ပြင်ဆင်ရန်"},
+      { value: 4, label:"လျှောက်လွှာပယ်ဖျက်သည်"},
+      { value: 5, label:"လာရောက်ခွင့်မပြုပါ"},
     ];
     
     return (
@@ -297,7 +408,40 @@ export default class TravelNote extends React.Component {
             onDateChange={(date) => this._handleChangeEndDate(date)}
           />
         </View>
-       
+        <View
+          style={{
+            marginLeft: 10,
+            marginRight: 10,
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <View style={{ width: "100%" }}>
+            <DropDown
+              value={this.state.status}
+              options={STATUS}
+              optionsContainerWidth="95%"
+              onSelect={(value, label) => this._handleOnSelect(value, label)}
+            />
+          </View>
+          {/* <View style={{ width: "30%" }}>
+            <TouchableOpacity
+              style={styles.touchBtn}
+              onPress={() =>
+                this._handleSearch(
+                  this.page,
+                  this.state.usertype,
+                  this.state.qStatus,
+                  this.state.changestartDate,
+                  this.state.changeendDate
+                )
+              }
+            >
+              <Image source={require("@images/search.png")} />
+              <Text style={styles.text}>{t("search", this.state.locale)}</Text>
+            </TouchableOpacity>
+          </View> */}
+        </View>
       </View>
     );
   }
@@ -339,7 +483,7 @@ export default class TravelNote extends React.Component {
     } else if (arrIndex == 1) {
       this.props.navigation.navigate("TravelNoteDetail", {
         userid: item.id,
-        backRoute: "TravelNote",
+        backRoute: "Permission",
       });
     }
   }
@@ -357,7 +501,7 @@ export default class TravelNote extends React.Component {
     return (
       <View style={styles.container}>
         <Header
-          name={t("travelnote", this.state.locale)}
+          name="ခွင့်ပြု/မပြု"
           Onpress={() => this.props.navigation.navigate("Home")}
         />
         {/* <ScrollView showsVerticalScrollIndicator={false}> */}

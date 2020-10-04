@@ -12,12 +12,13 @@ import {
 import { QRCode } from "react-native-custom-qr-codes";
 import * as Permissions from "expo-permissions";
 //import components
-import ToleGateCardOne from "@components/ToleGateCardOne";
+
 import Header from "@components/Header";
-import SuccessModal from "@components/SuccessModal";
 import Moment from "moment";
+
+//import api
+import { QRCodeApi } from "@api/Url";
 const axios = require("axios");
-import { CancelApi } from "@api/Url";
 
 //import services
 import { t, getLang } from "@services/Localization";
@@ -30,6 +31,10 @@ export default class ToleGate extends React.Component {
       access_token: null,
       isOpenSuccessModel: false,
       locale: null,
+      loginid: null,
+      id: "",
+      date: null,
+      data: [],
     };
     this.BackHandler = null;
   }
@@ -39,6 +44,7 @@ export default class ToleGate extends React.Component {
     const user_id = await AsyncStorage.getItem("userid");
     const access_token = await AsyncStorage.getItem("access_token");
     this.setState({ userid: user_id, access_token: access_token });
+    this.getQRCode();
     this.setBackHandler();
   }
   setBackHandler() {
@@ -55,109 +61,45 @@ export default class ToleGate extends React.Component {
     this.BackHandler.remove();
     // this.focusListener.remove();
   }
-  _handleCancel() {
+  getQRCode() {
     const self = this;
-    const headers = {
-      Accept: "application/json",
-      Authorization: "Bearer " + self.state.access_token,
-    };
     let bodyParam = {
-      userId: this.props.navigation.getParam("data").id,
-      status: 4,
-      qr_status: 2,
-      cancel_status: 2,
+      userId: self.state.userid,
     };
-    // console.log(GetTownshipApi);
     axios
-      .post(CancelApi, bodyParam, {
-        headers,
+      .post(QRCodeApi, bodyParam, {
+        headers: {
+          Accept: "application/json",
+          Authorization: "Bearer " + self.state.access_token,
+        },
       })
       .then(function (response) {
-        console.log(response.data);
-        self.setState({ isOpenSuccessModel: true });
+        self.setState({
+          data: response.data,
+        });
       })
       .catch(function (err) {
         console.log(err);
       });
   }
-  _handleOnClose() {
-    this.setState({ isOpenSuccessModel: false });
-    this.props.navigation.navigate("TravelNote");
-  }
   render() {
-    let data = this.props.navigation.getParam("data");
-    // console.log("Travel Qr", data);
     return (
       <View style={styles.container}>
         <Header
           name={t("qrlist", this.state.locale)}
-          Onpress={() => this.props.navigation.navigate("TravelNote")}
+          Onpress={() => this.props.navigation.navigate("Home")}
         />
-        <ScrollView>
-          <TouchableOpacity style={styles.qrcodeBox}>
-            <QRCode
-                content={data.id.toString()}
-              codeStyle="square"
-              size={100}
-            />
-          </TouchableOpacity>
-          <View
-            style={{
-              height: 2,
-              borderWidth: 1,
-              // flex: 1,
-              marginTop: 10,
-              borderColor: "#308DCC",
-            }}
+        {/* <ScrollView> */}
+        <TouchableOpacity style={styles.qrcodeBox}>
+          <QRCode
+            content={this.state.data.userId}
+            codeStyle="square"
+            size={150}
           />
-          <View
-            style={{
-              alignItems: "flex-end",
-              marginRight: 10,
-              marginTop: 10,
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                width: 160,
-                height: 40,
-                backgroundColor: "#EB4D4D",
-                borderWidth: 1,
-                borderColor: "#EB4D4D",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: 5,
-              }}
-              onPress={() => this._handleCancel()}
-            >
-              <Text style={{ color: "white" }}>
-                {t("cancelregister", this.state.locale)}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <ToleGateCardOne
-            date={Moment(data.created_at).format("DD-MM-YYYY")}
-            name={data.name}
-            nrc={
-              data.nrc_code +
-              "/" +
-              data.nrc_state +
-              "(" +
-              data.nrc_type +
-              ")" +
-              data.nrc_no
-            }
-            passportNo={data.passport ? data.passport : null}
-            phoneNo={data.ph_no}
-            OnPressCard={() => this.props.navigation.navigate("TravelNoteDetail",{user_id:data.id,backRoute:"TravelQr"})}
-            cityzien={data.citizen_status}
-          />
-        </ScrollView>
-        <SuccessModal
-          isOpen={this.state.isOpenSuccessModel}
-          text={t("cancelsuccess",this.state.locale)}
-          onClose={() => this._handleOnClose()}
-        />
+        </TouchableOpacity>
+        <Text style={styles.text}>
+          {Moment(this.state.data.created_at).format("DD-MM-YYYY")}
+        </Text>
       </View>
     );
   }
@@ -172,5 +114,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 40,
     // marginRight: 15,
+  },
+  text: {
+    paddingTop: 10,
+    textAlignVertical: "center",
+    textAlign: "center",
+    fontSize: 18,
   },
 });
