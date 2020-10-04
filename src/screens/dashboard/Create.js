@@ -1965,7 +1965,7 @@ export default class Create extends React.Component {
               /> */}
               <CreateFirstSuccessModal
                 isOpen={this.state.isOpenFirstSuccessModal}
-                text="လူနာအသစ်ထည့်လိုပါသလား?"
+                text="လူအသစ်ထည့်လိုပါသလား?"
                 handleEntry={() => this._handleFirstCreat()}
                 handleNoEntry={() => this.props.navigation.navigate("Home")}
               />
