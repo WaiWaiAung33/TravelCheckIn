@@ -16,23 +16,26 @@ import DatePicker from "react-native-datepicker";
 import Moment from "moment";
 //import components
 import DropDown from "@components/DropDown";
-import TravelNoteCard from "@components/TravelNoteCard";
+import TravelPermissionCard from "@components/TravelPermissionCard";
 import Header from "@components/Header";
 import Loading from "@components/Loading";
+import Checkbox from "@components/CancelCheckbox";
+import SuccessModal from "@components/SuccessModal";
 //import styles
 import Style from "@styles/Styles";
 const { width, height } = Dimensions.get("window");
 
 //import api
 const axios = require("axios");
-import { RegisterHistoryApi } from "@api/Url";
+import { RegisterHistoryApi, DelteApi } from "@api/Url";
 import TravelNoteApi from "@api/TravelNoteApi";
 
 //import services
 import { t, getLang } from "@services/Localization";
 
-var user_status="all";
-var qstatus=0;
+var user_status = "all";
+var qstatus = 0;
+var arr = [];
 export default class TravelNote extends React.Component {
   constructor(props) {
     super(props);
@@ -54,6 +57,11 @@ export default class TravelNote extends React.Component {
       locale: null,
       user_id: null,
       access_token: null,
+      check: false,
+      deletealert: false,
+      id: null,
+      isOpenSuccessModel: false,
+      array: [],
     };
     this.BackHandler = null;
     this.page = 1;
@@ -130,12 +138,12 @@ export default class TravelNote extends React.Component {
       end_date: self.state.changeendDate,
       page: page,
       userId: user_id,
-      status:"allow_disallow",
-      q_status:0
-    //   q_status: self.state.qStatus,
+      status: "allow_disallow",
+      q_status: 0,
+      //   q_status: self.state.qStatus,
     };
     axios
-      .post(RegisterHistoryApi,bodyParam, {
+      .post(RegisterHistoryApi, bodyParam, {
         headers: {
           Accept: "application/json",
           Authorization: "Bearer " + access_token,
@@ -206,7 +214,7 @@ export default class TravelNote extends React.Component {
     // alert(status);
     if (status == 0) {
       user_status = "allow_disallow";
-      qstatus=0;
+      qstatus = 0;
       // alert(status);
       // this.setState({
       //   usertype:status,
@@ -215,7 +223,7 @@ export default class TravelNote extends React.Component {
       this._handleSearch(
         this.page,
         "allow_disallow",
-         0,
+        0,
         this.state.changestartDate,
         this.state.changeendDate
       );
@@ -227,7 +235,7 @@ export default class TravelNote extends React.Component {
       //   qStatus: 0,
       // });
       user_status = 1;
-      qstatus=0;
+      qstatus = 0;
       this._handleSearch(
         this.page,
         1,
@@ -242,7 +250,7 @@ export default class TravelNote extends React.Component {
       //   qStatus: 0,
       // });
       user_status = 0;
-      qstatus=0;
+      qstatus = 0;
       this._handleSearch(
         this.page,
         0,
@@ -257,7 +265,7 @@ export default class TravelNote extends React.Component {
       //   qStatus: 0,
       // });
       user_status = 2;
-      qstatus=0;
+      qstatus = 0;
       this._handleSearch(
         this.page,
         2,
@@ -272,11 +280,11 @@ export default class TravelNote extends React.Component {
       //   qStatus: 1,
       // });
       user_status = 4;
-      qstatus=1;
+      qstatus = 1;
       this._handleSearch(
         this.page,
         4,
-        1,
+        0,
         this.state.changestartDate,
         this.state.changeendDate
       );
@@ -287,7 +295,7 @@ export default class TravelNote extends React.Component {
       //   qStatus: 0,
       // });
       user_status = 5;
-      qstatus=0;
+      qstatus = 0;
       this._handleSearch(
         this.page,
         5,
@@ -308,7 +316,7 @@ export default class TravelNote extends React.Component {
     this._hadleChangeUserType(value);
   }
   onRefresh = () => {
-    var today=new Date();
+    var today = new Date();
     var dd = today.getDate();
 
     var mm = today.getMonth() + 1;
@@ -324,9 +332,9 @@ export default class TravelNote extends React.Component {
     this.setState({
       data: [],
       refreshing: true,
-      status: { value: "0", label:t("all",this.state.locale) },
-      changestartDate:today,
-      changeendDate:today
+      status: { value: "0", label: t("all", this.state.locale) },
+      changestartDate: today,
+      changeendDate: today,
     });
     this.page = 1;
     this.getAllTravelNote(this.page);
@@ -356,25 +364,75 @@ export default class TravelNote extends React.Component {
     this.setState({ changeendDate: date });
   }
 
-  renderFilter() {
+  _handleCheck(check, itemid) {
+    // console.log(arr);
 
+    //  console.log("Item Id",itemid);
+    if (check == true) {
+      arr.push(itemid);
+      // console.log(arr);
+      // this._handleDelete(arr);
+      this.setState({ deletealert: true });
+    } else {
+      this.setState({ deletealert: false });
+    }
+  }
+
+  _handleDelete() {
+    // console.log(this.state.array);
+    const array = this.state.array;
+    // console.log(array);
+
+    const self = this;
+    let bodyParam = {
+      formId: arr,
+    };
+    // console.log(bodyParam);
+    axios
+      .post(DelteApi, bodyParam, {
+        headers: {
+          Accept: "application/json",
+          Authorization: "Bearer " + self.state.access_token,
+        },
+      })
+      .then(function (response) {
+        if (response.data.status == 1) {
+          self.setState({ isOpenSuccessModel: true });
+        }
+        console.log(response.data);
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+    // console.log(this.state.id);
+  }
+
+  renderFilter() {
     const STATUS = [
-      { value: 0, label:"အားလုံး"  },
-      { value: 1, label:"လျှောက်လွှာတင်ထားသည်" },
-      { value: 2, label:"လာရောက်ခွင့်ပြုသည်"},
-      { value: 3, label:"ပြင်ဆင်ရန်"},
-      { value: 4, label:"လျှောက်လွှာပယ်ဖျက်သည်"},
-      { value: 5, label:"လာရောက်ခွင့်မပြုပါ"},
+      { value: 0, label: "အားလုံး" },
+      { value: 1, label: "လျှောက်လွှာတင်ထားသည်" },
+      { value: 2, label: "လာရောက်ခွင့်ပြုသည်" },
+      { value: 3, label: "ပြင်ဆင်ရန်" },
+      { value: 4, label: "လျှောက်လွှာပယ်ဖျက်သည်" },
+      { value: 5, label: "လာရောက်ခွင့်မပြုပါ" },
     ];
-    
+
     return (
       <View>
-         <View style={{flexDirection:"row",marginTop:10,marginLeft:10,marginRight:10}}>
-            <Text style={{flex:1}}>{t("startdate",this.state.locale)}</Text>
-            <Text style={{flex:1,paddingLeft:15}}>{t("enddate",this.state.locale)}</Text>
-          </View>
+        <View
+          style={{
+            flexDirection: "row",
+            marginTop: 10,
+            marginLeft: 10,
+            marginRight: 10,
+          }}
+        >
+          <Text style={{ flex: 1 }}>{t("startdate", this.state.locale)}</Text>
+          <Text style={{ flex: 1, paddingLeft: 15 }}>
+            {t("enddate", this.state.locale)}
+          </Text>
+        </View>
         <View style={styles.secondContainer}>
-         
           <DatePicker
             date={this.state.changestartDate}
             mode="date"
@@ -416,31 +474,25 @@ export default class TravelNote extends React.Component {
             justifyContent: "space-between",
           }}
         >
-          <View style={{ width: "100%" }}>
+          <View style={{ width: "75%" }}>
             <DropDown
               value={this.state.status}
               options={STATUS}
-              optionsContainerWidth="95%"
+              optionsContainerWidth="70%"
               onSelect={(value, label) => this._handleOnSelect(value, label)}
             />
           </View>
-          {/* <View style={{ width: "30%" }}>
-            <TouchableOpacity
-              style={styles.touchBtn}
-              onPress={() =>
-                this._handleSearch(
-                  this.page,
-                  this.state.usertype,
-                  this.state.qStatus,
-                  this.state.changestartDate,
-                  this.state.changeendDate
-                )
-              }
-            >
-              <Image source={require("@images/search.png")} />
-              <Text style={styles.text}>{t("search", this.state.locale)}</Text>
+          <View
+            style={{
+              width: "25%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <TouchableOpacity onPress={() => this._handleDelete()}>
+              <Image source={require("@images/delete.png")} />
             </TouchableOpacity>
-          </View> */}
+          </View>
         </View>
       </View>
     );
@@ -487,8 +539,15 @@ export default class TravelNote extends React.Component {
       });
     }
   }
+  _handleClose() {
+    this.setState({
+      isOpenSuccessModel: false,
+    });
+    this.props.navigation.navigate("Home");
+  }
 
   render() {
+    // alert(this.state.check);
     if (this.state.isLoading) {
       return <Loading />;
     }
@@ -520,13 +579,20 @@ export default class TravelNote extends React.Component {
           renderItem={({ item }) => (
             // console.log(item),
             <View style={{ marginTop: 5 }}>
-              <TravelNoteCard
+              <TravelPermissionCard
                 name={item.name}
                 date={Moment(item.created_at).format("DD-MM-YYYY")}
                 phone={item.ph_no}
                 passportNo={item.passport}
                 nrcstatus={item.citizen_status}
                 statusname={item.status}
+                checkBox={
+                  <Checkbox
+                    isCheck={this.state.check}
+                    langText="Checked"
+                    onCheck={(isCheck) => this._handleCheck(isCheck, item.id)}
+                  />
+                }
                 q_statusColor={item.q_status}
                 nrc={
                   item.nrc_code +
@@ -539,6 +605,7 @@ export default class TravelNote extends React.Component {
                 }
                 OnPress={() => this._handleTravelNoteDetail(1, item)}
                 arrIndex={1}
+                check={this.state.check}
               />
             </View>
           )}
@@ -550,6 +617,13 @@ export default class TravelNote extends React.Component {
             flexGrow: 1,
           }}
           onEndReached={() => (!isSearched ? this.handleLoadMore() : {})}
+        />
+        <SuccessModal
+          isOpen={this.state.isOpenSuccessModel}
+          text={t("cancelsuccess",this.state.locale)}
+          onClose={() => this._handleClose()}
+          // OnPressNo={() => this._handleNo()}
+          // OnPressYes={() => this._handleSave()}
         />
       </View>
     );

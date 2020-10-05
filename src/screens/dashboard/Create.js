@@ -733,7 +733,6 @@ export default class Create extends React.Component {
     }
   }
 
-
   _gotoStep(step) {
     let isError = false;
     if (this.state.name == null) {
@@ -1029,6 +1028,10 @@ export default class Create extends React.Component {
         this.setState({ selectedData: value });
         break;
     }
+  }
+  _handleFirstClose() {
+    this.setState({ isOpenFirstSuccessModal: false });
+    this.props.navigation.navigate("Home");
   }
 
   _changeImage() {
@@ -1936,7 +1939,6 @@ export default class Create extends React.Component {
                       marginTop: 10,
                     }}
                   >
-          
                     <TouchableOpacity
                       style={[styles.touchBtn]}
                       onPress={() => this._handleSave()}
@@ -1965,9 +1967,9 @@ export default class Create extends React.Component {
               /> */}
               <CreateFirstSuccessModal
                 isOpen={this.state.isOpenFirstSuccessModal}
-                text="လူအသစ်ထည့်လိုပါသလား?"
+                text="နောက်တစ်ဦးထည့်လိုပါသလား?"
                 handleEntry={() => this._handleFirstCreat()}
-                handleNoEntry={() => this.props.navigation.navigate("Home")}
+                handleNoEntry={() => this._handleFirstClose()}
               />
               <CreateCheckbox
                 isOpen={this.state.isOpenCheckbox}

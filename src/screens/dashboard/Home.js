@@ -317,7 +317,7 @@ export default class Home extends React.Component {
               ]}
               onPress={() => this.props.navigation.navigate("Permission")}
             >
-              <Text style={styles.text}>ခွင့်ပြု/မပြုကြည့်ရှု့ရန်</Text>
+              <Text style={styles.text}>{t("permission",this.state.locale)}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity

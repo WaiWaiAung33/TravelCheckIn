@@ -85,14 +85,15 @@ const EN = {
   errordesignation:"Enter Designation",
   errordepartment:"Enter Department",
   errorministryinput:"Enter ministry name",
-  gender:"Male/Female",
+  gender:"Gender",
   male:"Male",
   female:"Female",
   email:"Email",
   password:"Password",
   loginadmin:"Login",
   startdate:"Start Date",
-  enddate:"End Date"
+  enddate:"End Date",
+  permission:"Allowed/disallow",
 };
 
 //Myanmar Language
@@ -181,7 +182,8 @@ const MM = {
   password:"လျှို့ဝှက်နံပါတ်",
   loginadmin:"ဝင်မည်",
   startdate:"စရက်",
-  enddate:"ဆုံးရက်"
+  enddate:"ဆုံးရက်",
+  permission:"ခွင့်ပြု/ခွင့်မပြု"
 };
 
 i18n.fallbacks = true;

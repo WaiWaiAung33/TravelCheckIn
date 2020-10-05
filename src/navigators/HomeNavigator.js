@@ -9,7 +9,6 @@ import TravelNoteDetail from "@screens/dashboard/TravelNoteDetail";
 import ToleGateList from "@screens/dashboard/ToleGateList";
 import Edit from "@screens/dashboard/Edit";
 import TravelQr from "@screens/dashboard/TravelQr";
-import CreateNew from "@screens/dashboard/CreateNew";
 import Permission from "@screens/dashboard/Permission";
 import Setting from "@screens/dashboard/Setting";
 export default createAppContainer(
@@ -34,13 +33,7 @@ export default createAppContainer(
           headerShown: false,
         }),
       },
-      CreateNew: {
-        screen: CreateNew,
-        navigationOptions: ({ navigation }) => ({
-          headerShown: false,
-        }),
-      },
-
+     
       TravelNote: {
         screen: TravelNote,
         navigationOptions: ({ navigation }) => ({

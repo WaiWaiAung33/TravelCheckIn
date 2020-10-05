@@ -20,7 +20,7 @@ export const CreateApi = BaseUrl + "regrister";
 export const QRListApi = BaseUrl + "qrgenerate";
 
 //cancel
-export const CancelApi = BaseUrl + "adminCheck";
+// export const CancelApi = BaseUrl + "adminCheck";
 
 //Register History Detail
 export const RegisterHistoryDetailApi= BaseUrl + "historyDetail";
@@ -32,5 +32,8 @@ export const GetVersionApi = BaseUrl + "forceVersion";
 
 //get QR Code Api
 export const QRCodeApi = BaseUrl + "qr";
+
+//delete api
+export const DelteApi = BaseUrl + "updateformdata";
 
 
