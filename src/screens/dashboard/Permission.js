@@ -33,7 +33,7 @@ import TravelNoteApi from "@api/TravelNoteApi";
 //import services
 import { t, getLang } from "@services/Localization";
 
-var user_status = "all";
+var user_status = "allow_disallow";
 var qstatus = 0;
 var arr = [];
 export default class TravelNote extends React.Component {

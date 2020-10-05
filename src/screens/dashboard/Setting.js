@@ -10,11 +10,24 @@ import {
 } from "react-native";
 
 //import components
+import { t, getLang } from "@services/Localization";
 import Header from "@components/Header";
+import CreateFirstSuccessModal from "@components/CreateFirstSuccessModal";
 import appjson from "@appjson";
 
 export default class Setting extends React.Component {
-   async _handleLogout(){
+  constructor(props){
+    super(props);
+    this.state={
+      isOpenFirstSuccessModal:false,
+      locale:null
+    }
+  }
+  async componentDidMount(){
+    const res = await getLang();
+    this.setState({ locale: res });
+  }
+   async _handleLogut(){
      await AsyncStorage.clear();
      this.props.navigation.navigate("Login");
     }
@@ -35,7 +48,7 @@ export default class Setting extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity
          style={styles.touchBtn}
-         onPress={()=>this._handleLogout()}
+         onPress={()=>this.setState({isOpenFirstSuccessModal:true})}
          >
           <ImageBackground
             source={require("@images/circle.png")}
@@ -72,6 +85,15 @@ export default class Setting extends React.Component {
           <Text style={styles.text}>Version {appjson.expo.version}</Text>
          
         </TouchableOpacity>
+        <CreateFirstSuccessModal
+                isOpen={this.state.isOpenFirstSuccessModal}
+                text={t("logout",this.state.locale)}
+                handleEntry={() => this._handleLogut()}
+                handleNoEntry={() => this.setState({isOpenFirstSuccessModal:false})}
+                no="NO"
+                yes="YES"
+                confirm={t("confirm",this.state.locale)}
+              />
       </View>
     );
   }

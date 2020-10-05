@@ -138,10 +138,6 @@ export default class Home extends React.Component {
       });
   }
 
-  _handleSetLocaleAsyncStorage = async () => {
-    this.setState({ confirmLocaleModalOpen: false });
-  };
-
   render() {
     // console.log(this.state.version);
     // if (this.state.isLoading) {

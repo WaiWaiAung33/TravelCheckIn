@@ -1967,9 +1967,12 @@ export default class Create extends React.Component {
               /> */}
               <CreateFirstSuccessModal
                 isOpen={this.state.isOpenFirstSuccessModal}
-                text="နောက်တစ်ဦးထည့်လိုပါသလား?"
+                text={t("addcreate",this.state.locale)}
                 handleEntry={() => this._handleFirstCreat()}
                 handleNoEntry={() => this._handleFirstClose()}
+                no={t("no",this.state.locale)}
+                yes={t("yes",this.state.locale)}
+                confirm={t("confirm",this.state.locale)}
               />
               <CreateCheckbox
                 isOpen={this.state.isOpenCheckbox}

@@ -249,7 +249,7 @@ export default class Login extends React.Component {
               fontWeight: "bold",
             }}
           >
-            Develop by LINN @2020
+           Copyright by Naypyitaw Council
           </Text>
         </View>
         <LanguageModal

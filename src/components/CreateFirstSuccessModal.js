@@ -42,15 +42,18 @@ export default class CustomModal extends React.Component {
                   alignItems: "center",
                   flex: 1,
                   backgroundColor: "#308DCC",
-                  padding: 8,
+                  height:40,
                   borderWidth: 1,
                   borderColor: "#308DCC",
                   borderTopLeftRadius: 10,
                   borderTopRightRadius: 10,
+                  justifyContent:"center",
+                  alignItems:"center",
+                  // flex:1
                   //   marginTop: 20,
                 }}
               >
-                <Text style={{ color: "#ffffff" }}>အတည်ပြုပါ</Text>
+                <Text style={{ color: "#ffffff",fontSize:16}}>{this.props.confirm}</Text>
                 {/* <Image
                   source={
                     this.props.headerIcon
@@ -80,13 +83,13 @@ export default class CustomModal extends React.Component {
                 style={styles.touchBtn}
                 onPress={() => this._handleNoEntry()}
               >
-                <Text style={styles.text}>မထည့်ပါ</Text>
+                <Text style={styles.text}>{this.props.no}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.touchBtn}
                 onPress={() => this._handleEntry()}
               >
-                <Text style={styles.text}>ထည့်မည်</Text>
+                <Text style={styles.text}>{this.props.yes}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -138,7 +141,8 @@ const styles = StyleSheet.create({
   touchBtn: {
     backgroundColor: "#308DCC",
     flex: 1,
-    padding: 3,
+    height:40,
+    // padding: 3,
     borderWidth: 1,
     borderColor: "#308DCC",
     borderRadius: 5,

@@ -94,6 +94,12 @@ const EN = {
   startdate:"Start Date",
   enddate:"End Date",
   permission:"Allowed/disallow",
+  no:"NO",
+  yes:"YES",
+  confirm:"Confirm",
+  addcreate:"နောက်တစ်ဦးထည့်လိုပါသလား?",
+  logout:"Are you sure to logout ?",
+  nodata:"No Data"
 };
 
 //Myanmar Language
@@ -183,7 +189,13 @@ const MM = {
   loginadmin:"ဝင်မည်",
   startdate:"စရက်",
   enddate:"ဆုံးရက်",
-  permission:"ခွင့်ပြု/ခွင့်မပြု"
+  permission:"ခွင့်ပြု/ခွင့်မပြု",
+  no:"မထည့်ပါ",
+  yes:"ထည့်မည်",
+  confirm:"အတည်ပြုပါ",
+  addcreate:"နောက်တစ်ဦးထည့်လိုပါသလား?",
+  logout:"စနစ်မှအမှန်တကယ်ထွက်လိုပါသလား?",
+  nodata:"အချက်အလက် မရှိပါ။"
 };
 
 i18n.fallbacks = true;

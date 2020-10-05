@@ -135,7 +135,7 @@ export default class Create extends React.Component {
         const datas = response.data.historyDetail;
         const endtown = response.data.endplace_township;
         // alert(endtown);
-        console.log(datas);
+        // console.log(datas);
         // console.log(response.data);
         // alert(datas.ministry_status);
         if (datas.ministry_status == 1) {

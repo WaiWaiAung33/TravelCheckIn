@@ -74,6 +74,7 @@ export default class ToleGate extends React.Component {
         },
       })
       .then(function (response) {
+        // console.log(response.data);
         self.setState({
           data: response.data,
         });
@@ -91,15 +92,23 @@ export default class ToleGate extends React.Component {
         />
         {/* <ScrollView> */}
         <TouchableOpacity style={styles.qrcodeBox}>
-          <QRCode
+          {
+            this.state.data.status == 0 ? <Text>{t("nodata",this.state.locale)}</Text> :
+            <QRCode
             content={this.state.data.userId}
             codeStyle="square"
             size={150}
           />
+          }
+         
         </TouchableOpacity>
-        <Text style={styles.text}>
+        {
+          this.state.data.status == 0 ? null :
+          <Text style={styles.text}>
           {Moment(this.state.data.created_at).format("DD-MM-YYYY")}
         </Text>
+        }
+      
       </View>
     );
   }

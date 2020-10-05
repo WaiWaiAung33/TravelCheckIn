@@ -101,6 +101,14 @@ export default class ToleGateCard extends React.Component {
         namecolor: "#000",
       });
     }
+    else if (this.props.statusname == 5) {
+      return this.setState({
+        text:"လာရောက်ခွင့်မပြုပါ",
+        color: "#FF0000",
+        backcolor: "#ffffff",
+        namecolor: "#000",
+      });
+    }
   }
   _showName() {
     if (this.props.nrcstatus == 4) {
