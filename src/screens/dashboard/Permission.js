@@ -121,6 +121,7 @@ export default class TravelNote extends React.Component {
   }
 
   getAllTravelNote = async (page) => {
+    // alert(page);
     // alert(this.state.changestartDate);
     // console.log(getCustomersapi);
     if (this.state.isSearched) {
@@ -142,6 +143,7 @@ export default class TravelNote extends React.Component {
       q_status: 0,
       //   q_status: self.state.qStatus,
     };
+    // console.log(bodyParam);
     axios
       .post(RegisterHistoryApi, bodyParam, {
         headers: {
@@ -150,7 +152,7 @@ export default class TravelNote extends React.Component {
         },
       })
       .then(function (response) {
-        console.log(response.data.history.data);
+        // console.log(response.data.history.data);
         self.setState({
           data: [...self.state.data, ...response.data.history.data],
           refreshing: false,
@@ -174,9 +176,10 @@ export default class TravelNote extends React.Component {
 
   _handleSearch(page, status, statusid, startdate, enddate) {
     // alert(status);
+    console.log(page);
     this.state.data = [];
     const self = this;
-    self.setState({ isSearched: true });
+    self.setState({ isSearched: false });
     let bodyParam = {
       userId: self.state.user_id,
       status: status,
@@ -366,23 +369,21 @@ export default class TravelNote extends React.Component {
 
   _handleCheck(check, itemid) {
     // console.log(arr);
-
+    this.setState({deletealert:check})
     //  console.log("Item Id",itemid);
     if (check == true) {
       arr.push(itemid);
       // console.log(arr);
       // this._handleDelete(arr);
-      this.setState({ deletealert: true });
-    } else {
-      this.setState({ deletealert: false });
-    }
+      // this.setState({ deletealert: true });
+    } 
+    // else {
+    //   this.setState({ deletealert: false });
+    // }
   }
 
   _handleDelete() {
-    // console.log(this.state.array);
-    const array = this.state.array;
-    // console.log(array);
-
+   if(this.state.deletealert == true){
     const self = this;
     let bodyParam = {
       formId: arr,
@@ -399,11 +400,16 @@ export default class TravelNote extends React.Component {
         if (response.data.status == 1) {
           self.setState({ isOpenSuccessModel: true });
         }
-        console.log(response.data);
+        // console.log(response.data);
       })
       .catch(function (err) {
         console.log(err);
       });
+   }else{
+     alert("Please select checkbox");
+   }
+
+   
     // console.log(this.state.id);
   }
 
@@ -551,7 +557,7 @@ export default class TravelNote extends React.Component {
     if (this.state.isLoading) {
       return <Loading />;
     }
-    var { isSearched, data } = this.state;
+    var {isSearched,data } = this.state;
     // var dataList = isSearched ? searchTravel : data;
     var dataList = data;
 
@@ -586,6 +592,7 @@ export default class TravelNote extends React.Component {
                 passportNo={item.passport}
                 nrcstatus={item.citizen_status}
                 statusname={item.status}
+                remark={item.remark}
                 checkBox={
                   <Checkbox
                     isCheck={this.state.check}

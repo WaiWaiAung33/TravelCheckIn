@@ -216,6 +216,12 @@ export default class ToleGateCard extends React.Component {
                     : this.props.passportNo} */}
               </Text>
             </View>
+            <View>
+              {
+              this.props.statusname == 2 || this.props.statusname == 5 ? 
+              <Text style={styles.textfooter}>{this.props.remark}</Text> : null
+              }
+            </View>
           </View>
         </TouchableOpacity>
       </View>
@@ -245,4 +251,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
     paddingTop: 5,
   },
+  textfooter:{
+    color:"#FFA500"
+  }
 });

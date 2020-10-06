@@ -56,7 +56,7 @@ export default class Home extends React.Component {
     const access_token = await AsyncStorage.getItem("access_token");
     this.setState({
       access_token: access_token,
-      version: appjson.expo.android.versionCode,
+      version: appjson.expo.version,
     });
     await this.setBackHandler();
     const res = await getLang();
@@ -116,7 +116,7 @@ export default class Home extends React.Component {
       .then(function (response) {
         // console.log(response.data);
         self.setState({ isLoading: false });
-        if (self.state.version < response.data.forceVersion.version_code) {
+        if (self.state.version == response.data.forceVersion.version_name) {
           self.setState({
             // isLoading: false,
             isOpenAppModal: false,
@@ -137,6 +137,8 @@ export default class Home extends React.Component {
         console.log(err);
       });
   }
+
+
 
   render() {
     // console.log(this.state.version);
