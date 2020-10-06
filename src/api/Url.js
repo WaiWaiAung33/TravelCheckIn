@@ -1,5 +1,6 @@
 
-export const BaseUrl = "http://128.199.79.79/Covid/public/api/";
+// export const BaseUrl = "http://128.199.79.79/Covid/public/api/";
+export const BaseUrl = "https://nptcheckin.com/api/";
 //Login Api
 export const LoginApi = BaseUrl + "sendOtp";
 export const OTPCodeApi = BaseUrl +"verifyOtp";
@@ -12,7 +13,8 @@ export const GetTownshipApi = BaseUrl + "township";
 export const GetNrcStateApi = BaseUrl + "getNRCstate";
 
 //image url
-export const ImguploadApi ="http://128.199.79.79/Covid/public/";
+// export const ImguploadApi ="http://128.199.79.79/Covid/public/";
+export const ImguploadApi ="https://nptcheckin.com/";
 //create api
 export const CreateApi = BaseUrl + "regrister";
 

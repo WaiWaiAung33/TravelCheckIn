@@ -21,6 +21,7 @@ import {
   GetTownshipApi,
   BaseUrl,
   EditApi,
+  ImguploadApi
 } from "@api/Url";
 
 //import components
@@ -196,22 +197,22 @@ export default class Create extends React.Component {
           address: datas.ministry,
           imagePath: datas.path,
           nrcfrontName:
-            "http://128.199.79.79/Covid/public/" +
+            ImguploadApi +
             datas.path +
             "/" +
             datas.nrc_front,
           nrcbackName:
-            "http://128.199.79.79/Covid/public/" +
+            ImguploadApi +
             datas.path +
             "/" +
             datas.nrc_back,
           moName:
-            "http://128.199.79.79/Covid/public/" +
+            ImguploadApi +
             datas.path +
             "/" +
             datas.mo_photo,
           approvephotoName:
-            "http://128.199.79.79/Covid/public/" +
+            ImguploadApi +
             datas.path +
             "/" +
             datas.approve_photo,
@@ -328,7 +329,7 @@ export default class Create extends React.Component {
       "ministry_id",
       self.state.education.value ? self.state.education.value : null
     );
-    console.log(formData);
+    // console.log(formData);
 
     axios
       .post(EditApi, formData, {
@@ -357,7 +358,7 @@ export default class Create extends React.Component {
       Authorization: "Bearer " + self.state.access_token,
     };
 
-    console.log(headers);
+    // console.log(headers);
     axios
       .get(GetCityApi, {
         headers,

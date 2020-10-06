@@ -35,6 +35,7 @@ export default class ToleGate extends React.Component {
       id: "",
       date: null,
       data: [],
+      status: null,
     };
     this.BackHandler = null;
   }
@@ -77,6 +78,7 @@ export default class ToleGate extends React.Component {
         // console.log(response.data);
         self.setState({
           data: response.data,
+          status: response.data.status,
         });
       })
       .catch(function (err) {
@@ -92,23 +94,21 @@ export default class ToleGate extends React.Component {
         />
         {/* <ScrollView> */}
         <TouchableOpacity style={styles.qrcodeBox}>
-          {
-            this.state.data.status == 0 ? <Text>{t("nodata",this.state.locale)}</Text> :
+          {this.state.status == 0 ? (
+            <Text>{t("nodata", this.state.locale)}</Text>
+          ) : (
             <QRCode
-            content={this.state.data.userId}
-            codeStyle="square"
-            size={150}
-          />
-          }
-         
+              content={this.state.data.userId}
+              codeStyle="square"
+              size={150}
+            />
+          )}
         </TouchableOpacity>
-        {
-          this.state.data.status == 0 ? null :
+        {this.state.status == 0 ? null : (
           <Text style={styles.text}>
-          {Moment(this.state.data.created_at).format("DD-MM-YYYY")}
-        </Text>
-        }
-      
+            {Moment(this.state.data.created_at).format("DD-MM-YYYY")}
+          </Text>
+        )}
       </View>
     );
   }
